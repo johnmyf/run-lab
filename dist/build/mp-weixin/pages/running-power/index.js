@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),t={__name:"index",setup(t){const a=()=>{e.index.navigateBack()};return(t,n)=>({a:e.o(a,"9e")})}},a=e._export_sfc(t,[["__scopeId","data-v-91d71764"]]);wx.createPage(a);

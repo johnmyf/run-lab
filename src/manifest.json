@@ -1,0 +1,30 @@
+{
+  "name": "跑研社",
+  "appid": "__UNI__XXXXXX",
+  "description": "跑步工具微信小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": true,
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    },
+    "usingComponents": true,
+    "darkmode": false,
+    "themeLocation": "theme.json",
+    "lazyCodeLoading": "requiredComponents"
+  },
+  "h5": {
+    "router": {
+      "mode": "history"
+    },
+    "title": "跑步工具",
+    "devServer": {
+      "port": 3000
+    }
+  }
+}

@@ -1,0 +1,129 @@
+<template>
+  <view class="home">
+    <view class="header">
+      <text class="header-title">跑步工具</text>
+    </view>
+
+    <view class="welcome-section">
+      <text class="welcome-text">欢迎回来，开始今天的跑步之旅！</text>
+    </view>
+
+    <text class="section-title">功能面板</text>
+
+    <view class="grid-container">
+      <view
+        v-for="item in menuItems"
+        :key="item.id"
+        class="grid-item"
+        :class="item.colorClass"
+        @click="goToPage(item)"
+      >
+        <text class="icon">{{ item.icon }}</text>
+        <text class="title">{{ item.title }}</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script setup>
+const menuItems = [
+  { id: 1, title: '跑力值计算', icon: '⚡', colorClass: 'blue', path: '/pages/running-power/index' },
+  { id: 2, title: '成绩预测', icon: '🏆', colorClass: 'red', path: '/pages/performance-prediction/index' },
+  { id: 3, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
+  { id: 4, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
+  { id: 5, title: '论坛', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
+  { id: 6, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
+  { id: 7, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' },
+  { id: 8, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' },
+  { id: 9, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' }
+]
+
+const goToPage = (item) => {
+  if (item.path) {
+    uni.navigateTo({ url: item.path })
+  } else {
+    uni.showToast({ title: '功能开发中', icon: 'none' })
+  }
+}
+</script>
+
+<style scoped>
+.home {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 140rpx;
+}
+
+.header {
+  background: #2C3E50;
+  height: 160rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 60rpx;
+}
+
+.header-title {
+  color: #FFFFFF;
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.welcome-section {
+  background: #FFFFFF;
+  margin: 40rpx 30rpx;
+  padding: 36rpx 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.welcome-text {
+  color: #2C3E50;
+  font-size: 28rpx;
+}
+
+.section-title {
+  color: #2C3E50;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin: 0 30rpx 30rpx 30rpx;
+  display: block;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  padding: 0 30rpx;
+}
+
+.grid-item {
+  height: 232rpx;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.grid-item .icon {
+  font-size: 72rpx;
+  margin-bottom: 16rpx;
+}
+
+.grid-item .title {
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: bold;
+  text-align: center;
+}
+
+.grid-item.blue { background: #3498DB; }
+.grid-item.red { background: #E74C3C; }
+.grid-item.green { background: #2ECC71; }
+.grid-item.purple { background: #9B59B6; }
+.grid-item.orange { background: #F39C12; }
+.grid-item.teal { background: #1ABC9C; }
+.grid-item.gray { background: #95A5A6; }
+</style>
