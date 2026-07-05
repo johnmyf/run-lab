@@ -1,0 +1,548 @@
+[
+  {
+    "time_1_6km": {
+      "value": "9:10",
+      "seconds": 550.0
+    },
+    "time_5km": {
+      "value": "30:40",
+      "seconds": 1840.0
+    },
+    "vdot": 30,
+    "r_200m": {
+      "value": "1:08",
+      "seconds": 68.0
+    },
+    "r_300m": {
+      "value": "1:42",
+      "seconds": 102.0
+    },
+    "i_200m": {
+      "value": "1:11",
+      "seconds": 71.0
+    },
+    "i_400m": {
+      "value": "2:24",
+      "seconds": 144.0
+    },
+    "t_400m": {
+      "value": "2:33",
+      "seconds": 153.0
+    },
+    "t_per_km": {
+      "value": "6:24",
+      "seconds": 384.0
+    },
+    "t_per_mile": {
+      "value": "10:18",
+      "seconds": 618.0
+    },
+    "m_time": {
+      "value": "4:57",
+      "seconds": 297.0
+    },
+    "m_per_km": {
+      "value": "7:03",
+      "seconds": 423.0
+    },
+    "m_per_mile": {
+      "value": "11:21",
+      "seconds": 681.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "9:27",
+      "seconds": 567.0
+    },
+    "time_5km": {
+      "value": "31:32",
+      "seconds": 1892.0
+    },
+    "vdot": 29,
+    "r_200m": {
+      "value": "1:10",
+      "seconds": 70.0
+    },
+    "r_300m": {
+      "value": "1:45",
+      "seconds": 105.0
+    },
+    "i_200m": {
+      "value": "1:14",
+      "seconds": 74.0
+    },
+    "i_400m": {
+      "value": "2:28",
+      "seconds": 148.0
+    },
+    "t_400m": {
+      "value": "2:37",
+      "seconds": 157.0
+    },
+    "t_per_km": {
+      "value": "6:34",
+      "seconds": 394.0
+    },
+    "t_per_mile": {
+      "value": "10:34",
+      "seconds": 634.0
+    },
+    "m_time": {
+      "value": "5:06",
+      "seconds": 306.0
+    },
+    "m_per_km": {
+      "value": "7:15",
+      "seconds": 435.0
+    },
+    "m_per_mile": {
+      "value": "11:41",
+      "seconds": 701.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "9:44",
+      "seconds": 584.0
+    },
+    "time_5km": {
+      "value": "32:27",
+      "seconds": 1947.0
+    },
+    "vdot": 28,
+    "r_200m": {
+      "value": "1:13",
+      "seconds": 73.0
+    },
+    "r_300m": {
+      "value": "1:49",
+      "seconds": 109.0
+    },
+    "i_200m": {
+      "value": "1:17",
+      "seconds": 77.0
+    },
+    "i_400m": {
+      "value": "2:34",
+      "seconds": 154.0
+    },
+    "t_400m": {
+      "value": "2:42",
+      "seconds": 162.0
+    },
+    "t_per_km": {
+      "value": "6:45",
+      "seconds": 405.0
+    },
+    "t_per_mile": {
+      "value": "10:52",
+      "seconds": 652.0
+    },
+    "m_time": {
+      "value": "5:15",
+      "seconds": 315.0
+    },
+    "m_per_km": {
+      "value": "7:27",
+      "seconds": 447.0
+    },
+    "m_per_mile": {
+      "value": "12:02",
+      "seconds": 722.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "10:02",
+      "seconds": 602.0
+    },
+    "time_5km": {
+      "value": "33:25",
+      "seconds": 2005.0
+    },
+    "vdot": 27,
+    "r_200m": {
+      "value": "1:15",
+      "seconds": 75.0
+    },
+    "r_300m": {
+      "value": "1:53",
+      "seconds": 113.0
+    },
+    "i_200m": {
+      "value": "1:19",
+      "seconds": 79.0
+    },
+    "i_400m": {
+      "value": "2:38",
+      "seconds": 158.0
+    },
+    "t_400m": {
+      "value": "2:46",
+      "seconds": 166.0
+    },
+    "t_per_km": {
+      "value": "6:56",
+      "seconds": 416.0
+    },
+    "t_per_mile": {
+      "value": "11:10",
+      "seconds": 670.0
+    },
+    "m_time": {
+      "value": "5:25",
+      "seconds": 325.0
+    },
+    "m_per_km": {
+      "value": "7:41",
+      "seconds": 461.0
+    },
+    "m_per_mile": {
+      "value": "12:24",
+      "seconds": 744.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "10:22",
+      "seconds": 622.0
+    },
+    "time_5km": {
+      "value": "34:27",
+      "seconds": 2067.0
+    },
+    "vdot": 26,
+    "r_200m": {
+      "value": "1:18",
+      "seconds": 78.0
+    },
+    "r_300m": {
+      "value": "1:57",
+      "seconds": 117.0
+    },
+    "i_200m": {
+      "value": "1:22",
+      "seconds": 82.0
+    },
+    "i_400m": {
+      "value": "2:44",
+      "seconds": 164.0
+    },
+    "t_400m": {
+      "value": "2:51",
+      "seconds": 171.0
+    },
+    "t_per_km": {
+      "value": "7:09",
+      "seconds": 429.0
+    },
+    "t_per_mile": {
+      "value": "11:30",
+      "seconds": 690.0
+    },
+    "m_time": {
+      "value": "5:35",
+      "seconds": 335.0
+    },
+    "m_per_km": {
+      "value": "7:56",
+      "seconds": 476.0
+    },
+    "m_per_mile": {
+      "value": "12:47",
+      "seconds": 767.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "10:43",
+      "seconds": 643.0
+    },
+    "time_5km": {
+      "value": "35:33",
+      "seconds": 2133.0
+    },
+    "vdot": 25,
+    "r_200m": {
+      "value": "1:21",
+      "seconds": 81.0
+    },
+    "r_300m": {
+      "value": "2:02",
+      "seconds": 122.0
+    },
+    "i_200m": {
+      "value": "1:24",
+      "seconds": 84.0
+    },
+    "i_400m": {
+      "value": "2:48",
+      "seconds": 168.0
+    },
+    "t_400m": {
+      "value": "2:56",
+      "seconds": 176.0
+    },
+    "t_per_km": {
+      "value": "7:21",
+      "seconds": 441.0
+    },
+    "t_per_mile": {
+      "value": "11:51",
+      "seconds": 711.0
+    },
+    "m_time": {
+      "value": "5:45",
+      "seconds": 345.0
+    },
+    "m_per_km": {
+      "value": "8:10",
+      "seconds": 490.0
+    },
+    "m_per_mile": {
+      "value": "13:11",
+      "seconds": 791.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "11:06",
+      "seconds": 666.0
+    },
+    "time_5km": {
+      "value": "36:44",
+      "seconds": 2204.0
+    },
+    "vdot": 24,
+    "r_200m": {
+      "value": "1:24",
+      "seconds": 84.0
+    },
+    "r_300m": null,
+    "i_200m": {
+      "value": "1:27",
+      "seconds": 87.0
+    },
+    "i_400m": {
+      "value": "2:55",
+      "seconds": 175.0
+    },
+    "t_400m": {
+      "value": "3:02",
+      "seconds": 182.0
+    },
+    "t_per_km": {
+      "value": "7:35",
+      "seconds": 455.0
+    },
+    "t_per_mile": {
+      "value": "12:13",
+      "seconds": 733.0
+    },
+    "m_time": {
+      "value": "5:56",
+      "seconds": 356.0
+    },
+    "m_per_km": {
+      "value": "8:26",
+      "seconds": 506.0
+    },
+    "m_per_mile": {
+      "value": "13:36",
+      "seconds": 816.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "11:30",
+      "seconds": 690.0
+    },
+    "time_5km": {
+      "value": "38:01",
+      "seconds": 2281.0
+    },
+    "vdot": 23,
+    "r_200m": {
+      "value": "1:27",
+      "seconds": 87.0
+    },
+    "r_300m": null,
+    "i_200m": {
+      "value": "1:30",
+      "seconds": 90.0
+    },
+    "i_400m": {
+      "value": "3:01",
+      "seconds": 181.0
+    },
+    "t_400m": {
+      "value": "3:08",
+      "seconds": 188.0
+    },
+    "t_per_km": {
+      "value": "7:50",
+      "seconds": 470.0
+    },
+    "t_per_mile": {
+      "value": "12:36",
+      "seconds": 756.0
+    },
+    "m_time": {
+      "value": "6:08",
+      "seconds": 368.0
+    },
+    "m_per_km": {
+      "value": "8:43",
+      "seconds": 523.0
+    },
+    "m_per_mile": {
+      "value": "14:02",
+      "seconds": 842.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "11:56",
+      "seconds": 716.0
+    },
+    "time_5km": {
+      "value": "39:22",
+      "seconds": 2362.0
+    },
+    "vdot": 22,
+    "r_200m": {
+      "value": "1:30",
+      "seconds": 90.0
+    },
+    "r_300m": null,
+    "i_200m": {
+      "value": "1:33",
+      "seconds": 93.0
+    },
+    "i_400m": {
+      "value": "3:07",
+      "seconds": 187.0
+    },
+    "t_400m": {
+      "value": "3:14",
+      "seconds": 194.0
+    },
+    "t_per_km": {
+      "value": "8:06",
+      "seconds": 486.0
+    },
+    "t_per_mile": {
+      "value": "13:02",
+      "seconds": 782.0
+    },
+    "m_time": {
+      "value": "6:19",
+      "seconds": 379.0
+    },
+    "m_per_km": {
+      "value": "8:59",
+      "seconds": 539.0
+    },
+    "m_per_mile": {
+      "value": "14:29",
+      "seconds": 869.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "12:24",
+      "seconds": 744.0
+    },
+    "time_5km": {
+      "value": "40:49",
+      "seconds": 2449.0
+    },
+    "vdot": 21,
+    "r_200m": {
+      "value": "1:33",
+      "seconds": 93.0
+    },
+    "r_300m": null,
+    "i_200m": {
+      "value": "1:36",
+      "seconds": 96.0
+    },
+    "i_400m": {
+      "value": "3:13",
+      "seconds": 193.0
+    },
+    "t_400m": {
+      "value": "3:21",
+      "seconds": 201.0
+    },
+    "t_per_km": {
+      "value": "8:23",
+      "seconds": 503.0
+    },
+    "t_per_mile": {
+      "value": "13:29",
+      "seconds": 809.0
+    },
+    "m_time": {
+      "value": "6:31",
+      "seconds": 391.0
+    },
+    "m_per_km": {
+      "value": "9:16",
+      "seconds": 556.0
+    },
+    "m_per_mile": {
+      "value": "14:57",
+      "seconds": 897.0
+    }
+  },
+  {
+    "time_1_6km": {
+      "value": "12:55",
+      "seconds": 775.0
+    },
+    "time_5km": {
+      "value": "42:24",
+      "seconds": 2544.0
+    },
+    "vdot": 20,
+    "r_200m": {
+      "value": "1:37",
+      "seconds": 97.0
+    },
+    "r_300m": null,
+    "i_200m": {
+      "value": "1:40",
+      "seconds": 100.0
+    },
+    "i_400m": {
+      "value": "3:21",
+      "seconds": 201.0
+    },
+    "t_400m": {
+      "value": "3:28",
+      "seconds": 208.0
+    },
+    "t_per_km": {
+      "value": "8:41",
+      "seconds": 521.0
+    },
+    "t_per_mile": {
+      "value": "13:58",
+      "seconds": 838.0
+    },
+    "m_time": {
+      "value": "6:44",
+      "seconds": 404.0
+    },
+    "m_per_km": {
+      "value": "9:34",
+      "seconds": 574.0
+    },
+    "m_per_mile": {
+      "value": "15:26",
+      "seconds": 926.0
+    }
+  }
+]
