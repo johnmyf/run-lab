@@ -56,6 +56,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import html2canvas from 'html2canvas'
 import vdotMap from '@/data/sheet5-1.json'
 
 // 需要显示的7个subject：与 sheet5-1.json 中的 key 完全对应
@@ -111,9 +112,40 @@ function goBack() {
   uni.navigateBack()
 }
 
-// 分享
-function shareResult() {
-  uni.showToast({ title: '分享功能暂未开放', icon: 'none' })
+// 分享成绩（生成图片并下载）
+async function shareResult() {
+  // #ifndef H5
+  uni.showToast({ title: '请在浏览器中打开使用分享功能', icon: 'none' })
+  return
+  // #endif
+
+  try {
+    uni.showLoading({ title: '生成分享图片...' })
+
+    const pageEl = document.querySelector('.page-container')
+    if (!pageEl) {
+      uni.hideLoading()
+      return
+    }
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#f5f5f5'
+    })
+
+    const imgData = canvas.toDataURL('image/png')
+    const link = document.createElement('a')
+    link.download = `成绩预测_VDOT${vdotValue.value}.png`
+    link.href = imgData
+    link.click()
+
+    uni.hideLoading()
+    uni.showToast({ title: '图片已生成', icon: 'success' })
+  } catch (e) {
+    uni.hideLoading()
+    uni.showToast({ title: '分享生成失败', icon: 'none' })
+  }
 }
 
 // 返回首页（首页为 tabBar 页面，需用 switchTab）
