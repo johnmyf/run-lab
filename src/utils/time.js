@@ -26,6 +26,22 @@ export function secondsToPace(totalSecs) {
 }
 
 /**
+ * 将 "M:SS" 或 "H:MM:SS" 格式时间转换为总秒数
+ * @param {string} timeStr - 如 "36:40" 或 "1:31:35"
+ * @returns {number} 总秒数
+ */
+export function parseTimeToSeconds(timeStr) {
+  if (!timeStr) return 0
+  const parts = timeStr.split(':')
+  if (parts.length === 3) {
+    return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseInt(parts[2], 10)
+  } else if (parts.length === 2) {
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
+  }
+  return 0
+}
+
+/**
  * 将 "H:MM:SS" 格式转为中文显示
  * @param {string} timeStr - 如 "0:30:40" 或 "1:31:35"
  * @returns {string} 如 "30分40秒" 或 "1小时31分35秒"

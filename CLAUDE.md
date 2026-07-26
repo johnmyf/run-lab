@@ -37,9 +37,12 @@ src/
 ├── utils/               # 通用工具函数（无 Vue 依赖）
 │   └── time.js                     # 时间/配速格式化工具
 ├── logic/               # 业务逻辑（按功能模块分类）
-│   └── performance-prediction/     # 成绩预测业务逻辑
-│       ├── constants.js            # 常量配置（subject、配速类型、说明文案）
-│       └── formatters.js           # 配速格式化函数
+│   ├── performance-prediction/     # 成绩预测业务逻辑
+│   │   ├── constants.js            # 常量配置（subject、配速类型、说明文案）
+│   │   └── formatters.js           # 配速格式化函数
+│   └── running-power/              # 跑力值计算业务逻辑
+│       ├── constants.js            # picker 范围、距离配置
+│       └── vdot.js                 # VDOT 算法（getVDOT）
 └── pages/               # 页面组件（必须在此目录下）
     ├── index/
     │   └── index.vue              # 首页（九宫格功能面板 + tabBar 首页）
@@ -86,7 +89,7 @@ src/
 
 - **数据源**: `src/data/sheet5-1.json` — Jack Daniels VDOT 表5-1，56 个 VDOT 值(30-85) × 9 个距离(1500米、1.6公里、3公里、3.2公里、5公里、10公里、15公里、半程马拉松、马拉松)
 - **输入**: 5km / 10km / 15km / 半程马拉松 / 马拉松 最快成绩（选填，输入越多越准）
-- **算法**: 各输入成绩分别查 `sheet5-1.json` 确定对应 VDOT → 取最大值作为最终 VDOT
+- **算法**: 各输入成绩分别查 `sheet5-1.json` 确定对应 VDOT → 取最大值作为最终 VDOT（由 `src/logic/running-power/vdot.js` 中 `getVDOT()` 实现）
   ```js
   // 核心逻辑：vdotMap[VDOT][subject] 是标准成绩，用户输入慢于标准则降一档
   for (let v = 30; v <= 85; v++) {
@@ -107,6 +110,7 @@ src/
   ```
 - **"[跑步]"标签规则**: 由 `src/logic/performance-prediction/constants.js` 中 `getSubjectLabel()` 处理：半程马拉松和马拉松 **不显示"跑步"**，其余显示 `subject + "跑步"`
 - **时间格式**: `src/utils/time.js` 中 `formatPerformanceTime()` 将 `"H:MM:SS"` 转为中文，如 `"0:30:40"` → `"30分40秒"`
+- **时间解析**: `src/utils/time.js` 中 `parseTimeToSeconds()` 将 `"M:SS"` 或 `"H:MM:SS"` 转为总秒数（`paceToSeconds()` 只处理 `"M:SS"`）
 - **配速格式化**: `src/logic/performance-prediction/formatters.js` 处理间歇跑/重复跑的配速转换
 - **训练配速配置**: `src/logic/performance-prediction/constants.js` 中的 `TRAINING_CONFIG`、`REPEAT_PRIORITY`、`README_CONTENT`
 - **分享**: H5 平台使用 `html2canvas` 截图下载（条件编译 `#ifdef H5`），分享时隐藏三个操作按钮

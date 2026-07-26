@@ -72,114 +72,49 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import vdotMap from '@/data/sheet5-1.json'
+import { parseTimeToSeconds } from '@/utils/time'
+import { DISTANCE_CONFIGS, getPickerRanges, formatPickerTime, MARATHON_303_TIME } from '@/logic/running-power/constants'
+import { getVDOT } from '@/logic/running-power/vdot'
 
-// 生成数字范围数组
-const range60 = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
-const rangeH2 = ['0', '1']
-const rangeH3 = ['0', '1', '2']
-const rangeH4 = ['0', '1', '2', '3']
-const rangeH7 = ['0', '1', '2', '3', '4', '5', '6']
+// ==================== 状态 ====================
 
-const distances = reactive([
-  {
-    key: '5公里',
-    label: '5公里最佳成绩:',
-    ranges: [[...range60], [...range60]],
-    selected: [0, 0],
-    hasValue: false,
-    formatFn: (indices) => `${range60[indices[0]]}:${range60[indices[1]]}`
-  },
-  {
-    key: '10公里',
-    label: '10公里最佳成绩:',
-    ranges: [[...rangeH2], [...range60], [...range60]],
-    selected: [0, 0, 0],
-    hasValue: false,
-    formatFn: (indices) => `${rangeH2[indices[0]]}:${range60[indices[1]]}:${range60[indices[2]]}`
-  },
-  {
-    key: '15公里',
-    label: '15公里最佳成绩:',
-    ranges: [[...rangeH3], [...range60], [...range60]],
-    selected: [0, 0, 0],
-    hasValue: false,
-    formatFn: (indices) => `${rangeH3[indices[0]]}:${range60[indices[1]]}:${range60[indices[2]]}`
-  },
-  {
-    key: '半程马拉松',
-    label: '半程马拉松最佳成绩:',
-    ranges: [[...rangeH4], [...range60], [...range60]],
-    selected: [0, 0, 0],
-    hasValue: false,
-    formatFn: (indices) => `${rangeH4[indices[0]]}:${range60[indices[1]]}:${range60[indices[2]]}`
-  },
-  {
-    key: '马拉松',
-    label: '马拉松最佳成绩:',
-    ranges: [[...rangeH7], [...range60], [...range60]],
-    selected: [0, 0, 0],
-    hasValue: false,
-    formatFn: (indices) => `${rangeH7[indices[0]]}:${range60[indices[1]]}:${range60[indices[2]]}`
-  }
-])
+/** 各距离的 picker 状态 */
+const distances = reactive(
+  DISTANCE_CONFIGS.map(cfg => ({
+    ...cfg,
+    ranges: getPickerRanges(cfg.rangeCount),
+    selected: Array(cfg.rangeCount).fill(0),
+    hasValue: false
+  }))
+)
 
 const modalState = ref('hidden')
 const finalVdot = ref(0)
 
-// 获取展示文本
+// ==================== 展示 ====================
+
 function getDisplayTime(dist) {
-  return dist.formatFn(dist.selected)
+  return formatPickerTime(dist.ranges, dist.selected)
 }
 
-// 获取时间字符串（用于计算）
 function getTimeString(dist) {
-  return dist.formatFn(dist.selected)
+  return formatPickerTime(dist.ranges, dist.selected)
 }
 
-// picker 列滚动
+// ==================== Picker 事件 ====================
+
 function onColumnChange(dist, event) {
   const { column, value } = event.detail
   dist.selected[column] = value
 }
 
-// picker 确认选择
 function onPickerChange(dist, event) {
   dist.selected = event.detail.value
   dist.hasValue = true
 }
 
-// 时间字符串转总秒数
-function getSeconds(timeStr) {
-  const parts = timeStr.split(':')
-  if (parts.length === 3) {
-    return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2])
-  } else if (parts.length === 2) {
-    return parseInt(parts[0]) * 60 + parseInt(parts[1])
-  }
-  return 0
-}
+// ==================== 操作 ====================
 
-// 计算单个科目的 VDOT 值
-function getVDOT(subject, performances) {
-  const pb = performances.pbs.find(p => p.subject === subject)
-  if (!pb) return null
-
-  const totalSeconds = getSeconds(pb.performance)
-  const MIN_VDOT = 30
-  const MAX_VDOT = 85
-
-  for (let v = MIN_VDOT; v <= MAX_VDOT; v++) {
-    const baseTime = vdotMap[String(v)]?.[subject]
-    if (!baseTime) continue
-    const baseSeconds = getSeconds(baseTime)
-    if (totalSeconds > baseSeconds) {
-      return Math.max(v - 1, MIN_VDOT)
-    }
-  }
-  return MAX_VDOT
-}
-
-// 重置
 function resetAll() {
   for (const dist of distances) {
     dist.selected = dist.selected.map(() => 0)
@@ -188,18 +123,13 @@ function resetAll() {
   modalState.value = 'hidden'
 }
 
-// 确定
 function confirm() {
   const pbs = []
   for (const dist of distances) {
     if (!dist.hasValue) continue
-    pbs.push({
-      subject: dist.key,
-      performance: getTimeString(dist)
-    })
+    pbs.push({ subject: dist.key, performance: getTimeString(dist) })
   }
 
-  // 检查是否至少输入一项
   if (pbs.length === 0) {
     modalState.value = 'no-input'
     return
@@ -208,11 +138,9 @@ function confirm() {
   calculateVDOT(pbs)
 }
 
-// 填入全马破三
 function fillMarathon303() {
-  // 设置马拉松为 2:58:47
   const marathon = distances.find(d => d.key === '马拉松')
-  marathon.selected = [2, 58, 47]
+  marathon.selected = [...MARATHON_303_TIME]
   marathon.hasValue = true
 
   modalState.value = 'hidden'
@@ -220,22 +148,17 @@ function fillMarathon303() {
   const pbs = []
   for (const dist of distances) {
     if (!dist.hasValue) continue
-    pbs.push({
-      subject: dist.key,
-      performance: getTimeString(dist)
-    })
+    pbs.push({ subject: dist.key, performance: getTimeString(dist) })
   }
 
   calculateVDOT(pbs)
 }
 
-// 计算 VDOT
 function calculateVDOT(pbs) {
-  const performances = { pbs }
   const vdots = []
 
   for (const pb of pbs) {
-    const vdot = getVDOT(pb.subject, performances)
+    const vdot = getVDOT(pb.subject, pbs, vdotMap)
     if (vdot !== null) {
       vdots.push({ subject: pb.subject, vdot })
     }
@@ -251,13 +174,11 @@ function calculateVDOT(pbs) {
   modalState.value = 'result'
 }
 
-// 跳转到成绩预测页
 function goToPrediction() {
   modalState.value = 'hidden'
   uni.navigateTo({ url: '/pages/performance-prediction/index' })
 }
 
-// 返回上一页
 function goBack() {
   uni.navigateBack()
 }
