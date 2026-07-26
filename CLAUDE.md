@@ -59,7 +59,7 @@ src/
 ### 页面组件约定
 - 所有功能页采用统一模板：顶部彩色 header（含 ← 返回按钮和居中标题）+ 居中内容区
 - header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、紫 `#9B59B6`（课表）、橙 `#F39C12`（论坛）、青 `#1ABC9C`（成就）
-- 所有功能页当前均为"开发中"占位状态，具体功能待实现
+- 跑力值计算页和成绩预测页已实现完整功能，其余功能页为"开发中"占位状态
 - 页面导航使用 uni-app API：`uni.navigateTo({ url: '/pages/xxx/index' })` 跳转，`uni.navigateBack()` 返回
 
 ### uni-app 特殊约定
@@ -70,3 +70,33 @@ src/
 - `box-sizing: border-box` 在小程序中无效，使用 uni-app 默认盒模型
 - `pages.json` 中设置 `"navigationStyle": "custom"` 以使用自定义导航栏
 - tabBar 配置在 `pages.json` 中，不在页面组件内
+
+## 核心功能数据说明
+
+### 跑力值计算 (`src/pages/running-power/index.vue`)
+
+- **数据源**: `src/data/sheet5-1.json` — Jack Daniels VDOT 表5-1，56 个 VDOT 值(30-85) × 9 个距离(1500米、1.6公里、3公里、3.2公里、5公里、10公里、15公里、半程马拉松、马拉松)
+- **输入**: 5km / 10km / 15km / 半程马拉松 / 马拉松 最快成绩（选填，输入越多越准）
+- **算法**: 各输入成绩分别查 `sheet5-1.json` 确定对应 VDOT → 取最大值作为最终 VDOT
+  ```js
+  // 核心逻辑：vdotMap[VDOT][subject] 是标准成绩，用户输入慢于标准则降一档
+  for (let v = 30; v <= 85; v++) {
+    const baseSeconds = getSeconds(vdotMap[String(v)]?.[subject])
+    if (总秒数 > baseSeconds) return Math.max(v - 1, 30)
+  }
+  ```
+- **共享**: 计算结果通过 `uni.setStorageSync('vdot', finalVdot)` 全局共享
+
+### 成绩预测 (`src/pages/performance-prediction/index.vue`)
+
+- **数据源**: 同一 `src/data/sheet5-1.json`，直接查表，**无公式推导**
+- **输入**: 从 `uni.getStorageSync('vdot')` 读取跑力值页面计算的 VDOT
+- **预测项**: 7 个 subject — `['1500米', '3公里', '5公里', '10公里', '15公里', '半程马拉松', '马拉松']`
+  ```js
+  // 核心查询
+  vdotMap[String(vdot)][subject]  // → "0:30:40" (H:MM:SS格式)
+  ```
+- **"[跑步]"标签规则**: 半程马拉松和马拉松 **不显示"跑步"**，其余显示 `subject + "跑步"`（如 `1500米跑步`）
+- **时间格式**: `formatPerformanceTime()` 将 `"H:MM:SS"` 转为中文，如 `"0:30:40"` → `"30分40秒"`
+- **分享**: H5 平台使用 `html2canvas` 截图下载（条件编译 `#ifdef H5`），分享时隐藏三个操作按钮
+- **按钮**: 分享 / 返回首页(`uni.switchTab`) / 重新评估(`uni.navigateTo` 跑力值计算页)
