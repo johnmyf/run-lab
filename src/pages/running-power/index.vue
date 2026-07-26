@@ -59,7 +59,8 @@
             <text class="modal-title">计算出你的跑力值(VDOT)</text>
             <text class="modal-result">{{ finalVdot }}</text>
             <view class="modal-buttons">
-              <button class="modal-btn modal-btn-primary" @click="modalState = 'hidden'">关闭</button>
+              <button class="modal-btn modal-btn-secondary" @click="modalState = 'hidden'">关闭</button>
+              <button class="modal-btn modal-btn-primary" @click="goToPrediction">查看成绩预测</button>
             </view>
           </template>
         </view>
@@ -246,7 +247,14 @@ function calculateVDOT(pbs) {
   }
 
   finalVdot.value = Math.max(...vdots.map(v => v.vdot))
+  uni.setStorageSync('vdot', finalVdot.value)
   modalState.value = 'result'
+}
+
+// 跳转到成绩预测页
+function goToPrediction() {
+  modalState.value = 'hidden'
+  uni.navigateTo({ url: '/pages/performance-prediction/index' })
 }
 
 // 返回上一页
