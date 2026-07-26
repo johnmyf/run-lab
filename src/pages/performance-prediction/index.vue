@@ -45,7 +45,7 @@
       </view>
 
       <!-- 操作按钮 -->
-      <view class="action-buttons">
+      <view class="action-buttons" v-show="!sharing">
         <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
         <button class="btn btn-re-eval" @click="goToRunningPower">重新评估</button>
@@ -67,6 +67,7 @@ const subjects = ['1500米', '3公里', '5公里', '10公里', '15公里', '半�
 // 从 storage 读取 VDOT 值（跑力值计算页面写入）
 const vdotValue = ref(uni.getStorageSync('vdot') || null)
 const noVdot = computed(() => vdotValue.value === null)
+const sharing = ref(false)
 
 // 生成预测成绩列表
 const predictions = computed(() => {
@@ -79,7 +80,7 @@ const predictions = computed(() => {
   return subjects.map(subject => ({
     subject,
     // "[跑步]" 显示规则：半程马拉松和马拉松不显示，其他显示
-    label: subject + (subject !== '半程马拉松' && subject !== '马拉松' ? '[跑步]' : ''),
+    label: subject + (subject !== '半程马拉松' && subject !== '马拉松' ? '跑步' : ''),
     time: data[subject] ? formatPerformanceTime(data[subject]) : '数据缺失'
   }))
 })
@@ -124,8 +125,13 @@ async function shareResult() {
   try {
     uni.showLoading({ title: '生成分享图片...' })
 
+    // 隐藏按钮后再截图
+    sharing.value = true
+    await new Promise(resolve => setTimeout(resolve, 100))
+
     const pageEl = document.querySelector('.page-container')
     if (!pageEl) {
+      sharing.value = false
       uni.hideLoading()
       uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
@@ -137,6 +143,8 @@ async function shareResult() {
       backgroundColor: '#f5f5f5'
     })
 
+    sharing.value = false
+
     const imgData = canvas.toDataURL('image/png')
     const link = document.createElement('a')
     link.download = `成绩预测_VDOT${vdotValue.value}.png`
@@ -146,6 +154,7 @@ async function shareResult() {
     uni.hideLoading()
     uni.showToast({ title: '图片已生成', icon: 'success' })
   } catch (e) {
+    sharing.value = false
     console.error('截图生成失败:', e)
     uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
@@ -326,14 +335,16 @@ function goToRunningPower() {
 .action-buttons {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20rpx;
   margin-bottom: 40rpx;
 }
 
 /* 通用按钮样式 */
 .btn {
-  height: 80rpx;
-  line-height: 80rpx;
+  width: 400rpx;
+  height: 88rpx;
+  line-height: 88rpx;
   border-radius: 16rpx;
   font-size: 30rpx;
   font-weight: bold;
