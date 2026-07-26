@@ -39,10 +39,16 @@ const menuItems = [
 ]
 
 const goToPage = (item) => {
-  if (item.path) {
-    uni.navigateTo({ url: item.path })
-  } else {
+  if (!item.path) {
     uni.showToast({ title: '功能开发中', icon: 'none' })
+    return
+  }
+  // tabBar 页面需要使用 switchTab 跳转
+  const tabBarPages = ['/pages/index/index', '/pages/achievement/index']
+  if (tabBarPages.includes(item.path)) {
+    uni.switchTab({ url: item.path })
+  } else {
+    uni.navigateTo({ url: item.path })
   }
 }
 </script>
