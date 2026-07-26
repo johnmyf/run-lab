@@ -22,7 +22,7 @@
 
 <script setup>
 const goBack = () => {
-  uni.navigateBack()
+  uni.switchTab({ url: '/pages/index/index' })
 }
 </script>
 
