@@ -56,7 +56,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+// #ifdef H5
 import html2canvas from 'html2canvas'
+// #endif
 import vdotMap from '@/data/sheet5-1.json'
 
 // 需要显示的7个subject：与 sheet5-1.json 中的 key 完全对应
@@ -125,6 +127,7 @@ async function shareResult() {
     const pageEl = document.querySelector('.page-container')
     if (!pageEl) {
       uni.hideLoading()
+      uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
     }
 
@@ -143,6 +146,7 @@ async function shareResult() {
     uni.hideLoading()
     uni.showToast({ title: '图片已生成', icon: 'success' })
   } catch (e) {
+    console.error('截图生成失败:', e)
     uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
   }
