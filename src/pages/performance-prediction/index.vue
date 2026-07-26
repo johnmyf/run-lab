@@ -99,30 +99,55 @@ const predictions = computed(() => {
   }))
 })
 
+// ==================== 训练说明数据 ====================
+const README_CONTENT = {
+  easy: { title: '轻松跑', text: '又叫E跑，日常有氧慢跑。体感轻松，呼吸均匀，可以边跑边聊天，能连续说出15字以上的句子，打有氧基础用。' },
+  long: { title: '长距离慢跑', text: '又叫L跑或LSD，有氧跑的进阶，时间控制在90~150分钟，其它要求跟轻松跑一致，作用：让身体习惯长时间运动，增强耐力，同时磨炼心理。' },
+  marathon: { title: '马拉松配速跑', text: '又叫节奏跑或M跑，比赛前模拟比赛节奏，熟悉比赛时的速度和体感，帮自己建立信心。训练作用不大，但赛前练几次很有必要。' },
+  threshold: { title: '乳酸门槛跑', text: '又叫T跑，作用是提高身体清除乳酸的能力，让你在较快速度下坚持更久，腿不容易酸胀。体感是"舒适的难受"，比轻松跑累很多，但还能勉强说几个词，不能完整聊天。每次跑20~40分钟。' },
+  interval: { title: '间歇跑', text: '又叫I跑，作用是大幅提升最大摄氧量，让你跑得更快、肺活量更大。做法：快跑几分钟（如3分钟），然后慢跑或走同样时间休息，重复多组。体感非常喘，基本说不出话。' },
+  repeat: { title: '重复跑', text: '又叫R跑，作用是提高速度、步频和跑步效率，让你跑起来更省力。做法：短距离冲刺（如200米或400米），用最快速度跑完，然后完全休息（走路或站住直到心跳平复），再跑下一组。体感是全力爆发，但休息时间长，不会太痛苦。' }
+}
+
 // 训练配速类型配置：顺序、标题、对应字段
 const TRAINING_CONFIG = [
-  { type: 'easy', label: '轻松跑配速范围', field: 'EL1KMPace', isRange: true,
-    readme: { title: '轻松跑', text: '又叫E跑，日常有氧慢跑。体感轻松，呼吸均匀，可以边跑边聊天，能连续说出15字以上的句子，打有氧基础用。' } },
-  { type: 'long', label: '长距离慢跑配速范围', field: 'EL1KMPace', isRange: true,
-    readme: { title: '长距离慢跑', text: '又叫L跑或LSD，有氧跑的进阶，时间控制在90~150分钟，其它要求跟轻松跑一致，作用：让身体习惯长时间运动，增强耐力，同时磨炼心理。' } },
-  { type: 'marathon', label: '马拉松配速跑配速', field: 'M1KMPace',
-    readme: { title: '马拉松配速跑', text: '又叫节奏跑或M跑，比赛前模拟比赛节奏，熟悉比赛时的速度和体感，帮自己建立信心。训练作用不大，但赛前练几次很有必要。' } },
-  { type: 'threshold', label: '乳酸门槛跑配速', field: 'T1KMPace',
-    readme: { title: '乳酸门槛跑', text: '又叫T跑，作用是提高身体清除乳酸的能力，让你在较快速度下坚持更久，腿不容易酸胀。体感是"舒适的难受"，比轻松跑累很多，但还能勉强说几个词，不能完整聊天。每次跑20~40分钟。' } },
-  { type: 'interval', label: '间歇跑配速', field: 'I1KMPace',
-    readme: { title: '间歇跑', text: '又叫I跑，作用是大幅提升最大摄氧量，让你跑得更快、肺活量更大。做法：快跑几分钟（如3分钟），然后慢跑或走同样时间休息，重复多组。体感非常喘，基本说不出话。' } }
+  { type: 'easy', label: '轻松跑配速范围', field: 'EL1KMPace', isRange: true },
+  { type: 'long', label: '长距离慢跑配速范围', field: 'EL1KMPace', isRange: true },
+  { type: 'marathon', label: '马拉松配速跑配速', field: 'M1KMPace' },
+  { type: 'threshold', label: '乳酸门槛跑配速', field: 'T1KMPace' },
+  // 间歇跑系列
+  { type: 'i400', label: '400米间歇跑用时', field: 'I400MPace' },
+  { type: 'i800', label: '800米间歇跑用时', field: 'I1KMPace', formatter: 'i800' },
+  { type: 'i1000', label: '1000米间歇跑用时及配速', field: 'I1KMPace' },
+  { type: 'i1200', label: '1200米间歇跑用时', field: 'I1200MPace', formatter: 'i1200' },
+  { type: 'i1600', label: '1.6公里间歇跑用时', field: 'I1.6KMPace', formatter: 'i1600' }
 ]
 
 // 重复跑优先级（从高到低）
 const REPEAT_PRIORITY = [
-  { type: 'repeat', key: 'R800MPace', label: '800米重复跑配速' },
-  { type: 'repeat', key: 'R600MPace', label: '600米重复跑配速' },
-  { type: 'repeat', key: 'R400MPace', label: '400米重复跑配速' },
-  { type: 'repeat', key: 'R200MPace', label: '200米重复跑配速' }
+  { type: 'repeat', key: 'R800MPace', label: '800米重复跑配速', distance: 800 },
+  { type: 'repeat', key: 'R600MPace', label: '600米重复跑配速', distance: 600 },
+  { type: 'repeat', key: 'R400MPace', label: '400米重复跑配速', distance: 400 },
+  { type: 'repeat', key: 'R200MPace', label: '200米重复跑配速', distance: 200 }
 ]
 
-// 重复跑 readme
-const REPEAT_README = { title: '重复跑', text: '又叫R跑，作用是提高速度、步频和跑步效率，让你跑起来更省力。做法：短距离冲刺（如200米或400米），用最快速度跑完，然后完全休息（走路或站住直到心跳平复），再跑下一组。体感是全力爆发，但休息时间长，不会太痛苦。' }
+/**
+ * 将 "M:SS" 格式转换为总秒数
+ */
+function paceToSeconds(pace) {
+  if (!pace || pace === 0) return 0
+  const parts = String(pace).split(':')
+  return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
+}
+
+/**
+ * 将总秒数转换为 "M:SS" 格式（M 无前导零）
+ */
+function secondsToPace(totalSecs) {
+  const m = Math.floor(totalSecs / 60)
+  const s = Math.round(totalSecs % 60)
+  return `${m}:${String(s).padStart(2, '0')}`
+}
 
 /**
  * 格式化范围值 {from, to} 为 "M:SS ~ M:SS"
@@ -130,6 +155,34 @@ const REPEAT_README = { title: '重复跑', text: '又叫R跑，作用是提高�
 function formatRange(value) {
   if (!value || value === 0) return ''
   return `${value.from} ~ ${value.to}`
+}
+
+// 各间歇跑类型的格式化函数
+const INTERVAL_FORMATTERS = {
+  i800(value) {
+    // 800m 用时 = 1km 配速 × 0.8，后跟配速
+    const eightHundredSecs = paceToSeconds(value) * 0.8
+    return `${secondsToPace(eightHundredSecs)} (配速:${value}/km)`
+  },
+  i1200(value) {
+    // 1200m 用时直接显示，后跟配速(×0.834)
+    const perKmSecs = paceToSeconds(value) * 0.834
+    return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
+  },
+  i1600(value) {
+    // 1.6km 用时直接显示，后跟配速(×0.625)
+    const perKmSecs = paceToSeconds(value) * 0.625
+    return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
+  }
+}
+
+/**
+ * 格式化重复跑配速（转换为1000米配速）
+ */
+function formatRepeatPace(value, distance) {
+  const secs = paceToSeconds(value)
+  const perKmSecs = secs * (1000 / distance)
+  return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
 }
 
 // 生成训练配速列表
@@ -146,38 +199,47 @@ const trainingPaces = computed(() => {
     const value = subjects[config.field]
     if (!value || value === 0) continue
 
-    items.push({
-      type: config.type,
-      label: config.label,
-      display: config.isRange ? formatRange(value) : value
-    })
+    let display
+    if (config.isRange) {
+      display = formatRange(value)
+    } else if (config.formatter && INTERVAL_FORMATTERS[config.formatter]) {
+      display = INTERVAL_FORMATTERS[config.formatter](value)
+    } else {
+      display = value
+    }
+
+    items.push({ type: config.type, label: config.label, display })
   }
 
   // 重复跑（按优先级选择第一个非零值）
   for (const rp of REPEAT_PRIORITY) {
     const value = subjects[rp.key]
     if (!value || value === 0) continue
-    items.push({ type: rp.type, label: rp.label, display: value })
+    items.push({
+      type: rp.type,
+      label: rp.label,
+      display: formatRepeatPace(value, rp.distance)
+    })
     break
   }
 
   return items
 })
 
-// 生成训练说明列表（与 trainingPaces 的类型对应）
+// 生成训练说明列表
 const trainingReadme = computed(() => {
   if (!trainingPaces.value.length) return []
   const types = trainingPaces.value.map(i => i.type)
   const readmeItems = []
 
-  for (const config of TRAINING_CONFIG) {
-    if (types.includes(config.type)) {
-      readmeItems.push({ ...config.readme, type: config.type })
-    }
-  }
-  if (types.includes('repeat')) {
-    readmeItems.push({ ...REPEAT_README, type: 'repeat' })
-  }
+  // 固定顺序：轻松跑 → 长距离 → 马拉松 → 乳酸门槛 → 间歇跑 → 重复跑
+  if (types.includes('easy')) readmeItems.push({ ...README_CONTENT.easy, type: 'easy' })
+  if (types.includes('long')) readmeItems.push({ ...README_CONTENT.long, type: 'long' })
+  if (types.includes('marathon')) readmeItems.push({ ...README_CONTENT.marathon, type: 'marathon' })
+  if (types.includes('threshold')) readmeItems.push({ ...README_CONTENT.threshold, type: 'threshold' })
+  // 只要有任一 I 系列类型，就显示间歇跑说明
+  if (types.some(t => t.startsWith('i'))) readmeItems.push({ ...README_CONTENT.interval, type: 'interval' })
+  if (types.includes('repeat')) readmeItems.push({ ...README_CONTENT.repeat, type: 'repeat' })
 
   return readmeItems
 })
