@@ -42,9 +42,15 @@ TrainingPaceRecommendations:
 ##[重新评估]
 退回到[跑力值计算]页面
 
+##成绩预测
+获取sheet5-1.json数据, 赋值为二元数组 vdot_map[vdot][subject]
+vdot为{全局变量VDOT}, 为[跑力值计算]的结果.
+取得的vdot_map[vdot][subject], 就是该项目的预测成绩
 
-
-
+##补充sheet5-1.json
+把文件 "data-resources/表5-1, 与常见距离的比赛时间相对应的 VDOT 值.md"  的表格转换为 "sheet5-1.json"
+这里 .md文件包含了不同subject, 但sheet5-1.json只少量包含了几个subject, 需补充全sheet5-1.json内所有subject的数据. 
+subject="1500米" / "3公里" 可以直接从新的sheet5-1.json获取
 
 
 
