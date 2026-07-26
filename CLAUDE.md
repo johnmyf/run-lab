@@ -31,6 +31,15 @@ src/
 ├── manifest.json        # uni-app 应用配置（平台参数、appid 等）
 ├── pages.json           # 路由和窗口配置（替代 vue-router）
 ├── uni.scss             # uni-app 全局样式变量
+├── data/                # 数据文件（JSON 数据表）
+│   ├── sheet5-1.json              # Jack Daniels VDOT 表
+│   └── sheet5-2.json              # 训练配速建议表
+├── utils/               # 通用工具函数（无 Vue 依赖）
+│   └── time.js                     # 时间/配速格式化工具
+├── logic/               # 业务逻辑（按功能模块分类）
+│   └── performance-prediction/     # 成绩预测业务逻辑
+│       ├── constants.js            # 常量配置（subject、配速类型、说明文案）
+│       └── formatters.js           # 配速格式化函数
 └── pages/               # 页面组件（必须在此目录下）
     ├── index/
     │   └── index.vue              # 首页（九宫格功能面板 + tabBar 首页）
@@ -96,7 +105,9 @@ src/
   // 核心查询
   vdotMap[String(vdot)][subject]  // → "0:30:40" (H:MM:SS格式)
   ```
-- **"[跑步]"标签规则**: 半程马拉松和马拉松 **不显示"跑步"**，其余显示 `subject + "跑步"`（如 `1500米跑步`）
-- **时间格式**: `formatPerformanceTime()` 将 `"H:MM:SS"` 转为中文，如 `"0:30:40"` → `"30分40秒"`
+- **"[跑步]"标签规则**: 由 `src/logic/performance-prediction/constants.js` 中 `getSubjectLabel()` 处理：半程马拉松和马拉松 **不显示"跑步"**，其余显示 `subject + "跑步"`
+- **时间格式**: `src/utils/time.js` 中 `formatPerformanceTime()` 将 `"H:MM:SS"` 转为中文，如 `"0:30:40"` → `"30分40秒"`
+- **配速格式化**: `src/logic/performance-prediction/formatters.js` 处理间歇跑/重复跑的配速转换
+- **训练配速配置**: `src/logic/performance-prediction/constants.js` 中的 `TRAINING_CONFIG`、`REPEAT_PRIORITY`、`README_CONTENT`
 - **分享**: H5 平台使用 `html2canvas` 截图下载（条件编译 `#ifdef H5`），分享时隐藏三个操作按钮
 - **按钮**: 分享 / 返回首页(`uni.switchTab`) / 重新评估(`uni.navigateTo` 跑力值计算页)
