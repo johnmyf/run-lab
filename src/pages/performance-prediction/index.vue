@@ -35,12 +35,25 @@
         </view>
       </view>
 
-      <!-- 训练配速建议卡片（建设中） -->
-      <view class="pace-card">
+      <!-- 训练配速建议卡片 -->
+      <view v-if="!noVdot" class="pace-card">
         <text class="section-title">训练配速建议</text>
-        <view class="pace-placeholder">
-          <text class="placeholder-icon">🏃</text>
-          <text class="placeholder-text">训练配速建议功能开发中，敬请期待...</text>
+        <view class="pace-list">
+          <view class="pace-item" v-for="item in trainingPaces" :key="item.type">
+            <text class="pace-label">{{ item.label }}:</text>
+            <text class="pace-value">{{ item.display }}</text>
+          </view>
+        </view>
+
+        <!-- 训练说明分隔线 -->
+        <view class="readme-divider"></view>
+
+        <!-- 训练说明 -->
+        <view class="readme-list">
+          <view class="readme-item" v-for="item in trainingReadme" :key="item.type">
+            <text class="readme-title">{{ item.title }}</text>
+            <text class="readme-text">{{ item.text }}</text>
+          </view>
         </view>
       </view>
 
@@ -60,6 +73,7 @@ import { ref, computed } from 'vue'
 import html2canvas from 'html2canvas'
 // #endif
 import vdotMap from '@/data/sheet5-1.json'
+import trainingPacesData from '@/data/sheet5-2.json'
 
 // 需要显示的7个subject：与 sheet5-1.json 中的 key 完全对应
 const subjects = ['1500米', '3公里', '5公里', '10公里', '15公里', '半程马拉松', '马拉松']
@@ -83,6 +97,89 @@ const predictions = computed(() => {
     label: subject + (subject !== '半程马拉松' && subject !== '马拉松' ? '跑步' : ''),
     time: data[subject] ? formatPerformanceTime(data[subject]) : '数据缺失'
   }))
+})
+
+// 训练配速类型配置：顺序、标题、对应字段
+const TRAINING_CONFIG = [
+  { type: 'easy', label: '轻松跑配速范围', field: 'EL1KMPace', isRange: true,
+    readme: { title: '轻松跑', text: '又叫E跑，日常有氧慢跑。体感轻松，呼吸均匀，可以边跑边聊天，能连续说出15字以上的句子，打有氧基础用。' } },
+  { type: 'long', label: '长距离慢跑配速范围', field: 'EL1KMPace', isRange: true,
+    readme: { title: '长距离慢跑', text: '又叫L跑或LSD，有氧跑的进阶，时间控制在90~150分钟，其它要求跟轻松跑一致，作用：让身体习惯长时间运动，增强耐力，同时磨炼心理。' } },
+  { type: 'marathon', label: '马拉松配速跑配速', field: 'M1KMPace',
+    readme: { title: '马拉松配速跑', text: '又叫节奏跑或M跑，比赛前模拟比赛节奏，熟悉比赛时的速度和体感，帮自己建立信心。训练作用不大，但赛前练几次很有必要。' } },
+  { type: 'threshold', label: '乳酸门槛跑配速', field: 'T1KMPace',
+    readme: { title: '乳酸门槛跑', text: '又叫T跑，作用是提高身体清除乳酸的能力，让你在较快速度下坚持更久，腿不容易酸胀。体感是"舒适的难受"，比轻松跑累很多，但还能勉强说几个词，不能完整聊天。每次跑20~40分钟。' } },
+  { type: 'interval', label: '间歇跑配速', field: 'I1KMPace',
+    readme: { title: '间歇跑', text: '又叫I跑，作用是大幅提升最大摄氧量，让你跑得更快、肺活量更大。做法：快跑几分钟（如3分钟），然后慢跑或走同样时间休息，重复多组。体感非常喘，基本说不出话。' } }
+]
+
+// 重复跑优先级（从高到低）
+const REPEAT_PRIORITY = [
+  { type: 'repeat', key: 'R800MPace', label: '800米重复跑配速' },
+  { type: 'repeat', key: 'R600MPace', label: '600米重复跑配速' },
+  { type: 'repeat', key: 'R400MPace', label: '400米重复跑配速' },
+  { type: 'repeat', key: 'R200MPace', label: '200米重复跑配速' }
+]
+
+// 重复跑 readme
+const REPEAT_README = { title: '重复跑', text: '又叫R跑，作用是提高速度、步频和跑步效率，让你跑起来更省力。做法：短距离冲刺（如200米或400米），用最快速度跑完，然后完全休息（走路或站住直到心跳平复），再跑下一组。体感是全力爆发，但休息时间长，不会太痛苦。' }
+
+/**
+ * 格式化范围值 {from, to} 为 "M:SS ~ M:SS"
+ */
+function formatRange(value) {
+  if (!value || value === 0) return ''
+  return `${value.from} ~ ${value.to}`
+}
+
+// 生成训练配速列表
+const trainingPaces = computed(() => {
+  if (noVdot.value) return []
+  const vdot = String(vdotValue.value)
+  const subjects = trainingPacesData[vdot]?.training_subjects
+  if (!subjects) return []
+
+  const items = []
+
+  // 固定训练类型（按配置顺序）
+  for (const config of TRAINING_CONFIG) {
+    const value = subjects[config.field]
+    if (!value || value === 0) continue
+
+    items.push({
+      type: config.type,
+      label: config.label,
+      display: config.isRange ? formatRange(value) : value
+    })
+  }
+
+  // 重复跑（按优先级选择第一个非零值）
+  for (const rp of REPEAT_PRIORITY) {
+    const value = subjects[rp.key]
+    if (!value || value === 0) continue
+    items.push({ type: rp.type, label: rp.label, display: value })
+    break
+  }
+
+  return items
+})
+
+// 生成训练说明列表（与 trainingPaces 的类型对应）
+const trainingReadme = computed(() => {
+  if (!trainingPaces.value.length) return []
+  const types = trainingPaces.value.map(i => i.type)
+  const readmeItems = []
+
+  for (const config of TRAINING_CONFIG) {
+    if (types.includes(config.type)) {
+      readmeItems.push({ ...config.readme, type: config.type })
+    }
+  }
+  if (types.includes('repeat')) {
+    readmeItems.push({ ...REPEAT_README, type: 'repeat' })
+  }
+
+  return readmeItems
 })
 
 /**
@@ -306,7 +403,7 @@ function goToRunningPower() {
   line-height: 1.6;
 }
 
-/* ==================== 训练配速建议占位 ==================== */
+/* ==================== 训练配速建议 ==================== */
 .pace-card {
   background: #FFFFFF;
   border-radius: 16rpx;
@@ -315,20 +412,68 @@ function goToRunningPower() {
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
-.pace-placeholder {
-  text-align: center;
-  padding: 50rpx 0;
+.pace-list {
+  padding-bottom: 10rpx;
 }
 
-.placeholder-icon {
-  font-size: 80rpx;
-  display: block;
-  margin-bottom: 16rpx;
+.pace-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
 }
 
-.placeholder-text {
-  color: #999;
+.pace-item:last-of-type {
+  border-bottom: none;
+}
+
+.pace-label {
+  color: #555;
   font-size: 28rpx;
+}
+
+.pace-value {
+  color: #E74C3C;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+/* 训练说明分隔线 */
+.readme-divider {
+  height: 2rpx;
+  background: #e8e8e8;
+  margin: 24rpx 0 20rpx;
+}
+
+/* 训练说明列表 */
+.readme-list {
+  padding-top: 10rpx;
+}
+
+.readme-item {
+  padding: 16rpx 0;
+}
+
+.readme-item + .readme-item {
+  border-top: 2rpx dashed #f0f0f0;
+  margin-top: 8rpx;
+  padding-top: 24rpx;
+}
+
+.readme-title {
+  color: #2C3E50;
+  font-size: 28rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.readme-text {
+  color: #777;
+  font-size: 24rpx;
+  line-height: 1.7;
+  display: block;
 }
 
 /* ==================== 操作按钮 ==================== */
