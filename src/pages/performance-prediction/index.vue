@@ -125,10 +125,10 @@ const TRAINING_CONFIG = [
 
 // 重复跑优先级（从高到低）
 const REPEAT_PRIORITY = [
-  { type: 'repeat', key: 'R800MPace', label: '800米重复跑配速', distance: 800 },
-  { type: 'repeat', key: 'R600MPace', label: '600米重复跑配速', distance: 600 },
-  { type: 'repeat', key: 'R400MPace', label: '400米重复跑配速', distance: 400 },
-  { type: 'repeat', key: 'R200MPace', label: '200米重复跑配速', distance: 200 }
+  { type: 'repeat', key: 'R800MPace', label: '800米重复跑用时', distance: 800 },
+  { type: 'repeat', key: 'R600MPace', label: '600米重复跑用时', distance: 600 },
+  { type: 'repeat', key: 'R400MPace', label: '400米重复跑用时', distance: 400 },
+  { type: 'repeat', key: 'R200MPace', label: '200米重复跑用时', distance: 200 }
 ]
 
 /**
