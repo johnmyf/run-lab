@@ -48,7 +48,7 @@
       <view class="action-buttons">
         <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
-        <view class="btn btn-re-eval" @click="goToRunningPower">重新评估</view>
+        <button class="btn btn-re-eval" @click="goToRunningPower">重新评估</button>
       </view>
     </view>
   </view>
