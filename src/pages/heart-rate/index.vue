@@ -36,7 +36,7 @@
           </radio-group>
         </view>
 
-        <button class="btn btn-calculate" @click="onCalculate">计算</button>
+        <button class="btn-calculate" @click="onCalculate">计算</button>
       </view>
 
       <!-- 区域2：估算结果卡片（计算后显示） -->
@@ -66,7 +66,7 @@
       <view class="card" v-if="calculated">
         <text class="card-title">心率训练区间</text>
         <view
-          v-for="(zone, index) in TRAINING_ZONES"
+          v-for="(zone, index) in zonesWithRanges"
           :key="index"
           class="zone-item"
         >
@@ -75,9 +75,7 @@
             <text class="zone-percent">{{ Math.round(zone.range[0] * 100) }}-{{ Math.round(zone.range[1] * 100) }}%</text>
           </view>
           <view class="zone-range">
-            <text class="zone-range-value">
-              {{ calcZoneRange(currentMaxHR, zone.range[0], zone.range[1]).from }} - {{ calcZoneRange(currentMaxHR, zone.range[0], zone.range[1]).to }}
-            </text>
+            <text class="zone-range-value">{{ zone.range.from }} - {{ zone.range.to }}</text>
             <text class="zone-range-unit">次/分钟</text>
           </view>
           <text class="zone-desc">{{ zone.desc }}</text>
@@ -113,6 +111,13 @@ const selectedIndex = ref(0)
 const maxHRResults = ref([])
 
 // ==================== 派生 ====================
+
+const zonesWithRanges = computed(() =>
+  TRAINING_ZONES.map(zone => ({
+    ...zone,
+    range: calcZoneRange(currentMaxHR.value, zone.range[0], zone.range[1])
+  }))
+)
 
 const currentMaxHR = computed(() => {
   if (!calculated.value || !maxHRResults.value.length) return 0

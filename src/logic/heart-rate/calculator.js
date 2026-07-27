@@ -12,7 +12,7 @@ import { AGE_MIN, AGE_MAX } from './constants'
  */
 export function validateAge(age) {
   const num = Number(age)
-  if (!age && age !== 0) {
+  if (age === '' || age === null || age === undefined) {
     return { valid: false, message: '请输入年龄' }
   }
   if (!Number.isInteger(num) || num < AGE_MIN || num > AGE_MAX) {
@@ -32,7 +32,7 @@ export function calcHeartRates(age, gender) {
     {
       name: '传统公式',
       formula: '220 - 年龄',
-      value: 220 - age
+      value: Math.round(220 - age)
     },
     {
       name: 'Tanaka公式',
