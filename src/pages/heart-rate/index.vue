@@ -209,10 +209,14 @@ async function shareResult() {
       return
     }
 
+    const pageHeight = pageEl.scrollHeight
     const canvas = await html2canvas(pageEl, {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#f5f5f5'
+      backgroundColor: '#f5f5f5',
+      height: pageHeight,
+      windowHeight: pageHeight,
+      scrollY: 0
     })
 
     sharing.value = false
