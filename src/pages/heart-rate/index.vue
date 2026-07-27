@@ -209,14 +209,10 @@ async function shareResult() {
       return
     }
 
-    const pageHeight = pageEl.scrollHeight
     const canvas = await html2canvas(pageEl, {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#f5f5f5',
-      height: pageHeight,
-      windowHeight: pageHeight,
-      scrollY: 0
+      backgroundColor: '#f5f5f5'
     })
 
     sharing.value = false
@@ -284,10 +280,7 @@ function goHome() {
 }
 
 .content-wrapper {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: calc(100vh - 160rpx);
-  padding-bottom: 40rpx;
+  padding: 30rpx;
 }
 
 /* 卡片通用 */
@@ -295,7 +288,7 @@ function goHome() {
   background: #FFFFFF;
   border-radius: 16rpx;
   padding: 30rpx;
-  margin: 30rpx 30rpx 0 30rpx;
+  margin-bottom: 30rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
