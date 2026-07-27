@@ -31,10 +31,10 @@ const menuItems = [
   { id: 2, title: '成绩预测', icon: '🏆', colorClass: 'red', path: '/pages/performance-prediction/index' },
   { id: 3, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
   { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
-  { id: 5, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
-  { id: 6, title: '论坛', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
-  { id: 7, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
-  { id: 8, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' },
+  { id: 5, title: '完赛时间估算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
+  { id: 6, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
+  { id: 7, title: '论坛', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
+  { id: 8, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
   { id: 9, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' }
 ]
 
@@ -133,4 +133,5 @@ const goToPage = (item) => {
 .grid-item.teal { background: #1ABC9C; }
 .grid-item.gray { background: #95A5A6; }
 .grid-item.cyan { background: #00BCD4; }
+.grid-item.pink { background: #E91E63; }
 </style>

@@ -236,6 +236,40 @@
                                     },
                                     {
                                         "type": "component",
+                                        "name": "完赛时间估算",
+                                        "size": {
+                                            "width": 108,
+                                            "height": 116
+                                        },
+                                        "backgroundColor": "#E91E63",
+                                        "cornerRadius": 12,
+                                        "children": [
+                                            {
+                                                "type": "icon",
+                                                "name": "完赛时间估算图标",
+                                                "content": "🏁",
+                                                "fontSize": 36,
+                                                "position": {
+                                                    "x": 36,
+                                                    "y": 20
+                                                }
+                                            },
+                                            {
+                                                "type": "text",
+                                                "name": "功能名称",
+                                                "content": "完赛时间估算",
+                                                "fontSize": 12,
+                                                "fontWeight": "bold",
+                                                "color": "#FFFFFF",
+                                                "position": {
+                                                    "x": 24,
+                                                    "y": 80
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "component",
                                         "name": "跑步课表",
                                         "size": {
                                             "width": 108,
@@ -369,40 +403,6 @@
                                                 }
                                             }
                                         ]
-                                    },
-                                    {
-                                        "type": "component",
-                                        "name": "待开发3",
-                                        "size": {
-                                            "width": 108,
-                                            "height": 116
-                                        },
-                                        "backgroundColor": "#95A5A6",
-                                        "cornerRadius": 12,
-                                        "children": [
-                                            {
-                                                "type": "icon",
-                                                "name": "待开发图标",
-                                                "content": "🔜",
-                                                "fontSize": 36,
-                                                "position": {
-                                                    "x": 36,
-                                                    "y": 20
-                                                }
-                                            },
-                                            {
-                                                "type": "text",
-                                                "name": "功能名称",
-                                                "content": "待开发",
-                                                "fontSize": 12,
-                                                "fontWeight": "bold",
-                                                "color": "#FFFFFF",
-                                                "position": {
-                                                    "x": 36,
-                                                    "y": 80
-                                                }
-                                            }
-                                        ]
                                     }
                                 ]
                             },
@@ -479,7 +479,8 @@
             "teal": "#1ABC9C",
             "cyan": "#00BCD4",
             "gray": "#95A5A6",
-            "lightGray": "#f5f5f5"
+            "lightGray": "#f5f5f5",
+            "pink": "#E91E63"
         },
         "typography": {
             "heading": {
