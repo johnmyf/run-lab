@@ -13,13 +13,16 @@
       <view class="card">
         <view class="input-row">
           <text class="input-label">年龄</text>
-          <input
-            class="age-input"
-            type="number"
-            :maxlength="2"
-            placeholder="输入年龄 (10-99)"
-            v-model="age"
-          />
+          <picker
+            mode="selector"
+            :range="ageRange"
+            @change="onAgeChange"
+          >
+            <view class="picker-display" :class="{ 'picker-empty': !age }">
+              <text v-if="age">{{ age }}岁</text>
+              <text v-else>请选择年龄</text>
+            </view>
+          </picker>
         </view>
 
         <view class="input-row">
@@ -35,11 +38,9 @@
             </label>
           </radio-group>
         </view>
-
-        <button class="btn-calculate" @click="onCalculate">计算</button>
       </view>
 
-      <!-- 区域2：估算结果卡片（计算后显示） -->
+      <!-- 区域2：估算结果卡片（有数据时显示） -->
       <view class="card" v-if="calculated">
         <text class="card-title">最大心率估算结果</text>
         <radio-group @change="onMethodChange">
@@ -62,7 +63,7 @@
         </radio-group>
       </view>
 
-      <!-- 区域3：训练区间卡片（计算后显示） -->
+      <!-- 区域3：训练区间卡片（有数据时显示） -->
       <view class="card" v-if="calculated">
         <text class="card-title">心率训练区间</text>
         <view
@@ -71,12 +72,14 @@
           class="zone-item"
         >
           <view class="zone-header">
-            <text class="zone-name">{{ zone.name }}</text>
-            <text class="zone-percent">{{ Math.round(zone.range[0] * 100) }}-{{ Math.round(zone.range[1] * 100) }}%</text>
-          </view>
-          <view class="zone-range">
-            <text class="zone-range-value">{{ zone.computedRange.from }} - {{ zone.computedRange.to }}</text>
-            <text class="zone-range-unit">次/分钟</text>
+            <view class="zone-header-left">
+              <text class="zone-name">{{ zone.name }}</text>
+              <text class="zone-percent">{{ Math.round(zone.range[0] * 100) }}-{{ Math.round(zone.range[1] * 100) }}%</text>
+            </view>
+            <view class="zone-range">
+              <text class="zone-range-value">{{ zone.computedRange.from }} - {{ zone.computedRange.to }}</text>
+              <text class="zone-range-unit">次/分钟</text>
+            </view>
           </view>
           <text class="zone-desc">{{ zone.desc }}</text>
           <text class="zone-training">对应训练：{{ zone.training }}</text>
@@ -93,22 +96,36 @@
           <text class="method-info-desc">{{ method.desc }}</text>
         </view>
       </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-buttons" v-show="calculated && !sharing">
+        <button class="btn btn-share" @click="shareResult">分享</button>
+        <button class="btn btn-home" @click="goHome">返回首页</button>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+// #ifdef H5
+import html2canvas from 'html2canvas'
+// #endif
 import { TRAINING_ZONES, METHODS } from '@/logic/heart-rate/constants'
-import { validateAge, calcHeartRates, calcZoneRange } from '@/logic/heart-rate/calculator'
+import { calcHeartRates, calcZoneRange } from '@/logic/heart-rate/calculator'
+
+// ==================== 常量 ====================
+
+const ageRange = Array.from({ length: 90 }, (_, i) => i + 10)
 
 // ==================== 状态 ====================
 
-const age = ref('')
+const age = ref(null)
 const gender = ref('男')
 const calculated = ref(false)
 const selectedIndex = ref(0)
 const maxHRResults = ref([])
+const sharing = ref(false)
 
 // ==================== 派生 ====================
 
@@ -124,7 +141,34 @@ const currentMaxHR = computed(() => {
   return maxHRResults.value[selectedIndex.value]?.value ?? 0
 })
 
+// ==================== 自动计算 ====================
+
+/** 执行完整计算（年龄/性别变更时） */
+function doCalculate() {
+  if (age.value === null) {
+    calculated.value = false
+    return
+  }
+  maxHRResults.value = calcHeartRates(Number(age.value), gender.value)
+  selectedIndex.value = 0
+  calculated.value = true
+}
+
+// 年龄变更 → 全部重新计算
+watch(age, () => {
+  doCalculate()
+})
+
+// 性别变更 → 全部重新计算
+watch(gender, () => {
+  doCalculate()
+})
+
 // ==================== 事件处理 ====================
+
+function onAgeChange(event) {
+  age.value = ageRange[event.detail.value]
+}
 
 function onGenderChange(event) {
   gender.value = event.detail.value
@@ -132,22 +176,61 @@ function onGenderChange(event) {
 
 function onMethodChange(event) {
   selectedIndex.value = Number(event.detail.value)
+  // zonesWithRanges 是 computed，自动重算
 }
 
-function onCalculate() {
-  const validation = validateAge(age.value)
-  if (!validation.valid) {
-    uni.showToast({ title: validation.message, icon: 'none' })
-    return
-  }
-
-  maxHRResults.value = calcHeartRates(Number(age.value), gender.value)
-  selectedIndex.value = 0
-  calculated.value = true
-}
+// ==================== 分享与导航 ====================
 
 function goBack() {
   uni.navigateBack()
+}
+
+async function shareResult() {
+  // #ifndef H5
+  uni.showToast({ title: '请在浏览器中打开使用分享功能', icon: 'none' })
+  return
+  // #endif
+
+  try {
+    uni.showLoading({ title: '生成分享图片...' })
+
+    sharing.value = true
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    const pageEl = document.querySelector('.page-container')
+    if (!pageEl) {
+      sharing.value = false
+      uni.hideLoading()
+      uni.showToast({ title: '页面元素未找到', icon: 'none' })
+      return
+    }
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#f5f5f5'
+    })
+
+    sharing.value = false
+
+    const imgData = canvas.toDataURL('image/png')
+    const link = document.createElement('a')
+    link.download = `心率计算.png`
+    link.href = imgData
+    link.click()
+
+    uni.hideLoading()
+    uni.showToast({ title: '图片已生成', icon: 'success' })
+  } catch (e) {
+    sharing.value = false
+    console.error('截图生成失败:', e)
+    uni.hideLoading()
+    uni.showToast({ title: '分享生成失败', icon: 'none' })
+  }
+}
+
+function goHome() {
+  uni.switchTab({ url: '/pages/index/index' })
 }
 </script>
 
@@ -236,15 +319,20 @@ function goBack() {
   flex-shrink: 0;
 }
 
-.age-input {
+.picker-display {
   flex: 1;
   height: 72rpx;
+  line-height: 72rpx;
   background: #f8f8f8;
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
   padding: 0 20rpx;
   font-size: 28rpx;
   color: #2C3E50;
+}
+
+.picker-display.picker-empty {
+  color: #bbb;
 }
 
 .gender-group {
@@ -261,20 +349,6 @@ function goBack() {
 .gender-text {
   font-size: 28rpx;
   color: #2C3E50;
-}
-
-.btn-calculate {
-  width: 100%;
-  height: 88rpx;
-  line-height: 88rpx;
-  background: #2ECC71;
-  color: #FFFFFF;
-  font-size: 32rpx;
-  font-weight: bold;
-  border-radius: 16rpx;
-  margin-top: 30rpx;
-  border: none;
-  text-align: center;
 }
 
 /* 区域2：估算结果 */
@@ -332,6 +406,12 @@ function goBack() {
   margin-bottom: 12rpx;
 }
 
+.zone-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
 .zone-name {
   color: #2C3E50;
   font-size: 30rpx;
@@ -350,7 +430,7 @@ function goBack() {
   display: flex;
   align-items: baseline;
   gap: 8rpx;
-  margin-bottom: 12rpx;
+  flex-shrink: 0;
 }
 
 .zone-range-value {
@@ -417,5 +497,34 @@ function goBack() {
   font-size: 26rpx;
   line-height: 1.6;
   display: block;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+
+.btn {
+  width: 400rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  color: #FFFFFF;
+}
+
+.btn-share {
+  background: #2C3E50;
+}
+
+.btn-home {
+  background: #3498DB;
 }
 </style>
