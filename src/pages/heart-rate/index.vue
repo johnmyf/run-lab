@@ -75,7 +75,7 @@
             <text class="zone-percent">{{ Math.round(zone.range[0] * 100) }}-{{ Math.round(zone.range[1] * 100) }}%</text>
           </view>
           <view class="zone-range">
-            <text class="zone-range-value">{{ zone.range.from }} - {{ zone.range.to }}</text>
+            <text class="zone-range-value">{{ zone.computedRange.from }} - {{ zone.computedRange.to }}</text>
             <text class="zone-range-unit">次/分钟</text>
           </view>
           <text class="zone-desc">{{ zone.desc }}</text>
@@ -115,7 +115,7 @@ const maxHRResults = ref([])
 const zonesWithRanges = computed(() =>
   TRAINING_ZONES.map(zone => ({
     ...zone,
-    range: calcZoneRange(currentMaxHR.value, zone.range[0], zone.range[1])
+    computedRange: calcZoneRange(currentMaxHR.value, zone.range[0], zone.range[1])
   }))
 )
 
