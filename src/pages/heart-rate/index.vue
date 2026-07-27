@@ -16,11 +16,11 @@
           <picker
             mode="selector"
             :range="ageRange"
+            :value="pickerIndex"
             @change="onAgeChange"
           >
-            <view class="picker-display" :class="{ 'picker-empty': !age }">
-              <text v-if="age">{{ age }}岁</text>
-              <text v-else>请选择年龄</text>
+            <view class="picker-display">
+              <text>{{ age }}岁</text>
             </view>
           </picker>
         </view>
@@ -118,9 +118,12 @@ import { calcHeartRates, calcZoneRange } from '@/logic/heart-rate/calculator'
 
 const ageRange = Array.from({ length: 90 }, (_, i) => i + 10)
 
+/** picker 选中索引：range 下标从 0 开始，age=10 对应 index=0 */
+const pickerIndex = computed(() => age.value - 10)
+
 // ==================== 状态 ====================
 
-const age = ref(null)
+const age = ref(45)
 const gender = ref('男')
 const calculated = ref(false)
 const selectedIndex = ref(0)
@@ -145,10 +148,6 @@ const currentMaxHR = computed(() => {
 
 /** 执行完整计算（年龄/性别变更时） */
 function doCalculate() {
-  if (age.value === null) {
-    calculated.value = false
-    return
-  }
   maxHRResults.value = calcHeartRates(Number(age.value), gender.value)
   selectedIndex.value = 0
   calculated.value = true
@@ -329,10 +328,6 @@ function goHome() {
   padding: 0 20rpx;
   font-size: 28rpx;
   color: #2C3E50;
-}
-
-.picker-display.picker-empty {
-  color: #bbb;
 }
 
 .gender-group {
