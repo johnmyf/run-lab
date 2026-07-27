@@ -412,8 +412,8 @@ function goHome() {
 
 .zone-header-left {
   display: flex;
-  align-items: center;
-  gap: 12rpx;
+  flex-direction: column;
+  gap: 6rpx;
 }
 
 .zone-name {
@@ -428,6 +428,7 @@ function goHome() {
   background: rgba(46, 204, 113, 0.1);
   padding: 4rpx 16rpx;
   border-radius: 8rpx;
+  align-self: flex-start;
 }
 
 .zone-range {
@@ -439,7 +440,7 @@ function goHome() {
 
 .zone-range-value {
   color: #2ECC71;
-  font-size: 48rpx;
+  font-size: 52rpx;
   font-weight: bold;
 }
 
