@@ -229,11 +229,12 @@ function scrollToTop() {
   uni.pageScrollTo({ scrollTop: 0, duration: 300 })
 }
 
-// 小程序分享
+// #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
   title: '配速计算器 — 跑研社',
   path: '/pages/pace-calculator/index',
 }))
+// #endif
 
 // 分享（H5 截图）
 async function shareResult() {
