@@ -147,9 +147,10 @@ const hasResult = computed(() => result.value !== null && result.value.rows?.len
 
 // 策略提示
 const strategyHint = computed(() => {
+  const perSegment = Math.abs(strategy.value / 5)
   if (strategy.value === 0) return '匀速 — 全程配速一致'
-  if (strategy.value < 0) return `前慢后快 — 前段慢 ${Math.abs(strategy.value)}%，后段快 ${Math.abs(strategy.value)}%`
-  return `前快后慢 — 前段快 ${strategy.value}%，后段慢 ${strategy.value}%`
+  if (strategy.value < 0) return `前慢后快 — 段间变化 ${perSegment}%/段，逐步加速`
+  return `前快后慢 — 段间变化 ${perSegment}%/段，逐步减速`
 })
 
 // 方法
@@ -179,7 +180,7 @@ function calculate() {
     return
   }
 
-  result.value = calculatePaceTable({
+  const table = calculatePaceTable({
     distanceKey: distanceKey.value,
     hours: HOUR_RANGE[hoursIdx.value],
     minutes: MIN_SEC_RANGE[minutesIdx.value],
@@ -187,6 +188,11 @@ function calculate() {
     strategy: strategy.value,
     interval: interval.value,
   })
+  if (!table) {
+    uni.showToast({ title: '计算失败，请检查输入', icon: 'none' })
+    return
+  }
+  result.value = table
 }
 
 function onStrategyChanging(e) {
@@ -218,6 +224,14 @@ function scrollToTop() {
   result.value = null
   uni.pageScrollTo({ scrollTop: 0, duration: 300 })
 }
+
+// 小程序分享
+onShareAppMessage(() => {
+  return {
+    title: '配速计算器 — 跑研社',
+    path: '/pages/pace-calculator/index',
+  }
+})
 
 // 分享（H5 截图）
 async function shareResult() {
