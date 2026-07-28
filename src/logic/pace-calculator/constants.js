@@ -26,6 +26,6 @@ export const STRATEGY_CONFIG = {
   STEP: 1,        // 步长
 }
 
-/** 时间选择器范围 */
-export const HOUR_RANGE = Array.from({ length: 7 }, (_, i) => i)         // 0-6
-export const MIN_SEC_RANGE = Array.from({ length: 60 }, (_, i) => i)     // 0-59
+/** 时间选择器范围（字符串格式，uni-app picker 要求） */
+export const HOUR_RANGE = Array.from({ length: 7 }, (_, i) => String(i))                    // "0"-"6"
+export const MIN_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')) // "00"-"59"

@@ -136,7 +136,7 @@ import { calculatePaceTable, formatPace, formatTime } from '@/logic/pace-calcula
 // 状态
 const distanceKey = ref(null)
 const hoursIdx = ref(0)
-const minutesIdx = ref(0)
+const minutesIdx = ref(30)  // 默认30分
 const secondsIdx = ref(0)
 const strategy = ref(0)
 const interval = ref(1)
@@ -172,9 +172,7 @@ function calculate() {
     uni.showToast({ title: '请选择跑步距离', icon: 'none' })
     return
   }
-  const totalSecs = HOUR_RANGE[hoursIdx.value] * 3600
-    + MIN_SEC_RANGE[minutesIdx.value] * 60
-    + MIN_SEC_RANGE[secondsIdx.value]
+  const totalSecs = hoursIdx.value * 3600 + minutesIdx.value * 60 + secondsIdx.value
   if (totalSecs <= 0) {
     uni.showToast({ title: '请设置有效时间', icon: 'none' })
     return
@@ -300,7 +298,7 @@ async function shareResult() {
   background: #FFF;
   border-radius: 16rpx;
   padding: 30rpx;
-  margin-bottom: 24rpx;
+  margin-bottom: 30rpx;
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
 }
 .section-label {
@@ -315,7 +313,7 @@ async function shareResult() {
 .distance-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 20rpx;
 }
 .distance-chip {
   padding: 16rpx 32rpx;
@@ -338,14 +336,14 @@ async function shareResult() {
 }
 .time-display {
   display: flex;
-  gap: 20rpx;
-  padding: 20rpx 40rpx;
+  gap: 30rpx;
+  padding: 28rpx 50rpx;
   background: #F0F8FF;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
   border: 2rpx solid #E0E0E0;
 }
 .time-display text {
-  font-size: 36rpx;
+  font-size: 40rpx;
   font-weight: bold;
   color: #2C3E50;
 }
