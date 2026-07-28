@@ -9,8 +9,8 @@
     </view>
 
     <view class="content-wrapper">
-      <!-- 输入区 -->
-      <view class="section distance-section">
+      <!-- 选择跑步距离 -->
+      <view class="section">
         <text class="section-label">选择跑步距离</text>
         <view class="distance-options">
           <view
@@ -25,23 +25,22 @@
         </view>
       </view>
 
-      <view class="section time-section">
+      <!-- 期望完成时间 -->
+      <view class="section">
         <text class="section-label">期望完成时间</text>
-        <view class="time-picker-row">
-          <!-- 三列 picker: 时/分/秒 -->
-          <picker
-            mode="multiSelector"
-            :range="[HOUR_RANGE, MIN_SEC_RANGE, MIN_SEC_RANGE]"
-            :value="[hoursIdx, minutesIdx, secondsIdx]"
-            @change="onTimeChange"
-          >
-            <view class="time-display">
-              <text>{{ HOUR_RANGE[hoursIdx] }}时</text>
-              <text>{{ MIN_SEC_RANGE[minutesIdx] }}分</text>
-              <text>{{ MIN_SEC_RANGE[secondsIdx] }}秒</text>
-            </view>
-          </picker>
-        </view>
+        <picker
+          mode="multiSelector"
+          :range="timePicker.ranges"
+          :value="timePicker.selected"
+          @columnchange="onColumnChange"
+          @change="onTimeChange"
+        >
+          <view class="time-display">
+            <text>{{ timePicker.ranges[0][timePicker.selected[0]] }}时</text>
+            <text>{{ timePicker.ranges[1][timePicker.selected[1]] }}分</text>
+            <text>{{ timePicker.ranges[2][timePicker.selected[2]] }}秒</text>
+          </view>
+        </picker>
       </view>
 
       <button class="calculate-btn" @click="calculate">计算配速</button>
@@ -90,25 +89,23 @@
 
         <!-- 配速表格 -->
         <view class="pace-table-wrapper">
-          <view class="pace-table">
-            <view class="table-header">
-              <text class="col-km">公里</text>
-              <text class="col-time">时间</text>
-              <text class="col-pace">配速</text>
-            </view>
-            <scroll-view scroll-y class="table-body">
-              <view
-                class="table-row"
-                v-for="(row, idx) in result.rows"
-                :key="idx"
-                :class="{ 'total-row': isLastRow(idx) }"
-              >
-                <text class="col-km">{{ formatKm(row.km) }}</text>
-                <text class="col-time">{{ formatTime(row.cumulativeSeconds) }}</text>
-                <text class="col-pace">{{ formatPace(row.paceSeconds) }}</text>
-              </view>
-            </scroll-view>
+          <view class="table-header">
+            <text class="col-km">公里</text>
+            <text class="col-time">时间</text>
+            <text class="col-pace">配速</text>
           </view>
+          <scroll-view scroll-y class="table-body">
+            <view
+              class="table-row"
+              v-for="(row, idx) in result.rows"
+              :key="idx"
+              :class="{ 'total-row': isLastRow(idx) }"
+            >
+              <text class="col-km">{{ formatKm(row.km) }}</text>
+              <text class="col-time">{{ formatTime(row.cumulativeSeconds) }}</text>
+              <text class="col-pace">{{ formatPace(row.paceSeconds) }}</text>
+            </view>
+          </scroll-view>
         </view>
 
         <!-- 操作按钮 -->
@@ -123,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 // #ifdef H5
 import html2canvas from 'html2canvas'
 // #endif
@@ -133,11 +130,16 @@ import {
 } from '@/logic/pace-calculator/constants'
 import { calculatePaceTable, formatPace, formatTime } from '@/logic/pace-calculator/calculator'
 
-// 状态
+// ==================== 时间选择器状态（reactive，参照跑力值页模式） ====================
+
+const timePicker = reactive({
+  ranges: [HOUR_RANGE, MIN_SEC_RANGE, MIN_SEC_RANGE],
+  selected: [0, 30, 0],  // 默认 0时30分0秒
+})
+
+// ==================== 其他状态 ====================
+
 const distanceKey = ref(null)
-const hoursIdx = ref(0)
-const minutesIdx = ref(30)  // 默认30分
-const secondsIdx = ref(0)
 const strategy = ref(0)
 const interval = ref(1)
 const result = ref(null)
@@ -153,17 +155,20 @@ const strategyHint = computed(() => {
   return `前快后慢 — 段间变化 ${perSegment}%/段，逐步减速`
 })
 
-// 方法
+// ==================== 方法 ====================
+
 function selectDistance(key) {
   distanceKey.value = key
   result.value = null
 }
 
+function onColumnChange(e) {
+  const { column, value } = e.detail
+  timePicker.selected[column] = value
+}
+
 function onTimeChange(e) {
-  const [h, m, s] = e.detail.value
-  hoursIdx.value = h
-  minutesIdx.value = m
-  secondsIdx.value = s
+  timePicker.selected = e.detail.value
   result.value = null
 }
 
@@ -172,7 +177,8 @@ function calculate() {
     uni.showToast({ title: '请选择跑步距离', icon: 'none' })
     return
   }
-  const totalSecs = hoursIdx.value * 3600 + minutesIdx.value * 60 + secondsIdx.value
+  const [h, m, s] = timePicker.selected
+  const totalSecs = h * 3600 + m * 60 + s
   if (totalSecs <= 0) {
     uni.showToast({ title: '请设置有效时间', icon: 'none' })
     return
@@ -180,9 +186,9 @@ function calculate() {
 
   const table = calculatePaceTable({
     distanceKey: distanceKey.value,
-    hours: HOUR_RANGE[hoursIdx.value],
-    minutes: MIN_SEC_RANGE[minutesIdx.value],
-    seconds: MIN_SEC_RANGE[secondsIdx.value],
+    hours: h,
+    minutes: m,
+    seconds: s,
     strategy: strategy.value,
     interval: interval.value,
   })
@@ -224,12 +230,10 @@ function scrollToTop() {
 }
 
 // 小程序分享
-onShareAppMessage(() => {
-  return {
-    title: '配速计算器 — 跑研社',
-    path: '/pages/pace-calculator/index',
-  }
-})
+onShareAppMessage(() => ({
+  title: '配速计算器 — 跑研社',
+  path: '/pages/pace-calculator/index',
+}))
 
 // 分享（H5 截图）
 async function shareResult() {
@@ -321,7 +325,6 @@ async function shareResult() {
   border: 2rpx solid #BDC3C7;
   font-size: 26rpx;
   color: #7F8C8D;
-  transition: all 0.2s;
 }
 .distance-chip.active {
   background: #00BCD4;
@@ -330,12 +333,9 @@ async function shareResult() {
 }
 
 /* 时间选择器 */
-.time-picker-row {
-  display: flex;
-  justify-content: center;
-}
 .time-display {
   display: flex;
+  justify-content: center;
   gap: 30rpx;
   padding: 28rpx 50rpx;
   background: #F0F8FF;
