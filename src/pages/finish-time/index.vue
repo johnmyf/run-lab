@@ -58,9 +58,9 @@
           @change="onPaceChange"
         >
           <view class="pace-display">
-            <text class="pace-value">{{ pacePicker.ranges[0][pacePicker.selected[0]] }}分</text>
-            <text class="pace-value">{{ pacePicker.ranges[1][pacePicker.selected[1]] }}秒</text>
-            <text class="pace-unit">/公里</text>
+            <text class="pace-part">{{ pacePicker.ranges[0][pacePicker.selected[0]] }}分</text>
+            <text class="pace-part">{{ pacePicker.ranges[1][pacePicker.selected[1]] }}秒</text>
+            <text class="pace-per-km">/公里</text>
           </view>
         </picker>
       </view>
@@ -402,24 +402,21 @@ async function shareResult() {
 .pace-display {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 0;
+  align-items: baseline;
+  gap: 20rpx;
   padding: 28rpx 50rpx;
   background: #F0F8FF;
   border-radius: 16rpx;
   border: 2rpx solid #E0E0E0;
 }
-.pace-value {
-  min-width: 140rpx;
-  text-align: center;
+.pace-part {
   font-size: 40rpx;
   font-weight: bold;
   color: #2C3E50;
 }
-.pace-unit {
+.pace-per-km {
   font-size: 24rpx;
   color: #95A5A6;
-  margin-left: 8rpx;
   font-weight: normal;
 }
 
