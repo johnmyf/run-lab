@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 调整首页 3×3 九宫格布局，移除一个"待开发"，新增"配速计算器"，重新排列"跑步课表""论坛""成就体系"的位置。
+**Goal:** 调整首页 3×3 九宫格布局，移除一个"待开发"，新增"配速计算器"，重新排列"跑步课表""交流天地""成就体系"的位置。
 
 **Architecture:** 纯前端布局调整，不涉及后端或状态管理。只需修改 Vue 数据数组顺序、Figma JSON 设计稿的节点顺序、HTML 预览的 DOM 顺序，以及 pages.json 路由和新建占位页面。
 
@@ -36,7 +36,7 @@ const menuItems = [
   { id: 3, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
   { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
   { id: 5, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
-  { id: 6, title: '论坛', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
+  { id: 6, title: '交流天地', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
   { id: 7, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
   { id: 8, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' },
   { id: 9, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' }
@@ -195,7 +195,7 @@ mkdir -p src/pages/pace-calculator
 
 将 `9宫格容器` 的 `children` 数组重新排序为：
 ```
-[跑力值计算, 成绩预测, 心率计算, 配速计算器(新增), 跑步课表, 论坛, 成就体系, 待开发2, 待开发3]
+[跑力值计算, 成绩预测, 心率计算, 配速计算器(新增), 跑步课表, 交流天地, 成就体系, 待开发2, 待开发3]
 ```
 
 其中配速计算器组件节点：
@@ -256,7 +256,7 @@ mkdir -p src/pages/pace-calculator
 将 `.grid-container` 内的 DOM 顺序调整为：
 ```
 跑力值计算(blue) → 成绩预测(red) → 心率计算(green) →
-配速计算器(cyan, 新增) → 跑步课表(purple) → 论坛(orange) →
+配速计算器(cyan, 新增) → 跑步课表(purple) → 交流天地(orange) →
 成就体系(teal) → 待开发(gray) → 待开发(gray)
 ```
 
@@ -285,7 +285,7 @@ mkdir -p src/pages/pace-calculator
 确认以下布局顺序在所有文件（index.vue / figma_design.json / figma_design_visual.html）中一致：
 ```
 Row 1: 跑力值计算 → 成绩预测 → 心率计算
-Row 2: 配速计算器 → 跑步课表 → 论坛
+Row 2: 配速计算器 → 跑步课表 → 交流天地
 Row 3: 成就体系 → 待开发 → 待开发
 ```
 
@@ -303,7 +303,7 @@ git add -A
 git commit -m "feat: 调整首页九宫格布局，新增配速计算器
 
 - 新增配速计算器（浅蓝 #00BCD4），位于第2行第1列
-- 跑步课表移至第2行第2列，论坛移至第2行第3列
+- 跑步课表移至第2行第2列，交流天地移至第2行第3列
 - 成就体系移至第3行第1列
 - 移除一个待开发占位
 - 同步更新 figma_design.json 和 figma_design_visual.html

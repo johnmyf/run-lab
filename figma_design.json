@@ -304,7 +304,7 @@
                                     },
                                     {
                                         "type": "component",
-                                        "name": "论坛",
+                                        "name": "交流天地",
                                         "size": {
                                             "width": 108,
                                             "height": 116
@@ -314,7 +314,7 @@
                                         "children": [
                                             {
                                                 "type": "icon",
-                                                "name": "论坛图标",
+                                                "name": "交流天地图标",
                                                 "content": "💬",
                                                 "fontSize": 36,
                                                 "position": {
@@ -325,7 +325,7 @@
                                             {
                                                 "type": "text",
                                                 "name": "功能名称",
-                                                "content": "论坛",
+                                                "content": "交流天地",
                                                 "fontSize": 12,
                                                 "fontWeight": "bold",
                                                 "color": "#FFFFFF",

@@ -33,7 +33,7 @@ const menuItems = [
   { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
   { id: 5, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
   { id: 6, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
-  { id: 7, title: '论坛', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
+  { id: 7, title: '交流天地', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' },
   { id: 8, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
   { id: 9, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' }
 ]

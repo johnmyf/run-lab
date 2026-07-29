@@ -55,7 +55,7 @@ src/
     ├── training-schedule/
     │   └── index.vue              # 跑步课表
     ├── forum/
-    │   └── index.vue              # 论坛
+    │   └── index.vue              # 交流天地
     └── achievement/
         └── index.vue              # 成就体系（同时也是 tabBar "我的"）
 ```
@@ -70,7 +70,7 @@ src/
 
 ### 页面组件约定
 - 所有功能页采用统一模板：顶部彩色 header（含 ← 返回按钮和居中标题）+ 居中内容区
-- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、紫 `#9B59B6`（课表）、橙 `#F39C12`（论坛）、青 `#1ABC9C`（成就）
+- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、紫 `#9B59B6`（课表）、橙 `#F39C12`（交流天地）、青 `#1ABC9C`（成就）
 - 跑力值计算页和成绩预测页已实现完整功能，其余功能页为"开发中"占位状态
 - 页面导航使用 uni-app API：`uni.navigateTo({ url: '/pages/xxx/index' })` 跳转，`uni.navigateBack()` 返回
 
