@@ -236,7 +236,7 @@
                                     },
                                     {
                                         "type": "component",
-                                        "name": "完赛时间估算",
+                                        "name": "完赛时间计算",
                                         "size": {
                                             "width": 108,
                                             "height": 116
@@ -246,7 +246,7 @@
                                         "children": [
                                             {
                                                 "type": "icon",
-                                                "name": "完赛时间估算图标",
+                                                "name": "完赛时间计算图标",
                                                 "content": "🏁",
                                                 "fontSize": 36,
                                                 "position": {
@@ -257,7 +257,7 @@
                                             {
                                                 "type": "text",
                                                 "name": "功能名称",
-                                                "content": "完赛时间估算",
+                                                "content": "完赛时间计算",
                                                 "fontSize": 12,
                                                 "fontWeight": "bold",
                                                 "color": "#FFFFFF",

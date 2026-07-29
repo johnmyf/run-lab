@@ -4,12 +4,12 @@
       <view class="back-button" @click="goBack">
         <text class="back-arrow">←</text>
       </view>
-      <text class="page-title">完赛时间估算</text>
+      <text class="page-title">完赛时间计算</text>
     </view>
 
     <view class="content">
       <text class="icon-large">🏁</text>
-      <text class="feature-title">完赛时间估算</text>
+      <text class="feature-title">完赛时间计算</text>
       <text class="feature-desc">正在开发中，敬请期待...</text>
 
       <view class="coming-soon">

@@ -22,7 +22,7 @@
     "router": {
       "mode": "history"
     },
-    "title": "跑步工具",
+    "title": "RunLab-跑研社",
     "devServer": {
       "port": 3000
     }
