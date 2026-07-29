@@ -34,7 +34,7 @@
               class="modal-input"
               v-model="customKmInput"
               type="digit"
-              placeholder="请输入距离（公里）"
+              placeholder="输入距离"
               :maxlength="6"
             />
             <text class="modal-unit">公里</text>
@@ -142,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, nextTick } from 'vue'
 // #ifdef H5
 import html2canvas from 'html2canvas'
 // #endif
@@ -301,7 +301,7 @@ onShareAppMessage(() => ({
 async function shareResult() {
   // #ifdef H5
   sharing.value = true
-  await uni.nextTick()
+  await nextTick()
   // 等待表格全展开后的渲染（大量行时需额外时间）
   await new Promise(r => setTimeout(r, 300))
   try {
