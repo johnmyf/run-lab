@@ -16,11 +16,18 @@ import { DISTANCE_CONFIGS, STRATEGY_CONFIG } from './constants'
  * @returns {Object} { avgPaceDisplay, avgPaceSeconds, totalKm, totalSeconds, rows }
  */
 export function calculatePaceTable(params) {
-  const { distanceKey, hours, minutes, seconds, strategy, interval } = params
-  const config = DISTANCE_CONFIGS.find(d => d.key === distanceKey)
-  if (!config) return null
+  const { distanceKey, hours, minutes, seconds, strategy, interval, customKm } = params
 
-  const totalKm = config.km
+  let totalKm
+  if (distanceKey === 'custom') {
+    if (!customKm || customKm < 3 || customKm > 300) return null
+    totalKm = customKm
+  } else {
+    const config = DISTANCE_CONFIGS.find(d => d.key === distanceKey)
+    if (!config) return null
+    totalKm = config.km
+  }
+
   const totalSeconds = hours * 3600 + minutes * 60 + seconds
   if (totalSeconds <= 0) return null
   if (strategy < STRATEGY_CONFIG.MIN || strategy > STRATEGY_CONFIG.MAX) return null

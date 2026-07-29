@@ -14,13 +14,35 @@
         <text class="section-label">选择跑步距离</text>
         <view class="distance-options">
           <view
-            v-for="d in DISTANCE_CONFIGS"
+            v-for="d in distanceOptions"
             :key="d.key"
             class="distance-chip"
             :class="{ active: distanceKey === d.key }"
             @click="selectDistance(d.key)"
           >
             <text>{{ d.label }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 自定义距离弹窗 -->
+      <view class="modal-overlay" v-if="showCustomModal" @click="cancelCustom">
+        <view class="modal-box" @click.stop>
+          <text class="modal-title">自定义距离</text>
+          <view class="modal-input-row">
+            <input
+              class="modal-input"
+              v-model="customKmInput"
+              type="digit"
+              placeholder="请输入距离（公里）"
+              :maxlength="6"
+            />
+            <text class="modal-unit">公里</text>
+          </view>
+          <text class="modal-hint">范围：3.00 ~ 300.00 公里</text>
+          <view class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" @click="cancelCustom">取消</button>
+            <button class="modal-btn modal-btn-confirm" @click="confirmCustom">确定</button>
           </view>
         </view>
       </view>
@@ -140,26 +162,65 @@ const timePicker = reactive({
 // ==================== 其他状态 ====================
 
 const distanceKey = ref(null)
+const customKm = ref(null)        // 自定义距离（公里）
+const customKmInput = ref('')     // 输入框绑定值
+const showCustomModal = ref(false)
 const strategy = ref(0)
 const interval = ref(1)
 const result = ref(null)
 const sharing = ref(false)
 
+// 距离选项：预设 + 自定义
+const distanceOptions = computed(() => [
+  ...DISTANCE_CONFIGS,
+  { key: 'custom', label: customKm.value ? `自定义(${customKm.value.toFixed(1)}km)` : '自定义' },
+])
+
 const hasResult = computed(() => result.value !== null && result.value.rows?.length > 0)
 
-// 策略提示
+// 策略提示：显示最快段与最慢段的配速差比例
 const strategyHint = computed(() => {
-  const perSegment = Math.abs(strategy.value / 5)
-  if (strategy.value === 0) return '匀速 — 全程配速一致'
-  if (strategy.value < 0) return `前慢后快 — 段间变化 ${perSegment}%/段，逐步加速`
-  return `前快后慢 — 段间变化 ${perSegment}%/段，逐步减速`
+  const S = strategy.value
+  if (S === 0) return '匀速 — 全程配速一致'
+  const r = S / 500  // 段间变化率
+  const totalDiff = Math.round(Math.abs((Math.pow(1 + r, 4) - 1) * 100))
+  if (S < 0) return `前慢后快 — 后段快 ${totalDiff}%，逐段加速`
+  return `前快后慢 — 后段慢 ${totalDiff}%，逐段降速`
 })
 
 // ==================== 方法 ====================
 
 function selectDistance(key) {
+  if (key === 'custom') {
+    if (customKm.value) {
+      distanceKey.value = 'custom'
+    } else {
+      customKmInput.value = ''
+    }
+    showCustomModal.value = true
+    result.value = null
+    return
+  }
   distanceKey.value = key
   result.value = null
+}
+
+function confirmCustom() {
+  const val = parseFloat(customKmInput.value)
+  if (isNaN(val) || val < 3 || val > 300) {
+    uni.showToast({ title: '请输入 3.00~300.00 之间的距离', icon: 'none' })
+    return
+  }
+  customKm.value = val
+  distanceKey.value = 'custom'
+  showCustomModal.value = false
+}
+
+function cancelCustom() {
+  showCustomModal.value = false
+  if (distanceKey.value === 'custom' && !customKm.value) {
+    distanceKey.value = null
+  }
 }
 
 function onColumnChange(e) {
@@ -191,6 +252,7 @@ function calculate() {
     seconds: s,
     strategy: strategy.value,
     interval: interval.value,
+    customKm: customKm.value,
   })
   if (!table) {
     uni.showToast({ title: '计算失败，请检查输入', icon: 'none' })
@@ -497,5 +559,83 @@ slider {
 .btn-re-eval {
   background: #ECF0F1;
   color: #2C3E50;
+}
+
+/* 自定义距离弹窗 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-box {
+  width: 600rpx;
+  background: #FFF;
+  border-radius: 24rpx;
+  padding: 50rpx 40rpx 40rpx;
+}
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2C3E50;
+  text-align: center;
+  display: block;
+  margin-bottom: 40rpx;
+}
+.modal-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+.modal-input {
+  width: 300rpx;
+  height: 80rpx;
+  border: 2rpx solid #00BCD4;
+  border-radius: 12rpx;
+  font-size: 40rpx;
+  text-align: center;
+  color: #2C3E50;
+  padding: 0 20rpx;
+}
+.modal-unit {
+  font-size: 32rpx;
+  color: #2C3E50;
+  margin-left: 16rpx;
+  font-weight: bold;
+}
+.modal-hint {
+  font-size: 24rpx;
+  color: #95A5A6;
+  text-align: center;
+  display: block;
+  margin-bottom: 40rpx;
+}
+.modal-buttons {
+  display: flex;
+  gap: 24rpx;
+}
+.modal-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-btn-cancel {
+  background: #ECF0F1;
+  color: #7F8C8D;
+}
+.modal-btn-confirm {
+  background: #00BCD4;
+  color: #FFF;
 }
 </style>
