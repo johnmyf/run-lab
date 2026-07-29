@@ -27,5 +27,5 @@ export const STRATEGY_CONFIG = {
 }
 
 /** 时间选择器范围（字符串格式，uni-app picker 要求） */
-export const HOUR_RANGE = Array.from({ length: 7 }, (_, i) => String(i))                    // "0"-"6"
+export const HOUR_RANGE = Array.from({ length: 73 }, (_, i) => String(i))                  // "0"-"72"
 export const MIN_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')) // "00"-"59"
