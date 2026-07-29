@@ -116,7 +116,7 @@
             <text class="col-time">时间</text>
             <text class="col-pace">配速</text>
           </view>
-          <scroll-view scroll-y class="table-body">
+          <view :class="['table-body', { 'table-body-expand': sharing }]">
             <view
               class="table-row"
               v-for="(row, idx) in result.rows"
@@ -127,7 +127,7 @@
               <text class="col-time">{{ formatTime(row.cumulativeSeconds) }}</text>
               <text class="col-pace">{{ formatPace(row.paceSeconds) }}</text>
             </view>
-          </scroll-view>
+          </view>
         </view>
 
         <!-- 操作按钮 -->
@@ -302,10 +302,15 @@ async function shareResult() {
   // #ifdef H5
   sharing.value = true
   await uni.nextTick()
+  // 等待表格全展开后的渲染（大量行时需额外时间）
+  await new Promise(r => setTimeout(r, 300))
   try {
-    const canvas = await html2canvas(document.querySelector('.page-container'), {
+    const el = document.querySelector('.page-container')
+    const canvas = await html2canvas(el, {
       useCORS: true,
       scale: 2,
+      height: el.scrollHeight,
+      windowHeight: el.scrollHeight,
     })
     const link = document.createElement('a')
     link.download = '配速计划.png'
@@ -505,6 +510,11 @@ slider {
 }
 .table-body {
   max-height: 700rpx;
+  overflow-y: auto;
+}
+.table-body-expand {
+  max-height: none;
+  overflow-y: visible;
 }
 .table-row {
   display: flex;
