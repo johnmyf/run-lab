@@ -178,15 +178,13 @@ const distanceOptions = computed(() => [
 
 const hasResult = computed(() => result.value !== null && result.value.rows?.length > 0)
 
-// 策略提示：显示首末段实际配速差比例
+// 策略提示：直接用滑杆值作为首末段差异比例
 const strategyHint = computed(() => {
   const S = strategy.value
   if (S === 0) return '匀速 — 全程配速一致'
-  const r = S / 500  // 段间变化率 = S%/5段
-  // 第1段到第5段累计变化：(1+r)^4 - 1
-  const totalDiff = Math.round(Math.abs((Math.pow(1 + r, 4) - 1) * 100))
-  if (S < 0) return `前慢后快 — 后段快 ${totalDiff}%，逐段加速`
-  return `前快后慢 — 后段慢 ${totalDiff}%，逐段降速`
+  const pct = Math.abs(S)
+  if (S < 0) return `前慢后快 — 后段快 ${pct}%，逐段加速`
+  return `前快后慢 — 后段慢 ${pct}%，逐段降速`
 })
 
 // ==================== 方法 ====================
