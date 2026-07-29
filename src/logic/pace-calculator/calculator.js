@@ -48,16 +48,26 @@ export function calculatePaceTable(params) {
 /** 计算 5 段配速值（秒/公里） */
 function calculateSegmentPaces(totalSeconds, totalKm, strategy) {
   const { SEGMENTS } = STRATEGY_CONFIG
-  const r = strategy / 100 / SEGMENTS
 
-  if (Math.abs(r) < 0.0001) {
-    // 匀速
+  if (strategy === 0) {
     const pace = totalSeconds / totalKm
     return Array(SEGMENTS).fill(pace)
   }
 
-  // 等比数列和：Σ(1+r)^(k-1) for k=1..5
+  // 求段间变化率 r，使得首末段配速差恰好 = |strategy|%
+  // S>0 前快后慢: (1+r)^(N-1) = 1 + S/100
+  // S<0 前慢后快: (1+r)^(N-1) = 1 / (1 + |S|/100)
+  const N = SEGMENTS - 1  // 段数-1 = 4
+  let r
+  if (strategy > 0) {
+    r = Math.pow(1 + strategy / 100, 1 / N) - 1
+  } else {
+    r = Math.pow(1 - strategy / 100, -1 / N) - 1
+  }
+
+  // 等比数列和
   const sum = (Math.pow(1 + r, SEGMENTS) - 1) / r
+  // 基础配速（第1段）
   const P = totalSeconds * SEGMENTS / (totalKm * sum)
 
   return Array.from({ length: SEGMENTS }, (_, i) => P * Math.pow(1 + r, i))
