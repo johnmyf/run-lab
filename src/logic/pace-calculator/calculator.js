@@ -46,7 +46,7 @@ export function calculatePaceTable(params) {
 }
 
 /** 计算 5 段配速值（秒/公里） */
-function calculateSegmentPaces(totalSeconds, totalKm, strategy) {
+export function calculateSegmentPaces(totalSeconds, totalKm, strategy) {
   const { SEGMENTS } = STRATEGY_CONFIG
 
   if (strategy === 0) {
@@ -74,7 +74,7 @@ function calculateSegmentPaces(totalSeconds, totalKm, strategy) {
 }
 
 /** 精确累计时间（某公里点的精确秒数） */
-function exactCumulativeTime(distance, totalKm, segmentPaces) {
+export function exactCumulativeTime(distance, totalKm, segmentPaces) {
   const { SEGMENTS } = STRATEGY_CONFIG
   const segLen = totalKm / SEGMENTS
   let time = 0
@@ -90,7 +90,7 @@ function exactCumulativeTime(distance, totalKm, segmentPaces) {
 }
 
 /** 生成表格行 */
-function buildRows(totalKm, totalSeconds, segmentPaces, interval) {
+export function buildRows(totalKm, totalSeconds, segmentPaces, interval) {
   const numFullKm = Math.floor(totalKm)
   const hasPartialKm = totalKm - numFullKm > 0.001
 
