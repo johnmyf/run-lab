@@ -237,16 +237,18 @@ function calculate() {
     uni.showToast({ title: '请选择跑步距离', icon: 'none' })
     return
   }
-  const [m, s] = pacePicker.selected
-  if (m === 0 && s === 0) {
+  const [mIdx, sIdx] = pacePicker.selected
+  const paceMin = Number(pacePicker.ranges[0][mIdx])
+  const paceSec = Number(pacePicker.ranges[1][sIdx])
+  if (paceMin === 0 && paceSec === 0) {
     uni.showToast({ title: '请设置有效配速', icon: 'none' })
     return
   }
 
   const table = calculateFinishTimeTable({
     distanceKey: distanceKey.value,
-    paceMin: Number(pacePicker.ranges[0][m]),
-    paceSec: Number(pacePicker.ranges[1][s]),
+    paceMin,
+    paceSec,
     strategy: strategy.value,
     interval: interval.value,
     customKm: customKm.value,
