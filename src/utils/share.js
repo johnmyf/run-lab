@@ -87,7 +87,7 @@ export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2 
 
     // 10. 触发下载
     const link = document.createElement('a')
-    link.download = `${prefix}_VDOT.png`
+    link.download = `${prefix}.png`
     link.href = canvasB.toDataURL('image/png')
     link.click()
 
