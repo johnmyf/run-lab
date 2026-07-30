@@ -1,6 +1,7 @@
 <template>
   <view class="home">
     <view class="header">
+      <image class="header-icon" src="/static/run-lab-icon.png" mode="aspectFit" />
       <text class="header-title">RunLab-跑研社</text>
     </view>
 
@@ -61,7 +62,7 @@ const goToPage = (item) => {
 }
 
 .header {
-  background: #2C3E50;
+  background: #4DB8A0;
   height: 160rpx;
   display: flex;
   align-items: center;
@@ -72,6 +73,12 @@ const goToPage = (item) => {
   color: #FFFFFF;
   font-size: 48rpx;
   font-weight: bold;
+}
+
+.header-icon {
+  width: 96rpx;
+  height: 96rpx;
+  margin-right: 16rpx;
 }
 
 .welcome-section {
