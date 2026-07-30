@@ -94,6 +94,8 @@
               @changing="onStrategyChanging"
               @change="onStrategyChange"
               activeColor="#00BCD4"
+              block-color="#00838F"
+              backgroundColor="#E0E0E0"
             />
             <text class="strategy-label">先快后慢</text>
           </view>
