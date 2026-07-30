@@ -107,10 +107,11 @@ const predictions = computed(() => {
     const lowerSecs = parseTimeToSeconds(lowerTimeStr)
     const lowerTime = secondsToTimeStr(lowerSecs)
 
-    // vdot=85 时上限减120秒，其余情况上限 = vdot+1 的成绩
+    // vdot=85 时上限减去 2秒×距离(km)取整，其余情况上限 = vdot+1 的成绩
     let upperTime, upperSecs
     if (vdot === 85) {
-      upperSecs = lowerSecs - 120
+      const deduction = Math.round(2 * DISTANCE_KM[subject])
+      upperSecs = lowerSecs - deduction
       upperTime = secondsToTimeStr(upperSecs)
     } else if (nextData && nextData[subject]) {
       upperSecs = parseTimeToSeconds(nextData[subject])
