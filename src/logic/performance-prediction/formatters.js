@@ -2,16 +2,26 @@
  * 成绩预测模块 — 配速格式化函数
  * @module logic/performance-prediction/formatters
  */
-import { paceToSeconds, secondsToPace } from '@/utils/time'
+import { paceToSeconds, secondsToPaceStr } from '@/utils/time'
 
 /**
- * 格式化范围值 {from, to} 为 "M:SS ~ M:SS"
+ * 将 "M:SS" 格式配速转换为 "M'SS"" 格式
+ * @param {string|number} paceStr - 如 "5:28" 或 0
+ * @returns {string} 如 "5'28""
+ */
+export function formatPaceStr(paceStr) {
+  if (!paceStr || paceStr === 0) return ''
+  return secondsToPaceStr(paceToSeconds(paceStr))
+}
+
+/**
+ * 格式化范围值 {from, to} 为 "M'SS" ~ M'SS""
  * @param {{ from: string, to: string }|number} value
  * @returns {string}
  */
 export function formatRange(value) {
   if (!value || value === 0) return ''
-  return `${value.from} ~ ${value.to}`
+  return `${formatPaceStr(value.from)} ~ ${formatPaceStr(value.to)}`
 }
 
 /** 各间歇跑类型的格式化函数映射 */
@@ -22,7 +32,7 @@ export const INTERVAL_FORMATTERS = {
    */
   i800(value) {
     const eightHundredSecs = paceToSeconds(value) * 0.8
-    return `${secondsToPace(eightHundredSecs)} (配速:${value}/km)`
+    return `${secondsToPaceStr(eightHundredSecs)} (配速:${formatPaceStr(value)}/km)`
   },
   /**
    * 1200m 用时直接显示，后跟配速(×0.834)
@@ -30,7 +40,7 @@ export const INTERVAL_FORMATTERS = {
    */
   i1200(value) {
     const perKmSecs = paceToSeconds(value) * 0.834
-    return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
+    return `${formatPaceStr(value)} (配速:${secondsToPaceStr(perKmSecs)}/km)`
   },
   /**
    * 1.6km 用时直接显示，后跟配速(×0.625)
@@ -38,7 +48,7 @@ export const INTERVAL_FORMATTERS = {
    */
   i1600(value) {
     const perKmSecs = paceToSeconds(value) * 0.625
-    return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
+    return `${formatPaceStr(value)} (配速:${secondsToPaceStr(perKmSecs)}/km)`
   }
 }
 
@@ -51,5 +61,5 @@ export const INTERVAL_FORMATTERS = {
 export function formatRepeatPace(value, distance) {
   const secs = paceToSeconds(value)
   const perKmSecs = secs * (1000 / distance)
-  return `${value} (配速:${secondsToPace(perKmSecs)}/km)`
+  return `${secondsToPaceStr(secs)} (配速:${secondsToPaceStr(perKmSecs)}/km)`
 }

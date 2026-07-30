@@ -18,7 +18,7 @@
       <!-- 近期成绩预测卡片 -->
       <view class="prediction-card">
         <text class="section-title">近期成绩预测</text>
-        <text class="section-subtitle">下限为保守可达到的成绩，上限为可挑战成绩</text>
+        <text class="section-subtitle">注: 下限为现阶段理应达到的成绩，上限为现阶段可挑战成绩</text>
 
         <!-- 无VDOT提示 -->
         <view v-if="noVdot" class="no-vdot-tip">
@@ -30,10 +30,10 @@
         <!-- 成绩列表 -->
         <view v-else class="prediction-list">
           <view class="prediction-row" v-for="item in predictions" :key="item.subject">
-            <view class="prediction-info">
-              <text class="prediction-label">{{ item.label }}</text>
-              <text class="prediction-range">{{ item.lowerTime }} ~ {{ item.upperTime }}</text>
-              <text class="prediction-pace" v-if="item.lowerPace">配速: {{ item.lowerPace }} ~ {{ item.upperPace }}</text>
+            <text class="prediction-label">{{ item.label }}</text>
+            <view class="prediction-values">
+              <text class="prediction-range">{{ item.upperTime }} ~ {{ item.lowerTime }}</text>
+              <text class="prediction-pace" v-if="item.lowerPace">配速: {{ item.upperPace }} ~ {{ item.lowerPace }}</text>
             </view>
           </view>
         </view>
@@ -80,7 +80,7 @@ import vdotMap from '@/data/sheet5-1.json'
 import trainingPacesData from '@/data/sheet5-2.json'
 import { parseTimeToSeconds, secondsToTimeStr, secondsToPaceStr } from '@/utils/time'
 import { SUBJECTS, DISTANCE_KM, TRAINING_CONFIG, REPEAT_PRIORITY, README_CONTENT, getSubjectLabel } from '@/logic/performance-prediction/constants'
-import { formatRange, INTERVAL_FORMATTERS, formatRepeatPace } from '@/logic/performance-prediction/formatters'
+import { formatRange, INTERVAL_FORMATTERS, formatRepeatPace, formatPaceStr } from '@/logic/performance-prediction/formatters'
 
 // ==================== 状态 ====================
 
@@ -155,7 +155,7 @@ const trainingPaces = computed(() => {
     } else if (config.formatter && INTERVAL_FORMATTERS[config.formatter]) {
       display = INTERVAL_FORMATTERS[config.formatter](value)
     } else {
-      display = value
+      display = formatPaceStr(value)
     }
 
     items.push({ type: config.type, label: config.label, display })
@@ -358,6 +358,9 @@ function goToRunningPower() {
 }
 
 .prediction-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
   padding: 24rpx 0;
   border-bottom: 2rpx solid #f0f0f0;
 }
@@ -366,15 +369,23 @@ function goToRunningPower() {
   border-bottom: none;
 }
 
-.prediction-info {
+.prediction-label {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 8rpx;
+  align-items: center;
+  color: #2C3E50;
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
 }
 
-.prediction-label {
-  color: #555;
-  font-size: 28rpx;
+.prediction-values {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8rpx;
+  flex-shrink: 0;
 }
 
 .prediction-range {
