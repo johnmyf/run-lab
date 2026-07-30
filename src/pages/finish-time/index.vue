@@ -58,9 +58,7 @@
           @change="onPaceChange"
         >
           <view class="pace-display">
-            <text class="pace-part">{{ pacePicker.ranges[0][pacePicker.selected[0]] }}分</text>
-            <text class="pace-part">{{ pacePicker.ranges[1][pacePicker.selected[1]] }}秒</text>
-            <text class="pace-per-km">/公里</text>
+            <text>{{ paceDisplayText }}</text>
           </view>
         </picker>
       </view>
@@ -178,6 +176,12 @@ const distanceOptions = computed(() => [
 ])
 
 const hasResult = computed(() => result.value !== null && result.value.rows?.length > 0)
+
+const paceDisplayText = computed(() => {
+  const min = pacePicker.ranges[0][pacePicker.selected[0]]
+  const sec = pacePicker.ranges[1][pacePicker.selected[1]]
+  return `${min}分${sec}秒 / 公里`
+})
 
 const strategyHint = computed(() => {
   const S = strategy.value
@@ -400,24 +404,16 @@ async function shareResult() {
 
 /* 配速选择器 */
 .pace-display {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 20rpx;
-  padding: 28rpx 50rpx;
+  padding: 28rpx 30rpx;
   background: #F0F8FF;
   border-radius: 16rpx;
   border: 2rpx solid #E0E0E0;
+  text-align: center;
 }
-.pace-part {
+.pace-display text {
   font-size: 40rpx;
   font-weight: bold;
   color: #2C3E50;
-}
-.pace-per-km {
-  font-size: 24rpx;
-  color: #95A5A6;
-  font-weight: normal;
 }
 
 /* 计算按钮 */
