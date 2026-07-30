@@ -65,3 +65,40 @@ export function formatPerformanceTime(timeStr) {
   result += `${seconds}秒`
   return result
 }
+
+/**
+ * 将总秒数格式化为 "h:mm:ss" 或 "mm:ss"（无小时时省略）
+ * @param {number} totalSecs - 总秒数
+ * @returns {string} 如 "30:40" 或 "1:31:35"
+ */
+export function secondsToTimeStr(totalSecs) {
+  const hours = Math.floor(totalSecs / 3600)
+  const minutes = Math.floor((totalSecs % 3600) / 60)
+  const seconds = totalSecs % 60
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  }
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
+}
+
+/**
+ * 将 "H:MM:SS" 格式转为简写 "h:mm:ss" 或 "mm:ss"（无小时时省略）
+ * @param {string} timeStr - 如 "0:30:40" 或 "1:31:35"
+ * @returns {string} 如 "30:40" 或 "1:31:35"
+ */
+export function formatSimpleTime(timeStr) {
+  if (!timeStr) return ''
+  return secondsToTimeStr(parseTimeToSeconds(timeStr))
+}
+
+/**
+ * 将总秒数格式化为配速格式 "mm'ss""（每公里用时）
+ * @param {number} totalSecs - 总秒数
+ * @returns {string} 如 "4'30\""
+ */
+export function secondsToPaceStr(totalSecs) {
+  const total = Math.round(totalSecs)
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}'${String(s).padStart(2, '0')}"`
+}

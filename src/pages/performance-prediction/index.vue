@@ -18,6 +18,7 @@
       <!-- 近期成绩预测卡片 -->
       <view class="prediction-card">
         <text class="section-title">近期成绩预测</text>
+        <text class="section-subtitle">下限为保守可达到的成绩，上限为可挑战成绩</text>
 
         <!-- 无VDOT提示 -->
         <view v-if="noVdot" class="no-vdot-tip">
@@ -29,8 +30,11 @@
         <!-- 成绩列表 -->
         <view v-else class="prediction-list">
           <view class="prediction-row" v-for="item in predictions" :key="item.subject">
-            <text class="prediction-label">{{ item.label }}</text>
-            <text class="prediction-time">{{ item.time }}</text>
+            <view class="prediction-info">
+              <text class="prediction-label">{{ item.label }}</text>
+              <text class="prediction-range">{{ item.lowerTime }} ~ {{ item.upperTime }}</text>
+              <text class="prediction-pace" v-if="item.lowerPace">配速: {{ item.lowerPace }} ~ {{ item.upperPace }}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -74,8 +78,8 @@ import html2canvas from 'html2canvas'
 // #endif
 import vdotMap from '@/data/sheet5-1.json'
 import trainingPacesData from '@/data/sheet5-2.json'
-import { formatPerformanceTime } from '@/utils/time'
-import { SUBJECTS, TRAINING_CONFIG, REPEAT_PRIORITY, README_CONTENT, getSubjectLabel } from '@/logic/performance-prediction/constants'
+import { parseTimeToSeconds, secondsToTimeStr, secondsToPaceStr } from '@/utils/time'
+import { SUBJECTS, DISTANCE_KM, TRAINING_CONFIG, REPEAT_PRIORITY, README_CONTENT, getSubjectLabel } from '@/logic/performance-prediction/constants'
 import { formatRange, INTERVAL_FORMATTERS, formatRepeatPace } from '@/logic/performance-prediction/formatters'
 
 // ==================== 状态 ====================
@@ -87,19 +91,46 @@ const sharing = ref(false)
 
 // ==================== 成绩预测 ====================
 
-/** 生成预测成绩列表 */
+/** 生成预测成绩列表（含范围 + 配速） */
 const predictions = computed(() => {
   if (noVdot.value) return []
 
-  const vdot = String(vdotValue.value)
-  const data = vdotMap[vdot]
+  const vdot = Number(vdotValue.value)
+  const data = vdotMap[String(vdot)]
+  const nextData = vdotMap[String(vdot + 1)]
   if (!data) return []
 
-  return SUBJECTS.map(subject => ({
-    subject,
-    label: getSubjectLabel(subject),
-    time: data[subject] ? formatPerformanceTime(data[subject]) : '数据缺失'
-  }))
+  return SUBJECTS.map(subject => {
+    const lowerTimeStr = data[subject]
+    if (!lowerTimeStr) return { subject, label: getSubjectLabel(subject), lowerTime: '数据缺失', upperTime: '', lowerPace: '', upperPace: '' }
+
+    const lowerSecs = parseTimeToSeconds(lowerTimeStr)
+    const lowerTime = secondsToTimeStr(lowerSecs)
+
+    // 上限 = vdot+1 的成绩 - 1 秒（若无则与下限相同）
+    let upperTime, upperSecs
+    if (nextData && nextData[subject]) {
+      upperSecs = parseTimeToSeconds(nextData[subject]) - 1
+      upperTime = secondsToTimeStr(upperSecs)
+    } else {
+      upperSecs = lowerSecs
+      upperTime = lowerTime
+    }
+
+    // 配速 = 时间(秒) / 距离(公里)
+    const distKm = DISTANCE_KM[subject]
+    const lowerPace = distKm ? secondsToPaceStr(lowerSecs / distKm) : ''
+    const upperPace = distKm ? secondsToPaceStr(upperSecs / distKm) : ''
+
+    return {
+      subject,
+      label: getSubjectLabel(subject),
+      lowerTime,
+      upperTime,
+      lowerPace,
+      upperPace
+    }
+  })
 })
 
 // ==================== 训练配速建议 ====================
@@ -307,8 +338,18 @@ function goToRunningPower() {
   font-size: 32rpx;
   font-weight: bold;
   display: block;
-  margin-bottom: 24rpx;
+  margin-bottom: 8rpx;
   padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.section-subtitle {
+  display: block;
+  color: #999;
+  font-size: 24rpx;
+  margin-top: -8rpx;
+  margin-bottom: 16rpx;
+  padding-bottom: 12rpx;
   border-bottom: 2rpx solid #f0f0f0;
 }
 
@@ -317,10 +358,7 @@ function goToRunningPower() {
 }
 
 .prediction-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 0;
+  padding: 24rpx 0;
   border-bottom: 2rpx solid #f0f0f0;
 }
 
@@ -328,15 +366,26 @@ function goToRunningPower() {
   border-bottom: none;
 }
 
+.prediction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
 .prediction-label {
   color: #555;
   font-size: 28rpx;
 }
 
-.prediction-time {
-  color: #2C3E50;
-  font-size: 28rpx;
+.prediction-range {
+  color: #E74C3C;
+  font-size: 30rpx;
   font-weight: bold;
+}
+
+.prediction-pace {
+  color: #999;
+  font-size: 24rpx;
 }
 
 /* ==================== 无 VDOT 提示 ==================== */

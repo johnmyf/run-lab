@@ -6,6 +6,17 @@
 /** 需要显示的7个 subject：与 sheet5-1.json 中的 key 完全对应 */
 export const SUBJECTS = ['1500米', '3公里', '5公里', '10公里', '15公里', '半程马拉松', '马拉松']
 
+/** 各 subject 对应的距离（公里），用于配速计算 */
+export const DISTANCE_KM = {
+  '1500米': 1.5,
+  '3公里': 3,
+  '5公里': 5,
+  '10公里': 10,
+  '15公里': 15,
+  '半程马拉松': 21.0975,
+  '马拉松': 42.195
+}
+
 /** 训练配速类型配置：顺序、标题、对应字段 */
 export const TRAINING_CONFIG = [
   { type: 'easy', label: '轻松跑配速范围', field: 'EL1KMPace', isRange: true },
