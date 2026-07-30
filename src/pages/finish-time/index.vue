@@ -407,7 +407,7 @@ async function shareResult() {
 /* 配速选择器 */
 .pace-display {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: baseline;
   padding: 24rpx 30rpx;
   background: #F0F8FF;
