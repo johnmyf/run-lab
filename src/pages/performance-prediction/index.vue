@@ -107,10 +107,13 @@ const predictions = computed(() => {
     const lowerSecs = parseTimeToSeconds(lowerTimeStr)
     const lowerTime = secondsToTimeStr(lowerSecs)
 
-    // 上限 = vdot+1 的成绩 - 1 秒（若无则与下限相同）
+    // vdot=85 时上限减120秒，其余情况上限 = vdot+1 的成绩
     let upperTime, upperSecs
-    if (nextData && nextData[subject]) {
-      upperSecs = parseTimeToSeconds(nextData[subject]) - 1
+    if (vdot === 85) {
+      upperSecs = lowerSecs - 120
+      upperTime = secondsToTimeStr(upperSecs)
+    } else if (nextData && nextData[subject]) {
+      upperSecs = parseTimeToSeconds(nextData[subject])
       upperTime = secondsToTimeStr(upperSecs)
     } else {
       upperSecs = lowerSecs
