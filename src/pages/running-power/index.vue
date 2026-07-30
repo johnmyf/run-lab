@@ -82,7 +82,7 @@ import { getVDOT } from '@/logic/running-power/vdot'
 const distances = reactive(
   DISTANCE_CONFIGS.map(cfg => ({
     ...cfg,
-    ranges: getPickerRanges(cfg.rangeCount),
+    ranges: getPickerRanges(cfg.rangeCount, cfg.hourRange),
     selected: Array(cfg.rangeCount).fill(0),
     hasValue: false
   }))
