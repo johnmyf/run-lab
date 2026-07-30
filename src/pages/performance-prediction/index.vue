@@ -74,7 +74,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 // #ifdef H5
-import html2canvas from 'html2canvas'
+import { captureAndShare } from '@/utils/share'
 // #endif
 import vdotMap from '@/data/sheet5-1.json'
 import trainingPacesData from '@/data/sheet5-2.json'
@@ -209,39 +209,28 @@ async function shareResult() {
   try {
     uni.showLoading({ title: '生成分享图片...' })
 
-    // 隐藏按钮后再截图
     sharing.value = true
     await new Promise(resolve => setTimeout(resolve, 100))
 
     const pageEl = document.querySelector('.page-container')
     if (!pageEl) {
-      sharing.value = false
       uni.hideLoading()
       uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
     }
 
-    const canvas = await html2canvas(pageEl, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#f5f5f5'
-    })
-
-    sharing.value = false
-
-    const imgData = canvas.toDataURL('image/png')
-    const link = document.createElement('a')
-    link.download = `成绩预测_VDOT${vdotValue.value}.png`
-    link.href = imgData
-    link.click()
-
-    uni.hideLoading()
-    uni.showToast({ title: '图片已生成', icon: 'success' })
+    const ok = await captureAndShare(pageEl, { prefix: `成绩预测_VDOT${vdotValue.value}` })
+    if (ok) {
+      uni.showToast({ title: '图片已生成', icon: 'success' })
+    } else {
+      throw new Error('captureAndShare returned false')
+    }
   } catch (e) {
-    sharing.value = false
-    console.error('截图生成失败:', e)
-    uni.hideLoading()
+    console.error('分享失败:', e)
     uni.showToast({ title: '分享生成失败', icon: 'none' })
+  } finally {
+    sharing.value = false
+    uni.hideLoading()
   }
 }
 

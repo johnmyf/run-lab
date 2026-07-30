@@ -110,7 +110,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 // #ifdef H5
-import html2canvas from 'html2canvas'
+import { captureAndShare } from '@/utils/share'
 // #endif
 import { TRAINING_ZONES, METHODS } from '@/logic/heart-rate/constants'
 import { calcHeartRates, calcZoneRange } from '@/logic/heart-rate/calculator'
@@ -203,33 +203,23 @@ async function shareResult() {
 
     const pageEl = document.querySelector('.page-container')
     if (!pageEl) {
-      sharing.value = false
       uni.hideLoading()
       uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
     }
 
-    const canvas = await html2canvas(pageEl, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#f5f5f5'
-    })
-
-    sharing.value = false
-
-    const imgData = canvas.toDataURL('image/png')
-    const link = document.createElement('a')
-    link.download = `心率计算.png`
-    link.href = imgData
-    link.click()
-
-    uni.hideLoading()
-    uni.showToast({ title: '图片已生成', icon: 'success' })
+    const ok = await captureAndShare(pageEl, { prefix: '心率计算' })
+    if (ok) {
+      uni.showToast({ title: '图片已生成', icon: 'success' })
+    } else {
+      throw new Error('captureAndShare returned false')
+    }
   } catch (e) {
-    sharing.value = false
-    console.error('截图生成失败:', e)
-    uni.hideLoading()
+    console.error('分享失败:', e)
     uni.showToast({ title: '分享生成失败', icon: 'none' })
+  } finally {
+    sharing.value = false
+    uni.hideLoading()
   }
 }
 
