@@ -146,7 +146,7 @@
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
 // #ifdef H5
-import html2canvas from 'html2canvas'
+import { captureAndShare } from '@/utils/share'
 // #endif
 import {
   DISTANCE_CONFIGS, INTERVAL_OPTIONS, STRATEGY_CONFIG,
@@ -299,29 +299,21 @@ onShareAppMessage(() => ({
 }))
 // #endif
 
-// 分享（H5 截图）
+// 分享（H5 截图 + 二维码）
 async function shareResult() {
   // #ifdef H5
   sharing.value = true
   await nextTick()
-  // 等待表格全展开后的渲染（大量行时需额外时间）
   await new Promise(r => setTimeout(r, 300))
   try {
     const el = document.querySelector('.page-container')
-    const canvas = await html2canvas(el, {
-      useCORS: true,
-      scale: 2,
-      height: el.scrollHeight,
-      windowHeight: el.scrollHeight,
-    })
-    const link = document.createElement('a')
-    link.download = '配速计划.png'
-    link.href = canvas.toDataURL()
-    link.click()
+    const ok = await captureAndShare(el, { prefix: '配速计划' })
+    if (!ok) throw new Error('captureAndShare failed')
   } catch (e) {
     uni.showToast({ title: '分享失败', icon: 'none' })
+  } finally {
+    sharing.value = false
   }
-  sharing.value = false
   // #endif
 }
 </script>
