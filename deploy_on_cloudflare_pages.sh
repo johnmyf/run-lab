@@ -1,5 +1,12 @@
-# Cloudflare Pages SPA 回退规则：所有路径请求都返回 index.html
-# 解决刷新子页面时 404 的问题
-echo '/* /index.html 200' > dist/build/h5/_redirects
+#!/bin/bash
+# Cloudflare Pages 手动部署脚本
+# 前置条件：npm run build:h5（postbuild 钩子会自动执行 prepare-deploy.sh）
 
-npx wrangler pages deploy dist/build/h5 #--project-name run-lab
+BUILD_DIR=dist/build/h5
+
+# 构建+部署前准备
+npm run build:h5
+
+echo ""
+echo "=== 部署到 Cloudflare Pages ==="
+npx wrangler pages deploy "$BUILD_DIR" #--project-name run-lab
