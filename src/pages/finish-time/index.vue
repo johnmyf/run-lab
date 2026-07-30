@@ -407,7 +407,7 @@ async function shareResult() {
 /* 配速选择器 */
 .pace-display {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: baseline;
   padding: 24rpx 30rpx;
   background: #F0F8FF;
@@ -417,8 +417,13 @@ async function shareResult() {
 .pace-col {
   display: inline-flex;
   align-items: baseline;
-  justify-content: center;
   min-width: 120rpx;
+}
+.pace-col:first-child {
+  justify-content: flex-end;
+}
+.pace-col:last-child {
+  justify-content: center;
 }
 .pace-num {
   font-size: 44rpx;
