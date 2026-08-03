@@ -45,7 +45,7 @@
 **Interfaces:**
 - Consumes: `src/utils/time.js` 的 `secondsToPaceStr(totalSecs)` → `"4'38\""`（已存在）
 - Produces:
-  - `MODE_OPTIONS: Array<{ key: 'pace'|'cadence'|'stride', label: string, hidden: string }>` — 三模式（`hidden` 表示该模式下隐藏的输入项 key）
+  - `MODE_OPTIONS: Array<{ key: 'pace'|'cadence'|'stride', label: string }>` — 三模式
   - `PACE_MIN_RANGE: string[]`、`PACE_SEC_RANGE: string[]`、`DEFAULT_PACE: [number, number]`
   - `CADENCE_UNIT = '步/分钟'`、`STRIDE_UNIT = '米'`、`PACE_UNIT = '/公里'`、`HINT_TEXT: string`
   - `APPENDIX: Array<{ title: string, lines: string[] }>` — 5 板块
@@ -62,11 +62,11 @@
  * @module logic/cadence-stride/constants
  */
 
-/** 计算项（三选一）；hidden 表示该模式下隐藏的输入项 key */
+/** 计算项（三选一） */
 export const MODE_OPTIONS = [
-  { key: 'pace', label: '由步频和步幅计算配速', hidden: 'pace' },
-  { key: 'cadence', label: '由配速和步幅计算步频', hidden: 'cadence' },
-  { key: 'stride', label: '由配速和步频计算步幅', hidden: 'stride' },
+  { key: 'pace', label: '由步频和步幅计算配速' },
+  { key: 'cadence', label: '由配速和步幅计算步频' },
+  { key: 'stride', label: '由配速和步频计算步幅' },
 ]
 
 /** 配速 picker：分 0~15 */
@@ -782,4 +782,4 @@ Expected: 构建成功，`dist/build/mp-weixin` 生成，无报错。
 
 - **规格覆盖**：常量/公式（Task1）、页面/路由/入口（Task2）、构建（Task3）逐一对应设计文档第 3~6 节；三模式隐藏、实时计算无按钮、结果句文案、附录、分享、返回首页、移除待开发均落在 Task2 验收清单
 - **占位符扫描**：无 TBD/TODO，所有代码步骤含完整实现
-- **类型一致性**：`computeResult({ mode, cadence, stride, paceSeconds })` 参数结构与返回 `{ prefix, value, suffix }` 在 Task1 定义、Task2 消费一致；`MODE_OPTIONS` 的 `hidden` 与页面 `v-show="mode !== 'cadence'/'stride'/'pace'"` 对应；`DEFAULT_PACE` 在 constants 定义、页面 `selected: [...DEFAULT_PACE]` 拷贝使用（避免改动常量）；`PACE_MIN_RANGE/PACE_SEC_RANGE` 命名与完赛时间模块一致
+- **类型一致性**：`computeResult({ mode, cadence, stride, paceSeconds })` 参数结构与返回 `{ prefix, value, suffix }` 在 Task1 定义、Task2 消费一致；`DEFAULT_PACE` 在 constants 定义、页面 `selected: [...DEFAULT_PACE]` 拷贝使用（避免改动常量）；`PACE_MIN_RANGE/PACE_SEC_RANGE` 命名与完赛时间模块一致

@@ -32,10 +32,10 @@
 
 ### constants.js
 
-- `MODE_OPTIONS`：三模式及各自隐藏项
-  - `{ key: 'pace', label: '由步频和步幅计算配速', hidden: 'pace' }`（默认）
-  - `{ key: 'cadence', label: '由配速和步幅计算步频', hidden: 'cadence' }`
-  - `{ key: 'stride', label: '由配速和步频计算步幅', hidden: 'stride' }`
+- `MODE_OPTIONS`：三模式
+  - `{ key: 'pace', label: '由步频和步幅计算配速' }`（默认）
+  - `{ key: 'cadence', label: '由配速和步幅计算步频' }`
+  - `{ key: 'stride', label: '由配速和步频计算步幅' }`
 - `PACE_MIN_RANGE`（0~15）、`PACE_SEC_RANGE`（00~59）、`DEFAULT_PACE = [5, 0]`
 - 单位常量：`CADENCE_UNIT = '步/分钟'`、`STRIDE_UNIT = '米'`、`PACE_UNIT = '/公里'`
 - 提示语：`HINT_TEXT = '输入完成后，直接出计算结果，无需点击按钮'`
