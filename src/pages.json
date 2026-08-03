@@ -30,12 +30,13 @@
         "navigationStyle": "custom"
       }
     },
-    {
-      "path": "pages/forum/index",
-      "style": {
-        "navigationStyle": "custom"
-      }
-    },
+    // 【已移除】交流天地路由
+    // {
+    //   "path": "pages/forum/index",
+    //   "style": {
+    //     "navigationStyle": "custom"
+    //   }
+    // },
     {
       "path": "pages/achievement/index",
       "style": {
