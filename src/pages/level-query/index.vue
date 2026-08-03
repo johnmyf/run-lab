@@ -87,7 +87,7 @@
         </view>
         <view :class="['table-body', { 'table-body-expand': sharing }]">
           <view class="table-row" v-for="row in proTable" :key="row.level">
-            <text class="col-level">{{ row.displayName }}</text>
+            <text class="col-level">{{ row.level }}</text>
             <text class="col-time">{{ row.time }}</text>
           </view>
         </view>
@@ -164,7 +164,6 @@ const proTable = computed(() => {
   const order = ['国际健将', '运动健将', '一级运动员', '二级运动员', '三级运动员']
   return order.map(level => ({
     level,
-    displayName: getLevelDisplayName(level),
     time: pro[level] || '—'
   }))
 })
