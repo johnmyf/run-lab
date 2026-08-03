@@ -33,8 +33,8 @@ const menuItems = [
   { id: 3, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
   { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
   { id: 5, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
-  { id: 6, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
-  // { id: 7, title: '交流天地', icon: '💬', colorClass: 'orange', path: '/pages/forum/index' }, // 【已移除】交流天地入口
+  { id: 6, title: '等级查询', icon: '🥇', colorClass: 'orange', path: '/pages/level-query/index' },
+  { id: 7, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
   { id: 8, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' },
   { id: 9, title: '待开发', icon: '🔜', colorClass: 'gray', path: '' }
 ]
@@ -138,6 +138,7 @@ const goToPage = (item) => {
 .grid-item.purple { background: #9B59B6; }
 /* .grid-item.orange { background: #F39C12; } 【已移除】交流天地专属配色 */
 .grid-item.teal { background: #1ABC9C; }
+.grid-item.orange { background: #F39C12; }
 .grid-item.gray { background: #95A5A6; }
 .grid-item.cyan { background: #00BCD4; }
 .grid-item.pink { background: #E91E63; }

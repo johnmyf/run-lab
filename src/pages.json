@@ -50,6 +50,12 @@
       }
     },
     {
+      "path": "pages/level-query/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/finish-time/index",
       "style": {
         "navigationStyle": "custom"
