@@ -78,13 +78,14 @@ export function computeResult({ mode, cadence, stride, paceSeconds }) {
       suffix: ` ${CADENCE_UNIT}`,
     }
   }
-  // mode === 'stride'
-  if (!isValid(paceSeconds) || !isValid(cadence)) return null
-  const st = calcStride(paceSeconds, cadence)
-  return {
-    prefix: `由平均配速: ${formatPaceStr(paceSeconds)}, 平均步频: ${formatCadenceStr(cadence)} ${CADENCE_UNIT}, 得出平均步幅: `,
-    value: formatStrideStr(st),
-    suffix: ` ${STRIDE_UNIT}`,
+  if (mode === 'stride') {
+    if (!isValid(paceSeconds) || !isValid(cadence)) return null
+    const st = calcStride(paceSeconds, cadence)
+    return {
+      prefix: `由平均配速: ${formatPaceStr(paceSeconds)}, 平均步频: ${formatCadenceStr(cadence)} ${CADENCE_UNIT}, 得出平均步幅: `,
+      value: formatStrideStr(st),
+      suffix: ` ${STRIDE_UNIT}`,
+    }
   }
   // 未识别 mode 防御：不静默落入任何分支
   return null
