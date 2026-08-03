@@ -25,7 +25,7 @@ export const PRO_LEVELS = ['三级运动员', '二级运动员', '一级运动�
 export const LEVELS_LOW_TO_HIGH = [...MASS_LEVELS, ...PRO_LEVELS]
 
 /** 全不达标时的提示文案 */
-export const NO_LEVEL_TEXT = '暂没有达标任何级别, 请继续努力, 下次一定更好!'
+export const NO_LEVEL_TEXT = '未达标任何级别,请继续努力'
 
 /** 结果区显示名映射：专业等级加"(专业)"前缀，国际健将→国家健将 */
 const LEVEL_DISPLAY_NAMES = {
