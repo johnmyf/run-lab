@@ -59,7 +59,7 @@
 - **操作按钮**（`v-show="!sharing"`）：
   - 分享：H5 条件编译 + `@/utils/share` 的 `captureAndShare`，隐藏操作按钮后截图下载
   - 返回首页：`uni.switchTab({ url: '/pages/index/index' })`
-  - 重新录入：重置 项目/性别/时间/年龄 为默认值，隐藏结果区
+  - ~~重新录入~~（已按用户要求移除）
 
 ## 6. 路由与九宫格入口
 

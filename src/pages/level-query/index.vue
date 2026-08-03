@@ -77,6 +77,9 @@
         <text class="result-value">{{ resultDisplay }}</text>
       </view>
 
+      <!-- 附录：等级标准表（参考附录，与主内容区分隔） -->
+      <text class="appendix-title">附录：等级标准表</text>
+
       <!-- 表格区（无论是否查询都显示，跟随所选 项目+性别） -->
       <view class="table-card">
         <text class="table-title">专业运动员等级标准</text>
@@ -114,7 +117,6 @@
       <view class="action-buttons" v-show="!sharing">
         <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
-        <button class="btn btn-reset" @click="resetInputs">重新录入</button>
       </view>
     </view>
   </view>
@@ -211,16 +213,6 @@ function query() {
     levelData
   )
   hasQuery.value = true
-}
-
-function resetInputs() {
-  project.value = '马拉松'
-  gender.value = '男子'
-  timePicker.selected = [3, 0, 0]
-  ageIndex.value = AGE_RANGE.indexOf('30')
-  resultLevel.value = null
-  hasQuery.value = false
-  uni.pageScrollTo({ scrollTop: 0, duration: 300 })
 }
 
 function navigateBack() {
@@ -357,7 +349,7 @@ async function shareResult() {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 30rpx;
+  margin: 44rpx 0 56rpx;
   box-shadow: 0 4rpx 12rpx rgba(243, 156, 18, 0.4);
 }
 
@@ -367,7 +359,7 @@ async function shareResult() {
   border-radius: 16rpx;
   padding: 40rpx;
   text-align: center;
-  margin-bottom: 30rpx;
+  margin-bottom: 80rpx;
   box-shadow: 0 4rpx 16rpx rgba(243, 156, 18, 0.3);
 }
 .result-label {
@@ -381,6 +373,15 @@ async function shareResult() {
   font-size: 48rpx;
   font-weight: bold;
   display: block;
+}
+
+/* 附录标题 */
+.appendix-title {
+  font-size: 26rpx;
+  color: #95A5A6;
+  display: block;
+  margin: 30rpx 0 24rpx;
+  padding-left: 8rpx;
 }
 
 /* 表格卡 */
@@ -462,9 +463,5 @@ async function shareResult() {
 .btn-home {
   background: #2C3E50;
   color: #FFF;
-}
-.btn-reset {
-  background: #ECF0F1;
-  color: #2C3E50;
 }
 </style>
