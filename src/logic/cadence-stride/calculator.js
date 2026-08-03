@@ -86,6 +86,8 @@ export function computeResult({ mode, cadence, stride, paceSeconds }) {
     value: formatStrideStr(st),
     suffix: ` ${STRIDE_UNIT}`,
   }
+  // 未识别 mode 防御：不静默落入任何分支
+  return null
 }
 
 /** 有效正数判定 */

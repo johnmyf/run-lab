@@ -100,7 +100,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-show="!sharing">
-        <button class="btn btn-share" @click="shareResult">分享</button>
+        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
       </view>
     </view>
@@ -108,9 +108,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, computed } from 'vue'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+import { nextTick } from 'vue'
 // #endif
 import {
   MODE_OPTIONS, PACE_MIN_RANGE, PACE_SEC_RANGE, DEFAULT_PACE,
