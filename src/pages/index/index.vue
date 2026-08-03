@@ -136,7 +136,6 @@ const goToPage = (item) => {
 .grid-item.red { background: #E74C3C; }
 .grid-item.green { background: #2ECC71; }
 .grid-item.purple { background: #9B59B6; }
-/* .grid-item.orange { background: #F39C12; } 【已移除】交流天地专属配色 */
 .grid-item.teal { background: #1ABC9C; }
 .grid-item.orange { background: #F39C12; }
 .grid-item.gray { background: #95A5A6; }

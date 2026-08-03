@@ -75,7 +75,6 @@
       <view v-if="hasQuery" class="result-card">
         <text class="result-label">你的级别</text>
         <text class="result-value">{{ resultDisplay }}</text>
-        <text v-if="!resultLevel" class="result-encourage">{{ NO_LEVEL_TEXT }}</text>
       </view>
 
       <!-- 表格区（无论是否查询都显示，跟随所选 项目+性别） -->
@@ -382,13 +381,6 @@ async function shareResult() {
   font-size: 48rpx;
   font-weight: bold;
   display: block;
-}
-.result-encourage {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 26rpx;
-  display: block;
-  margin-top: 12rpx;
-  line-height: 1.6;
 }
 
 /* 表格卡 */
