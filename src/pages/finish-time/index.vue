@@ -141,7 +141,7 @@
 
         <!-- 操作按钮 -->
         <view class="action-buttons" v-show="!sharing">
-          <button class="btn btn-share" @click="shareResult">分享</button>
+          <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
           <button class="btn btn-home" @click="goHome">返回首页</button>
           <button class="btn btn-re-eval" @click="scrollToTop">重新评估</button>
         </view>

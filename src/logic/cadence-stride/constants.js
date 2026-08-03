@@ -3,11 +3,11 @@
  * @module logic/cadence-stride/constants
  */
 
-/** 计算项（三选一）；hidden 表示该模式下隐藏的输入项 key */
+/** 计算项（三选一） */
 export const MODE_OPTIONS = [
-  { key: 'pace', label: '由步频和步幅计算配速', hidden: 'pace' },
-  { key: 'cadence', label: '由配速和步幅计算步频', hidden: 'cadence' },
-  { key: 'stride', label: '由配速和步频计算步幅', hidden: 'stride' },
+  { key: 'pace', label: '由步频和步幅计算配速' },
+  { key: 'cadence', label: '由配速和步幅计算步频' },
+  { key: 'stride', label: '由配速和步频计算步幅' },
 ]
 
 /** 配速 picker：分 0~15 */

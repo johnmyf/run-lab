@@ -63,7 +63,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-show="!sharing && !noVdot">
-        <button class="btn btn-share" @click="shareResult">分享</button>
+        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
         <button class="btn btn-re-eval" @click="goToRunningPower">重新评估</button>
       </view>
@@ -203,13 +203,16 @@ function goBack() {
   uni.navigateBack()
 }
 
+// #ifdef MP-WEIXIN
+onShareAppMessage(() => ({
+  title: '成绩预测 — 跑研社',
+  path: '/pages/performance-prediction/index',
+}))
+// #endif
+
 // 分享成绩（生成图片并下载）
 async function shareResult() {
-  // #ifndef H5
-  uni.showToast({ title: '请在浏览器中打开使用分享功能', icon: 'none' })
-  return
-  // #endif
-
+  // #ifdef H5
   try {
     uni.showLoading({ title: '生成分享图片...' })
 
@@ -236,6 +239,7 @@ async function shareResult() {
     sharing.value = false
     uni.hideLoading()
   }
+  // #endif
 }
 
 // 返回首页（首页为 tabBar 页面，需用 switchTab）

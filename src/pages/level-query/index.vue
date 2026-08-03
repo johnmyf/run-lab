@@ -115,7 +115,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-show="!sharing">
-        <button class="btn btn-share" @click="shareResult">分享</button>
+        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
       </view>
     </view>
@@ -223,13 +223,16 @@ function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
 }
 
+// #ifdef MP-WEIXIN
+onShareAppMessage(() => ({
+  title: '等级查询 — 跑研社',
+  path: '/pages/level-query/index',
+}))
+// #endif
+
 // 分享（H5 截图 + 二维码）
 async function shareResult() {
-  // #ifndef H5
-  uni.showToast({ title: '请在浏览器中打开使用分享功能', icon: 'none' })
-  return
-  // #endif
-
+  // #ifdef H5
   sharing.value = true
   await nextTick()
   await new Promise(r => setTimeout(r, 300))
@@ -242,6 +245,7 @@ async function shareResult() {
   } finally {
     sharing.value = false
   }
+  // #endif
 }
 </script>
 
