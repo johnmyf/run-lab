@@ -57,7 +57,7 @@
   - `formatPaceStr(paceSeconds: number): string` — 如 `"4'38\"/公里"`
   - `formatCadenceStr(cadence: number): string` — 四舍五入整数
   - `formatStrideStr(stride: number): string` — 最多 2 位小数去尾零
-  - `computeResult({ mode, cadence, stride, paceSeconds }): { prefix: string, value: string, suffix: string } | null`
+  - `computeResult({ mode, cadence, stride, paceSeconds }): { rows: Array<{ label: string, value: string, highlight?: boolean }> } | null` — 结果表格行（输入两行在前、计算结果一行在最后且 `highlight: true`）
 
 - [ ] **Step 1: 创建 `src/logic/cadence-stride/constants.js`**
 
@@ -97,7 +97,7 @@ export const PACE_MIN_RANGE = Array.from({ length: 18 }, (_, i) => String(i + 2)
 /** 配速 picker：秒 00~59（最小间隔 1 秒） */
 export const PACE_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
-/** 默认配速：6'00" */
+/** 默认配速：6'00"（「分/秒」值语义，页面转为 picker 索引；分钟列 2~19，索引≠值） */
 export const DEFAULT_PACE = [6, 0]
 
 /** 单位 */
@@ -145,7 +145,7 @@ export const APPENDIX = [
   {
     title: '训练建议',
     lines: [
-      '新手：先稳定步频到170以上，避免跨步。',
+      '新手：先稳定步频到170以上，避免跨步，并逐步提升步频到180以上（跑步效率较高）。',
       '进阶：通过力量训练（如臀腿爆发力）和柔韧性练习（如髋屈肌拉伸）自然增大步幅。',
       '配速训练：结合间歇跑、节奏跑等专项练习，找到个人最优的步频-步幅平衡点。',
     ],
@@ -209,41 +209,50 @@ export function formatStrideStr(stride) {
 }
 
 /**
- * 实时计算入口：两个所需输入均有效（正数）时返回结果句子三段，否则 null
+ * 实时计算入口：两个所需输入均有效（正数）时返回结果表格行（输入两行在前，计算结果一行在最后、highlight），否则 null
  * @param {Object} params
  * @param {'pace'|'cadence'|'stride'} params.mode - 计算项
  * @param {number} params.cadence - 步频（无效时传 NaN）
  * @param {number} params.stride - 步幅（无效时传 NaN）
  * @param {number} params.paceSeconds - 配速秒数（配速 picker 得出）
- * @returns {{ prefix: string, value: string, suffix: string }|null}
+ * @returns {{ rows: Array<{ label: string, value: string, highlight?: boolean }> }|null}
  */
 export function computeResult({ mode, cadence, stride, paceSeconds }) {
   if (mode === 'pace') {
     if (!isValid(cadence) || !isValid(stride)) return null
     const paceSec = calcPaceSeconds(cadence, stride)
     return {
-      prefix: `由平均步频: ${formatCadenceStr(cadence)} ${CADENCE_UNIT}, 平均步幅: ${formatStrideStr(stride)} ${STRIDE_UNIT}, 得出平均配速: `,
-      value: formatPaceStr(paceSec),
-      suffix: '',
+      rows: [
+        { label: '平均步频', value: `${formatCadenceStr(cadence)} ${CADENCE_UNIT}` },
+        { label: '平均步幅', value: `${formatStrideStr(stride)} ${STRIDE_UNIT}` },
+        { label: '平均配速', value: formatPaceStr(paceSec), highlight: true },
+      ],
     }
   }
   if (mode === 'cadence') {
     if (!isValid(paceSeconds) || !isValid(stride)) return null
     const cad = calcCadence(paceSeconds, stride)
     return {
-      prefix: `由平均配速: ${formatPaceStr(paceSeconds)}, 平均步幅: ${formatStrideStr(stride)} ${STRIDE_UNIT}, 得出平均步频: `,
-      value: formatCadenceStr(cad),
-      suffix: ` ${CADENCE_UNIT}`,
+      rows: [
+        { label: '平均配速', value: formatPaceStr(paceSeconds) },
+        { label: '平均步幅', value: `${formatStrideStr(stride)} ${STRIDE_UNIT}` },
+        { label: '平均步频', value: `${formatCadenceStr(cad)} ${CADENCE_UNIT}`, highlight: true },
+      ],
     }
   }
-  // mode === 'stride'
-  if (!isValid(paceSeconds) || !isValid(cadence)) return null
-  const st = calcStride(paceSeconds, cadence)
-  return {
-    prefix: `由平均配速: ${formatPaceStr(paceSeconds)}, 平均步频: ${formatCadenceStr(cadence)} ${CADENCE_UNIT}, 得出平均步幅: `,
-    value: formatStrideStr(st),
-    suffix: ` ${STRIDE_UNIT}`,
+  if (mode === 'stride') {
+    if (!isValid(paceSeconds) || !isValid(cadence)) return null
+    const st = calcStride(paceSeconds, cadence)
+    return {
+      rows: [
+        { label: '平均配速', value: formatPaceStr(paceSeconds) },
+        { label: '平均步频', value: `${formatCadenceStr(cadence)} ${CADENCE_UNIT}` },
+        { label: '平均步幅', value: `${formatStrideStr(st)} ${STRIDE_UNIT}`, highlight: true },
+      ],
+    }
   }
+  // 未识别 mode 防御：不静默落入任何分支
+  return null
 }
 
 /** 有效正数判定 */
@@ -258,9 +267,9 @@ function isValid(n) {
 
 | 输入 | 推演 | 期望返回 |
 | --- | --- | --- |
-| mode='pace', cadence=180, stride=1.2 | calcPaceSeconds = 60000/216 ≈ 277.78 → secondsToPaceStr 四舍五入 278 → "4'38\"/公里" | `{ prefix: '由平均步频: 180 步/分钟, 平均步幅: 1.2 米, 得出平均配速: ', value: "4'38\"/公里", suffix: '' }` |
-| mode='cadence', paceSeconds=278, stride=1.2 | calcCadence = 60000/(278×1.2) ≈ 179.86 → round → 180 | `{ prefix: '由平均配速: 4\'38"/公里, 平均步幅: 1.2 米, 得出平均步频: ', value: '180', suffix: ' 步/分钟' }` |
-| mode='stride', paceSeconds=278, cadence=180 | calcStride = 60000/(278×180) ≈ 1.199 → toFixed(2)=1.20 → parseFloat → "1.2" | `{ prefix: '由平均配速: 4\'38"/公里, 平均步频: 180 步/分钟, 得出平均步幅: ', value: '1.2', suffix: ' 米' }` |
+| mode='pace', cadence=180, stride=1.2 | calcPaceSeconds = 60000/216 ≈ 277.78 → secondsToPaceStr 四舍五入 278 → "4'38\"/公里" | `{ rows: [{label:'平均步频', value:'180 步/分钟'}, {label:'平均步幅', value:'1.2 米'}, {label:'平均配速', value:"4'38\"/公里", highlight:true}] }` |
+| mode='cadence', paceSeconds=278, stride=1.2 | calcCadence = 60000/(278×1.2) ≈ 179.86 → round → 180 | `{ rows: [{label:'平均配速', value:"4'38\"/公里"}, {label:'平均步幅', value:'1.2 米'}, {label:'平均步频', value:'180 步/分钟', highlight:true}] }` |
+| mode='stride', paceSeconds=278, cadence=180 | calcStride = 60000/(278×180) ≈ 1.199 → toFixed(2)=1.20 → parseFloat → "1.2" | `{ rows: [{label:'平均配速', value:"4'38\"/公里"}, {label:'平均步频', value:'180 步/分钟'}, {label:'平均步幅', value:'1.2 米', highlight:true}] }` |
 | mode='pace', cadence=NaN（步频未填） | isValid(NaN) false | `null` |
 
 - [ ] **Step 4: 提交**
@@ -381,11 +390,18 @@ git commit -m "feat: 新增步频步幅计算常量与公式逻辑"
         </view>
       </view>
 
-      <!-- 结果区（实时，无需按钮） -->
+      <!-- 结果区（实时，无需按钮；表格行，结果在最下且突出） -->
       <view v-if="hasResult" class="result-card">
-        <text class="result-sentence">{{ result.prefix }}</text>
-        <text class="result-value">{{ result.value }}</text>
-        <text class="result-suffix">{{ result.suffix }}</text>
+        <view
+          v-for="(row, i) in result.rows"
+          :key="i"
+          class="result-row"
+          :class="{ 'result-row-result': row.highlight }"
+        >
+          <text class="result-label">{{ row.label }}</text>
+          <text class="result-colon">：</text>
+          <text class="result-value">{{ row.value }}</text>
+        </view>
       </view>
 
       <!-- 附录 -->
@@ -432,7 +448,8 @@ const stridePicker = reactive({
 
 const pacePicker = reactive({
   ranges: [PACE_MIN_RANGE, PACE_SEC_RANGE],
-  selected: [...DEFAULT_PACE],
+  // DEFAULT_PACE 是「分/秒」值，需转为 range 索引（分钟列 2~19，索引≠值）
+  selected: [PACE_MIN_RANGE.indexOf(String(DEFAULT_PACE[0])), DEFAULT_PACE[1]],
 })
 
 const sharing = ref(false)
@@ -692,20 +709,37 @@ async function shareResult() {
   margin: 0 4rpx;
 }
 
-/* 结果卡（实时） */
+/* 结果卡（实时，表格行；上下留白间隔较原 30rpx 加大 100% → 60rpx） */
 .result-card {
   background: #E8EAF6;
   border-radius: 16rpx;
-  padding: 36rpx 30rpx;
-  margin-bottom: 30rpx;
-  line-height: 1.6;
+  padding: 0 30rpx;
+  margin: 60rpx 0;
 }
-.result-sentence,
-.result-suffix {
+.result-row {
+  display: flex;
+  align-items: baseline;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid rgba(92, 107, 192, 0.14);
+}
+.result-row:last-child {
+  border-bottom: none;
+}
+.result-label {
+  font-size: 28rpx;
+  color: #2C3E50;
+  flex-shrink: 0;
+}
+.result-colon {
+  font-size: 28rpx;
+  color: #2C3E50;
+  margin: 0 8rpx;
+}
+.result-value {
   font-size: 28rpx;
   color: #2C3E50;
 }
-.result-value {
+.result-row-result .result-value {
   font-size: 40rpx;
   font-weight: bold;
   color: #5C6BC0;
@@ -731,6 +765,11 @@ async function shareResult() {
 }
 .appendix-section:last-child {
   margin-bottom: 0;
+}
+/* 第 2~5 板块上方行分隔（对应需求「---」；首个板块「1. 步频」不设） */
+.appendix-section + .appendix-section {
+  border-top: 2rpx solid #f0f0f0;
+  padding-top: 24rpx;
 }
 .appendix-sec-title {
   font-size: 28rpx;
@@ -814,18 +853,18 @@ Run: `npm run dev:h5`（终端会输出访问 URL，浏览器打开首页）。
 
 1. 首页九宫格：共 9 项填满 3×3，新增[步频步幅计算]在第3行第1列（等级查询之后），靛蓝色块 + 👣 图标，点击进入步频步幅计算页
 2. 页面默认：计算项默认选中第一项「由步频和步幅计算配速」；显示步频、步幅两个数值选择器（默认 180 / 1.00），配速输入**隐藏**；结果区**始终显示**（输入恒有效）
-3. 实时计算（用例1）：步频默认 `180`、步幅选到 `1.20` → 结果区立即显示 `由平均步频: 180 步/分钟, 平均步幅: 1.2 米, 得出平均配速: **4'38"/公里**`（4'38" 靛蓝突出）
+3. 实时计算（用例1，表格行）：步频默认 `180`、步幅选到 `1.20` → 结果区显示三行 `平均步频: 180 步/分钟` / `平均步幅: 1.2 米` / `平均配速: 4'38"/公里`（末行 4'38" 加粗靛蓝放大突出，行间有分隔线）
 4. 范围校验：步频选择器 130~260（间隔 1，共 131 项）；步幅双列选择器（整数 0~2 × 百分位：0→30~99、1→00~99、2→00~29，覆盖 0.30~2.29 间隔 0.01，共 200 项；切整数部分后百分位自动切换范围）；配速分 2~19（2'00"~19'59"）；滚动选择任一值结果立即更新
-5. 切到第二项「由配速和步幅计算步频」：步频选择器**隐藏**、配速输入出现（默认 6'00"）；步幅仍 `1.00` → 显示 `由平均配速: 6'00"/公里, 平均步幅: 1 米, 得出平均步频: **167** 步/分钟`（60000/(360×1.0)=166.7→167）
-6. 切到第三项「由配速和步频计算步幅」：步幅选择器**隐藏**；步频仍 `180`、配速 6'00" → 显示 `由平均配速: 6'00"/公里, 平均步频: 180 步/分钟, 得出平均步幅: **1.11** 米`
-7. 再次切回第一项：步频 `180`、步幅 `1.00` 仍保留，结果立即重算为 `3'20"/公里`
-8. 用例2：第二项 + 配速选 `4'38"`、步幅 `1.20` → 步频 `180` 步/分钟
-9. 用例3：第三项 + 配速 `4'38"`、步频 `180` → 步幅 `1.20` 米（格式化去尾零显示 `1.2`）
+5. 切到第二项「由配速和步幅计算步频」：步频选择器**隐藏**、配速输入出现（默认 6'00"）；步幅仍 `1.00` → 显示三行 `平均配速: 6'00"/公里` / `平均步幅: 1 米` / `平均步频: 167 步/分钟`（末行突出；60000/(360×1.0)=166.7→167）
+6. 切到第三项「由配速和步频计算步幅」：步幅选择器**隐藏**；步频仍 `180`、配速 6'00" → 显示三行 `平均配速: 6'00"/公里` / `平均步频: 180 步/分钟` / `平均步幅: 0.93 米`（末行突出；60000/(360×180)≈0.926→0.93）
+7. 再次切回第一项：步频 `180`、步幅 `1.00` 仍保留，结果立即重算为 `平均配速: 5'33"/公里`（60000/(180×1.0)=333.3s→5'33"）
+8. 用例2：第二项 + 配速选 `4'38"`、步幅 `1.20` → 结果末行 `平均步频: 180 步/分钟`
+9. 用例3：第三项 + 配速 `4'38"`、步频 `180` → 结果末行 `平均步幅: 1.2 米`（格式化去尾零显示 `1.2`）
 10. 配速 picker：点开选择分（2~19）/秒（00~59），确认后结果立即更新；默认 6'00"
 11. 步幅选择器联动：整数选 `0` → 百分位仅 30~99（选中 `30` → 0.30）；整数选 `2` → 百分位仅 00~29（选中 `29` → 2.29）
-11. 附录区：标题「附录：步频 · 步幅 · 配速」，5 板块（步频/步幅/配速/三者关系/训练建议）文案完整
-12. [返回首页]：回到首页（tabBar switchTab）
-13. [分享]：触发浏览器下载 `步频步幅.png`（截图含结果区与附录，按钮隐藏）
+12. 附录区：标题「附录：步频 · 步幅 · 配速」，5 板块（步频/步幅/配速/三者关系/训练建议）文案完整，第 2~5 板块上方有行分隔线
+13. [返回首页]：回到首页（tabBar switchTab）
+14. [分享]：触发浏览器下载 `步频步幅.png`（截图含结果区与附录，按钮隐藏）
 
 - [ ] **Step 5: 提交**
 
@@ -861,4 +900,4 @@ Expected: 构建成功，`dist/build/mp-weixin` 生成，无报错。
 
 - **规格覆盖**：常量/公式（Task1）、页面/路由/入口（Task2）、构建（Task3）逐一对应设计文档第 3~6 节；三模式隐藏、实时计算无按钮、结果句文案、附录、分享、返回首页、移除待开发均落在 Task2 验收清单
 - **占位符扫描**：无 TBD/TODO，所有代码步骤含完整实现
-- **类型一致性**：`computeResult({ mode, cadence, stride, paceSeconds })` 参数结构与返回 `{ prefix, value, suffix }` 在 Task1 定义、Task2 消费一致；`DEFAULT_PACE` 在 constants 定义、页面 `selected: [...DEFAULT_PACE]` 拷贝使用（避免改动常量）；`PACE_MIN_RANGE/PACE_SEC_RANGE` 命名与完赛时间模块一致
+- **类型一致性**：`computeResult({ mode, cadence, stride, paceSeconds })` 参数结构与返回 `{ rows: Array<{ label, value, highlight? }> }` 在 Task1 定义、Task2 模板 `v-for="row in result.rows"` 消费一致（结果行 `highlight` 用于末行突出样式）；`DEFAULT_PACE` 为「分/秒」**值**语义，页面 `selected: [PACE_MIN_RANGE.indexOf(String(DEFAULT_PACE[0])), DEFAULT_PACE[1]]` 转为 range **索引**（分钟列 2~19，索引≠值，避免 `[6,0]` 直接作索引选成 8'00"）；`PACE_MIN_RANGE/PACE_SEC_RANGE` 命名与完赛时间模块一致

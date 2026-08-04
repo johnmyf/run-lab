@@ -33,7 +33,7 @@ export const PACE_MIN_RANGE = Array.from({ length: 18 }, (_, i) => String(i + 2)
 /** 配速 picker：秒 00~59（最小间隔 1 秒） */
 export const PACE_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
-/** 默认配速：6'00" */
+/** 默认配速：6'00"（「分/秒」值语义，页面转为 picker 索引；分钟列 2~19，索引≠值） */
 export const DEFAULT_PACE = [6, 0]
 
 /** 单位 */
@@ -81,7 +81,7 @@ export const APPENDIX = [
   {
     title: '训练建议',
     lines: [
-      '新手：先稳定步频到170以上，避免跨步。',
+      '新手：先稳定步频到170以上，避免跨步，并逐步提升步频到180以上（跑步效率较高）。',
       '进阶：通过力量训练（如臀腿爆发力）和柔韧性练习（如髋屈肌拉伸）自然增大步幅。',
       '配速训练：结合间歇跑、节奏跑等专项练习，找到个人最优的步频-步幅平衡点。',
     ],

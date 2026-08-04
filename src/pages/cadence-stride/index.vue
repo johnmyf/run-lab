@@ -91,11 +91,18 @@
         </view>
       </view>
 
-      <!-- 结果区（实时，无需按钮） -->
+      <!-- 结果区（实时，无需按钮；表格行，结果在最下且突出） -->
       <view v-if="hasResult" class="result-card">
-        <text class="result-sentence">{{ result.prefix }}</text>
-        <text class="result-value">{{ result.value }}</text>
-        <text class="result-suffix">{{ result.suffix }}</text>
+        <view
+          v-for="(row, i) in result.rows"
+          :key="i"
+          class="result-row"
+          :class="{ 'result-row-result': row.highlight }"
+        >
+          <text class="result-label">{{ row.label }}</text>
+          <text class="result-colon">：</text>
+          <text class="result-value">{{ row.value }}</text>
+        </view>
       </view>
 
       <!-- 附录 -->
@@ -143,7 +150,8 @@ const stridePicker = reactive({
 
 const pacePicker = reactive({
   ranges: [PACE_MIN_RANGE, PACE_SEC_RANGE],
-  selected: [...DEFAULT_PACE],
+  // DEFAULT_PACE 是「分/秒」值，需转为 range 索引（分钟列 2~19，索引≠值）
+  selected: [PACE_MIN_RANGE.indexOf(String(DEFAULT_PACE[0])), DEFAULT_PACE[1]],
 })
 
 const sharing = ref(false)
@@ -403,20 +411,37 @@ async function shareResult() {
   margin: 0 4rpx;
 }
 
-/* 结果卡（实时） */
+/* 结果卡（实时，表格行；上下留白间隔较原 30rpx 加大 100% → 60rpx） */
 .result-card {
   background: #E8EAF6;
   border-radius: 16rpx;
-  padding: 36rpx 30rpx;
-  margin-bottom: 30rpx;
-  line-height: 1.6;
+  padding: 0 30rpx;
+  margin: 60rpx 0;
 }
-.result-sentence,
-.result-suffix {
+.result-row {
+  display: flex;
+  align-items: baseline;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid rgba(92, 107, 192, 0.14);
+}
+.result-row:last-child {
+  border-bottom: none;
+}
+.result-label {
+  font-size: 28rpx;
+  color: #2C3E50;
+  flex-shrink: 0;
+}
+.result-colon {
+  font-size: 28rpx;
+  color: #2C3E50;
+  margin: 0 8rpx;
+}
+.result-value {
   font-size: 28rpx;
   color: #2C3E50;
 }
-.result-value {
+.result-row-result .result-value {
   font-size: 40rpx;
   font-weight: bold;
   color: #5C6BC0;
@@ -442,6 +467,11 @@ async function shareResult() {
 }
 .appendix-section:last-child {
   margin-bottom: 0;
+}
+/* 第 2~5 板块上方行分隔（对应需求「---」；首个板块「1. 步频」不设） */
+.appendix-section + .appendix-section {
+  border-top: 2rpx solid #f0f0f0;
+  padding-top: 24rpx;
 }
 .appendix-sec-title {
   font-size: 28rpx;
