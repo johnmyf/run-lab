@@ -31,29 +31,38 @@
       <view class="section">
         <text class="section-label">输入项</text>
 
-        <!-- 步频 -->
+        <!-- 步频（数值选择器 130~260，间隔 1） -->
         <view class="input-row" v-show="mode !== 'cadence'">
           <text class="input-label">步频</text>
-          <input
-            class="input-field"
-            type="digit"
-            v-model="cadenceInput"
-            placeholder="如 180"
-            :maxlength="4"
-          />
+          <picker
+            mode="selector"
+            :range="CADENCE_RANGE"
+            :value="cadenceIndex"
+            @change="onCadenceChange"
+          >
+            <view class="num-display">
+              <text class="num-value">{{ CADENCE_RANGE[cadenceIndex] }}</text>
+            </view>
+          </picker>
           <text class="input-unit">{{ CADENCE_UNIT }}</text>
         </view>
 
-        <!-- 步幅 -->
+        <!-- 步幅（数值选择器：整数部分 0~2 + 百分位，范围随整数动态限定） -->
         <view class="input-row" v-show="mode !== 'stride'">
           <text class="input-label">步幅</text>
-          <input
-            class="input-field"
-            type="digit"
-            v-model="strideInput"
-            placeholder="如 1.2"
-            :maxlength="5"
-          />
+          <picker
+            mode="multiSelector"
+            :range="stridePicker.ranges"
+            :value="stridePicker.selected"
+            @columnchange="onStrideColumnChange"
+            @change="onStrideChange"
+          >
+            <view class="pace-display">
+              <text class="pace-num">{{ stridePicker.ranges[0][stridePicker.selected[0]] }}</text>
+              <text class="pace-dot">.</text>
+              <text class="pace-num">{{ stridePicker.ranges[1][stridePicker.selected[1]] }}</text>
+            </view>
+          </picker>
           <text class="input-unit">{{ STRIDE_UNIT }}</text>
         </view>
 
@@ -114,7 +123,9 @@ import { captureAndShare } from '@/utils/share'
 import { nextTick } from 'vue'
 // #endif
 import {
-  MODE_OPTIONS, PACE_MIN_RANGE, PACE_SEC_RANGE, DEFAULT_PACE,
+  MODE_OPTIONS, CADENCE_RANGE, DEFAULT_CADENCE,
+  STRIDE_WHOLE_RANGE, STRIDE_DECI_RANGES, DEFAULT_STRIDE,
+  PACE_MIN_RANGE, PACE_SEC_RANGE, DEFAULT_PACE,
   CADENCE_UNIT, STRIDE_UNIT, PACE_UNIT, HINT_TEXT, APPENDIX,
 } from '@/logic/cadence-stride/constants'
 import { computeResult } from '@/logic/cadence-stride/calculator'
@@ -122,8 +133,13 @@ import { computeResult } from '@/logic/cadence-stride/calculator'
 // ==================== 状态 ====================
 
 const mode = ref('pace')          // 默认：由步频和步幅计算配速
-const cadenceInput = ref('')      // 步频输入（步/分钟）
-const strideInput = ref('')       // 步幅输入（米）
+const cadenceIndex = ref(CADENCE_RANGE.indexOf(DEFAULT_CADENCE))  // 默认步频 180
+
+// 步幅双列选择器：整数部分 0~2 + 百分位（范围随整数部分动态限定，默认 1.00）
+const stridePicker = reactive({
+  ranges: [STRIDE_WHOLE_RANGE, STRIDE_DECI_RANGES['1']],
+  selected: [...DEFAULT_STRIDE],
+})
 
 const pacePicker = reactive({
   ranges: [PACE_MIN_RANGE, PACE_SEC_RANGE],
@@ -134,13 +150,21 @@ const sharing = ref(false)
 
 // ==================== 实时结果（computed 派生，输入即算） ====================
 
+const cadence = computed(() => Number(CADENCE_RANGE[cadenceIndex.value]))
+
+const stride = computed(() => {
+  const whole = Number(stridePicker.ranges[0][stridePicker.selected[0]])
+  const deci = Number(stridePicker.ranges[1][stridePicker.selected[1]])
+  return whole + deci / 100
+})
+
 const result = computed(() => {
   const [mIdx, sIdx] = pacePicker.selected
   const paceSeconds = Number(pacePicker.ranges[0][mIdx]) * 60 + Number(pacePicker.ranges[1][sIdx])
   return computeResult({
     mode: mode.value,
-    cadence: parseFloat(cadenceInput.value),
-    stride: parseFloat(strideInput.value),
+    cadence: cadence.value,
+    stride: stride.value,
     paceSeconds,
   })
 })
@@ -151,6 +175,26 @@ const hasResult = computed(() => result.value !== null)
 
 function selectMode(key) {
   mode.value = key
+}
+
+function onCadenceChange(e) {
+  cadenceIndex.value = e.detail.value
+}
+
+function onStrideColumnChange(e) {
+  const { column, value } = e.detail
+  if (column === 0) {
+    // 整数部分变化 → 切换百分位范围，百分位重置为最低合法值
+    stridePicker.ranges[1] = STRIDE_DECI_RANGES[STRIDE_WHOLE_RANGE[value]]
+    stridePicker.selected = [value, 0]
+  } else {
+    stridePicker.selected[1] = value
+  }
+}
+
+function onStrideChange(e) {
+  stridePicker.selected = e.detail.value
+  stridePicker.ranges[1] = STRIDE_DECI_RANGES[STRIDE_WHOLE_RANGE[e.detail.value[0]]]
 }
 
 function onColumnChange(e) {
@@ -296,15 +340,21 @@ async function shareResult() {
   color: #2C3E50;
   font-weight: bold;
 }
-.input-field {
+.num-display {
   flex: 1;
-  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16rpx 30rpx;
   background: #F5F5F5;
   border: 2rpx solid #E0E0E0;
   border-radius: 12rpx;
-  padding: 0 24rpx;
-  font-size: 32rpx;
+}
+.num-value {
+  font-size: 40rpx;
+  font-weight: bold;
   color: #2C3E50;
+  min-width: 48rpx;
   text-align: center;
 }
 .input-unit {
@@ -345,6 +395,12 @@ async function shareResult() {
   font-size: 24rpx;
   color: #95A5A6;
   margin-left: 8rpx;
+}
+.pace-dot {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2C3E50;
+  margin: 0 4rpx;
 }
 
 /* 结果卡（实时） */

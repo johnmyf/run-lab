@@ -15,7 +15,10 @@
 - **格式化**：配速用 `utils/time.js` 的 `secondsToPaceStr()` → `4'38"` 后接 `/公里`；步频四舍五入为整数；步幅最多 2 位小数并去尾零（`1.20` → `1.2`）
 - **实时计算**：无计算按钮；仅当两个所需输入均为有效正数（`isFinite(n) && n > 0`）时显示结果，否则不显示
 - **模式隐藏**：三模式分别隐藏被算出的输入项（`v-show`：`mode==='cadence'` 隐藏步频、`mode==='stride'` 隐藏步幅、`mode==='pace'` 隐藏配速）；切换模式保留已有输入值并自动重算
-- **配速 picker**：分 0~15、秒 00~59，默认 `[5, 0]`（5'00"）
+- **步频输入（数值选择器）**：`picker mode="selector"`，范围 130~260（间隔 1），默认 180
+- **步幅输入（双列数值选择器）**：`picker mode="multiSelector"`（参照配速选择器），整数部分 0~2 + 百分位；百分位范围随整数部分动态限定（0→30~99，1→00~99，2→00~29），覆盖 0.30~2.29 米（间隔 0.01），默认 1.00
+- **配速 picker**：分 2~19（2'00"~19'59"）、秒 00~59，默认 `[6, 0]`（6'00"）
+- **输入恒有效，结果始终显示**（步频/步幅/配速均为选择器）
 - **页面规范**：页头靛蓝 `#5C6BC0`；CSS 用 rpx；用 `<view>`/`<text>`；避免 `:hover`/`cursor:pointer`
 - **分享（参照完赛时间计算页面）**：H5 `#ifdef H5` + `@/utils/share` 的 `captureAndShare`（prefix `'步频步幅'`），分享时 `sharing=true` 隐藏按钮；微信小程序 `#ifdef MP-WEIXIN` 的 `onShareAppMessage`
 - **入口**：九宫格**移除「待开发」**项（同时移除 `.grid-item.gray` 样式）；新增 `colorClass: 'indigo'`（背景 `#5C6BC0`），插入在[等级查询]之后，调整后共 9 项填满 3×3
@@ -46,7 +49,9 @@
 - Consumes: `src/utils/time.js` 的 `secondsToPaceStr(totalSecs)` → `"4'38\""`（已存在）
 - Produces:
   - `MODE_OPTIONS: Array<{ key: 'pace'|'cadence'|'stride', label: string }>` — 三模式
-  - `PACE_MIN_RANGE: string[]`、`PACE_SEC_RANGE: string[]`、`DEFAULT_PACE: [number, number]`
+  - `CADENCE_RANGE: string[]`（130~260）、`DEFAULT_CADENCE = '180'`
+  - `STRIDE_WHOLE_RANGE: string[]`（整数 0~2）、`STRIDE_DECI_RANGES: Record<string, string[]>`（百分位，按整数动态限定 30~99/00~99/00~29）、`DEFAULT_STRIDE = [1, 0]`
+  - `PACE_MIN_RANGE: string[]`（2~19）、`PACE_SEC_RANGE: string[]`、`DEFAULT_PACE: [number, number]`（默认 6'00"）
   - `CADENCE_UNIT = '步/分钟'`、`STRIDE_UNIT = '米'`、`PACE_UNIT = '/公里'`、`HINT_TEXT: string`
   - `APPENDIX: Array<{ title: string, lines: string[] }>` — 5 板块
   - `formatPaceStr(paceSeconds: number): string` — 如 `"4'38\"/公里"`
@@ -69,14 +74,31 @@ export const MODE_OPTIONS = [
   { key: 'stride', label: '由配速和步频计算步幅' },
 ]
 
-/** 配速 picker：分 0~15 */
-export const PACE_MIN_RANGE = Array.from({ length: 16 }, (_, i) => String(i))
+/** 步频数值选择器：130~260，间隔 1（默认 180） */
+export const CADENCE_RANGE = Array.from({ length: 131 }, (_, i) => String(130 + i))
 
-/** 配速 picker：秒 00~59 */
+/** 步幅数值选择器：整数部分 0~2 */
+export const STRIDE_WHOLE_RANGE = ['0', '1', '2']
+
+/** 步幅数值选择器：百分位小数，按整数部分动态限定（0→30~99，1→00~99，2→00~29） */
+export const STRIDE_DECI_RANGES = {
+  '0': Array.from({ length: 70 }, (_, i) => String(30 + i).padStart(2, '0')),
+  '1': Array.from({ length: 100 }, (_, i) => String(i).padStart(2, '0')),
+  '2': Array.from({ length: 30 }, (_, i) => String(i).padStart(2, '0')),
+}
+
+/** 默认步频：180 / 默认步幅：1.00（整数部分 1、百分位 00） */
+export const DEFAULT_CADENCE = '180'
+export const DEFAULT_STRIDE = [1, 0]
+
+/** 配速 picker：分 2~19（2'00"~19'59"） */
+export const PACE_MIN_RANGE = Array.from({ length: 18 }, (_, i) => String(i + 2))
+
+/** 配速 picker：秒 00~59（最小间隔 1 秒） */
 export const PACE_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
-/** 默认配速：5'00" */
-export const DEFAULT_PACE = [5, 0]
+/** 默认配速：6'00" */
+export const DEFAULT_PACE = [6, 0]
 
 /** 单位 */
 export const CADENCE_UNIT = '步/分钟'
@@ -258,7 +280,7 @@ git commit -m "feat: 新增步频步幅计算常量与公式逻辑"
 - Modify: `src/pages/index/index.vue`（插入九宫格项 + 新增 indigo 配色 + 移除待开发/gray）
 
 **Interfaces:**
-- Consumes: Task 1 的 `MODE_OPTIONS/PACE_MIN_RANGE/PACE_SEC_RANGE/DEFAULT_PACE/CADENCE_UNIT/STRIDE_UNIT/PACE_UNIT/HINT_TEXT/APPENDIX` 与 `computeResult`；`@/utils/share` 的 `captureAndShare`（H5）
+- Consumes: Task 1 的 `MODE_OPTIONS/CADENCE_RANGE/DEFAULT_CADENCE/STRIDE_WHOLE_RANGE/STRIDE_DECI_RANGES/DEFAULT_STRIDE/PACE_MIN_RANGE/PACE_SEC_RANGE/DEFAULT_PACE/CADENCE_UNIT/STRIDE_UNIT/PACE_UNIT/HINT_TEXT/APPENDIX` 与 `computeResult`；`@/utils/share` 的 `captureAndShare`（H5）
 - Produces: 可在 H5 与微信小程序中打开的 `/pages/cadence-stride/index` 页面
 
 - [ ] **Step 1: 创建 `src/pages/cadence-stride/index.vue`**
@@ -299,29 +321,38 @@ git commit -m "feat: 新增步频步幅计算常量与公式逻辑"
       <view class="section">
         <text class="section-label">输入项</text>
 
-        <!-- 步频 -->
+        <!-- 步频（数值选择器 130~260，间隔 1） -->
         <view class="input-row" v-show="mode !== 'cadence'">
           <text class="input-label">步频</text>
-          <input
-            class="input-field"
-            type="digit"
-            v-model="cadenceInput"
-            placeholder="如 180"
-            :maxlength="4"
-          />
+          <picker
+            mode="selector"
+            :range="CADENCE_RANGE"
+            :value="cadenceIndex"
+            @change="onCadenceChange"
+          >
+            <view class="num-display">
+              <text class="num-value">{{ CADENCE_RANGE[cadenceIndex] }}</text>
+            </view>
+          </picker>
           <text class="input-unit">{{ CADENCE_UNIT }}</text>
         </view>
 
-        <!-- 步幅 -->
+        <!-- 步幅（双列数值选择器：整数部分 0~2 + 百分位，范围随整数动态限定） -->
         <view class="input-row" v-show="mode !== 'stride'">
           <text class="input-label">步幅</text>
-          <input
-            class="input-field"
-            type="digit"
-            v-model="strideInput"
-            placeholder="如 1.2"
-            :maxlength="5"
-          />
+          <picker
+            mode="multiSelector"
+            :range="stridePicker.ranges"
+            :value="stridePicker.selected"
+            @columnchange="onStrideColumnChange"
+            @change="onStrideChange"
+          >
+            <view class="pace-display">
+              <text class="pace-num">{{ stridePicker.ranges[0][stridePicker.selected[0]] }}</text>
+              <text class="pace-dot">.</text>
+              <text class="pace-num">{{ stridePicker.ranges[1][stridePicker.selected[1]] }}</text>
+            </view>
+          </picker>
           <text class="input-unit">{{ STRIDE_UNIT }}</text>
         </view>
 
@@ -381,7 +412,9 @@ import { ref, reactive, computed, nextTick } from 'vue'
 import { captureAndShare } from '@/utils/share'
 // #endif
 import {
-  MODE_OPTIONS, PACE_MIN_RANGE, PACE_SEC_RANGE, DEFAULT_PACE,
+  MODE_OPTIONS, CADENCE_RANGE, DEFAULT_CADENCE,
+  STRIDE_WHOLE_RANGE, STRIDE_DECI_RANGES, DEFAULT_STRIDE,
+  PACE_MIN_RANGE, PACE_SEC_RANGE, DEFAULT_PACE,
   CADENCE_UNIT, STRIDE_UNIT, PACE_UNIT, HINT_TEXT, APPENDIX,
 } from '@/logic/cadence-stride/constants'
 import { computeResult } from '@/logic/cadence-stride/calculator'
@@ -389,8 +422,13 @@ import { computeResult } from '@/logic/cadence-stride/calculator'
 // ==================== 状态 ====================
 
 const mode = ref('pace')          // 默认：由步频和步幅计算配速
-const cadenceInput = ref('')      // 步频输入（步/分钟）
-const strideInput = ref('')       // 步幅输入（米）
+const cadenceIndex = ref(CADENCE_RANGE.indexOf(DEFAULT_CADENCE))  // 默认步频 180
+
+// 步幅双列选择器：整数部分 0~2 + 百分位（范围随整数部分动态限定，默认 1.00）
+const stridePicker = reactive({
+  ranges: [STRIDE_WHOLE_RANGE, STRIDE_DECI_RANGES['1']],
+  selected: [...DEFAULT_STRIDE],
+})
 
 const pacePicker = reactive({
   ranges: [PACE_MIN_RANGE, PACE_SEC_RANGE],
@@ -401,13 +439,21 @@ const sharing = ref(false)
 
 // ==================== 实时结果（computed 派生，输入即算） ====================
 
+const cadence = computed(() => Number(CADENCE_RANGE[cadenceIndex.value]))
+
+const stride = computed(() => {
+  const whole = Number(stridePicker.ranges[0][stridePicker.selected[0]])
+  const deci = Number(stridePicker.ranges[1][stridePicker.selected[1]])
+  return whole + deci / 100
+})
+
 const result = computed(() => {
   const [mIdx, sIdx] = pacePicker.selected
   const paceSeconds = Number(pacePicker.ranges[0][mIdx]) * 60 + Number(pacePicker.ranges[1][sIdx])
   return computeResult({
     mode: mode.value,
-    cadence: parseFloat(cadenceInput.value),
-    stride: parseFloat(strideInput.value),
+    cadence: cadence.value,
+    stride: stride.value,
     paceSeconds,
   })
 })
@@ -418,6 +464,26 @@ const hasResult = computed(() => result.value !== null)
 
 function selectMode(key) {
   mode.value = key
+}
+
+function onCadenceChange(e) {
+  cadenceIndex.value = e.detail.value
+}
+
+function onStrideColumnChange(e) {
+  const { column, value } = e.detail
+  if (column === 0) {
+    // 整数部分变化 → 切换百分位范围，百分位重置为最低合法值
+    stridePicker.ranges[1] = STRIDE_DECI_RANGES[STRIDE_WHOLE_RANGE[value]]
+    stridePicker.selected = [value, 0]
+  } else {
+    stridePicker.selected[1] = value
+  }
+}
+
+function onStrideChange(e) {
+  stridePicker.selected = e.detail.value
+  stridePicker.ranges[1] = STRIDE_DECI_RANGES[STRIDE_WHOLE_RANGE[e.detail.value[0]]]
 }
 
 function onColumnChange(e) {
@@ -563,15 +629,21 @@ async function shareResult() {
   color: #2C3E50;
   font-weight: bold;
 }
-.input-field {
+.num-display {
   flex: 1;
-  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16rpx 30rpx;
   background: #F5F5F5;
   border: 2rpx solid #E0E0E0;
   border-radius: 12rpx;
-  padding: 0 24rpx;
-  font-size: 32rpx;
+}
+.num-value {
+  font-size: 40rpx;
+  font-weight: bold;
   color: #2C3E50;
+  min-width: 48rpx;
   text-align: center;
 }
 .input-unit {
@@ -612,6 +684,12 @@ async function shareResult() {
   font-size: 24rpx;
   color: #95A5A6;
   margin-left: 8rpx;
+}
+.pace-dot {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2C3E50;
+  margin: 0 4rpx;
 }
 
 /* 结果卡（实时） */
@@ -735,15 +813,16 @@ Run: `npm run dev:h5`（终端会输出访问 URL，浏览器打开首页）。
 逐项确认：
 
 1. 首页九宫格：共 9 项填满 3×3，新增[步频步幅计算]在第3行第1列（等级查询之后），靛蓝色块 + 👣 图标，点击进入步频步幅计算页
-2. 页面默认：计算项默认选中第一项「由步频和步幅计算配速」；显示步频、步幅两个输入框，配速输入**隐藏**；结果区**不显示**
-3. 实时计算（用例1）：步频填 `180`、步幅填 `1.2` → 结果区立即显示 `由平均步频: 180 步/分钟, 平均步幅: 1.2 米, 得出平均配速: **4'38"/公里**`（4'38" 靛蓝突出）
-4. 输入缺失：清空任一项 → 结果区立即消失
-5. 切到第二项「由配速和步幅计算步频」：步频输入**隐藏**、配速输入出现（默认 5'00"）；步幅仍填 `1.2` → 显示 `由平均配速: 5'00"/公里, 平均步幅: 1.2 米, 得出平均步频: **167** 步/分钟`（60000/(300×1.2)=166.7→167）
-6. 切到第三项「由配速和步频计算步幅」：步幅输入**隐藏**；步频仍填 `180`、配速 5'00" → 显示 `由平均配速: 5'00"/公里, 平均步频: 180 步/分钟, 得出平均步幅: **1.11** 米`
-7. 再次切回第一项：步频 `180`、步幅 `1.2` 仍保留，结果立即重算为 `4'38"/公里`
-8. 用例2：第二项 + 配速选 `4'38"`、步幅 `1.2` → 步频 `180` 步/分钟
-9. 用例3：第三项 + 配速 `4'38"`、步频 `180` → 步幅 `1.2` 米
-10. 配速 picker：点开选择分/秒，确认后结果立即更新
+2. 页面默认：计算项默认选中第一项「由步频和步幅计算配速」；显示步频、步幅两个数值选择器（默认 180 / 1.00），配速输入**隐藏**；结果区**始终显示**（输入恒有效）
+3. 实时计算（用例1）：步频默认 `180`、步幅选到 `1.20` → 结果区立即显示 `由平均步频: 180 步/分钟, 平均步幅: 1.2 米, 得出平均配速: **4'38"/公里**`（4'38" 靛蓝突出）
+4. 范围校验：步频选择器 130~260（间隔 1，共 131 项）；步幅双列选择器（整数 0~2 × 百分位：0→30~99、1→00~99、2→00~29，覆盖 0.30~2.29 间隔 0.01，共 200 项；切整数部分后百分位自动切换范围）；配速分 2~19（2'00"~19'59"）；滚动选择任一值结果立即更新
+5. 切到第二项「由配速和步幅计算步频」：步频选择器**隐藏**、配速输入出现（默认 6'00"）；步幅仍 `1.00` → 显示 `由平均配速: 6'00"/公里, 平均步幅: 1 米, 得出平均步频: **167** 步/分钟`（60000/(360×1.0)=166.7→167）
+6. 切到第三项「由配速和步频计算步幅」：步幅选择器**隐藏**；步频仍 `180`、配速 6'00" → 显示 `由平均配速: 6'00"/公里, 平均步频: 180 步/分钟, 得出平均步幅: **1.11** 米`
+7. 再次切回第一项：步频 `180`、步幅 `1.00` 仍保留，结果立即重算为 `3'20"/公里`
+8. 用例2：第二项 + 配速选 `4'38"`、步幅 `1.20` → 步频 `180` 步/分钟
+9. 用例3：第三项 + 配速 `4'38"`、步频 `180` → 步幅 `1.20` 米（格式化去尾零显示 `1.2`）
+10. 配速 picker：点开选择分（2~19）/秒（00~59），确认后结果立即更新；默认 6'00"
+11. 步幅选择器联动：整数选 `0` → 百分位仅 30~99（选中 `30` → 0.30）；整数选 `2` → 百分位仅 00~29（选中 `29` → 2.29）
 11. 附录区：标题「附录：步频 · 步幅 · 配速」，5 板块（步频/步幅/配速/三者关系/训练建议）文案完整
 12. [返回首页]：回到首页（tabBar switchTab）
 13. [分享]：触发浏览器下载 `步频步幅.png`（截图含结果区与附录，按钮隐藏）

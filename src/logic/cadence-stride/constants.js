@@ -10,14 +10,31 @@ export const MODE_OPTIONS = [
   { key: 'stride', label: '由配速和步频计算步幅' },
 ]
 
-/** 配速 picker：分 0~15 */
-export const PACE_MIN_RANGE = Array.from({ length: 16 }, (_, i) => String(i))
+/** 步频数值选择器：130~260，间隔 1（默认 180） */
+export const CADENCE_RANGE = Array.from({ length: 131 }, (_, i) => String(130 + i))
 
-/** 配速 picker：秒 00~59 */
+/** 步幅数值选择器：整数部分 0~2 */
+export const STRIDE_WHOLE_RANGE = ['0', '1', '2']
+
+/** 步幅数值选择器：百分位小数，按整数部分动态限定（0→30~99，1→00~99，2→00~29） */
+export const STRIDE_DECI_RANGES = {
+  '0': Array.from({ length: 70 }, (_, i) => String(30 + i).padStart(2, '0')),
+  '1': Array.from({ length: 100 }, (_, i) => String(i).padStart(2, '0')),
+  '2': Array.from({ length: 30 }, (_, i) => String(i).padStart(2, '0')),
+}
+
+/** 默认步频：180 / 默认步幅：1.00（整数部分 1、百分位 00） */
+export const DEFAULT_CADENCE = '180'
+export const DEFAULT_STRIDE = [1, 0]
+
+/** 配速 picker：分 2~19（2'00"~19'59"） */
+export const PACE_MIN_RANGE = Array.from({ length: 18 }, (_, i) => String(i + 2))
+
+/** 配速 picker：秒 00~59（最小间隔 1 秒） */
 export const PACE_SEC_RANGE = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
-/** 默认配速：5'00" */
-export const DEFAULT_PACE = [5, 0]
+/** 默认配速：6'00" */
+export const DEFAULT_PACE = [6, 0]
 
 /** 单位 */
 export const CADENCE_UNIT = '步/分钟'
