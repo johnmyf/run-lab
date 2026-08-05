@@ -14,8 +14,6 @@
       "minified": true
     },
     "usingComponents": true,
-    "darkmode": false,
-    "themeLocation": "theme.json",
     "lazyCodeLoading": "requiredComponents"
   },
   "h5": {

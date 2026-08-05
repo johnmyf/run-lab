@@ -9,12 +9,11 @@
 
 <style>
 /* 全局样式 — 替代原 style.css */
-* {
+/* 注意：微信小程序 WXSS 不支持通配符选择器 *，用 page（小程序根元素）+ body（H5 根元素）替代 */
+page,
+body {
   margin: 0;
   padding: 0;
-}
-
-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   background: #f5f5f5;
 }
