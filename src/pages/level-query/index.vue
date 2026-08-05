@@ -127,6 +127,7 @@ import { ref, reactive, computed, nextTick } from 'vue'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
 // #endif
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import levelData from '@/data/level.json'
 import {
   PROJECTS, GENDERS, AGE_GROUPS, AGE_RANGE,

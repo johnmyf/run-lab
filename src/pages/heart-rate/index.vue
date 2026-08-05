@@ -99,7 +99,7 @@
       </view>
 
       <!-- 操作按钮 -->
-      <view class="action-buttons" v-show="calculated && !sharing">
+      <view class="action-buttons" v-if="calculated && !sharing">
         <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
       </view>

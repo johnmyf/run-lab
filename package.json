@@ -24,7 +24,8 @@
     "@dcloudio/uni-cli-shared": "3.0.0-5010420260703001",
     "@dcloudio/uni-stacktracey": "3.0.0-5010420260703001",
     "@dcloudio/vite-plugin-uni": "3.0.0-5010420260703001",
-    "@vue/runtime-core": "^3.4.21",
+    "@vue/runtime-core": "3.4.21",
+    "@vue/reactivity": "3.4.21",
     "rollup": "4.14.3",
     "vite": "5.2.8"
   }

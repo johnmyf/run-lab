@@ -32,7 +32,7 @@
         <text class="section-label">输入项</text>
 
         <!-- 步频（数值选择器 130~260，间隔 1） -->
-        <view class="input-row" v-show="mode !== 'cadence'">
+        <view class="input-row" v-if="mode !== 'cadence'">
           <text class="input-label">步频</text>
           <picker
             mode="selector"
@@ -48,7 +48,7 @@
         </view>
 
         <!-- 步幅（数值选择器：整数部分 0~2 + 百分位，范围随整数动态限定） -->
-        <view class="input-row" v-show="mode !== 'stride'">
+        <view class="input-row" v-if="mode !== 'stride'">
           <text class="input-label">步幅</text>
           <picker
             mode="multiSelector"
@@ -67,7 +67,7 @@
         </view>
 
         <!-- 配速 -->
-        <view class="input-row" v-show="mode !== 'pace'">
+        <view class="input-row" v-if="mode !== 'pace'">
           <text class="input-label">配速</text>
           <picker
             mode="multiSelector"
@@ -129,6 +129,7 @@ import { ref, reactive, computed } from 'vue'
 import { captureAndShare } from '@/utils/share'
 import { nextTick } from 'vue'
 // #endif
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import {
   MODE_OPTIONS, CADENCE_RANGE, DEFAULT_CADENCE,
   STRIDE_WHOLE_RANGE, STRIDE_DECI_RANGES, DEFAULT_STRIDE,

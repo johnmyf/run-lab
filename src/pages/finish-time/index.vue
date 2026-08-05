@@ -155,6 +155,7 @@ import { ref, reactive, computed, nextTick } from 'vue'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
 // #endif
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import {
   DISTANCE_CONFIGS, INTERVAL_OPTIONS, STRATEGY_CONFIG,
 } from '@/logic/pace-calculator/constants'

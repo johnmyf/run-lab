@@ -23,7 +23,7 @@
         <!-- 无VDOT提示 -->
         <view v-if="noVdot" class="no-vdot-tip">
           <text class="tip-icon">📊</text>
-          <text class="tip-text">还没有估算VDOT跑力值，请先前往跑力值计算页面进行评估</text>
+          <text class="tip-text" user-select>还没有估算VDOT跑力值，请先前往跑力值计算页面进行评估</text>
           <button class="btn btn-primary btn-goto" @click="goToRunningPower">前往计算</button>
         </view>
 
@@ -56,13 +56,13 @@
         <view class="readme-list">
           <view class="readme-item" v-for="item in trainingReadme" :key="item.type">
             <text class="readme-title">{{ item.title }}</text>
-            <text class="readme-text">{{ item.text }}</text>
+            <text class="readme-text" user-select>{{ item.text }}</text>
           </view>
         </view>
       </view>
 
       <!-- 操作按钮 -->
-      <view class="action-buttons" v-show="!sharing && !noVdot">
+      <view class="action-buttons" v-if="!sharing && !noVdot">
         <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
         <button class="btn btn-re-eval" @click="goToRunningPower">重新评估</button>
@@ -76,6 +76,7 @@ import { ref, computed } from 'vue'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
 // #endif
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import vdotMap from '@/data/sheet5-1.json'
 import trainingPacesData from '@/data/sheet5-2.json'
 import { parseTimeToSeconds, secondsToTimeStr, secondsToPaceStr } from '@/utils/time'
