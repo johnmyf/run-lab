@@ -21,6 +21,13 @@ body {
 #app {
   min-height: 100vh;
 }
+
+/* #ifdef H5 */
+/* 放大 H5 端原生 tabBar 文字字号（与微信小程序自定义 tabBar 一致） */
+.uni-tabbar__label {
+  font-size: 28rpx !important;
+}
+/* #endif */
 </style>
 
 <style scoped>

@@ -18,11 +18,19 @@
         <text class="coming-text">功能开发中</text>
       </view>
     </view>
+
+    <!-- #ifdef MP-WEIXIN -->
+    <CustomTabBar active-index="1" />
+    <!-- #endif -->
   </view>
 </template>
 
 <script setup>
 import { statusBarHeight } from '@/utils/status-bar'
+
+// #ifdef MP-WEIXIN
+import CustomTabBar from '@/custom-tab-bar/index.vue'
+// #endif
 
 const goBack = () => {
   uni.switchTab({ url: '/pages/index/index' })
@@ -37,6 +45,7 @@ const goBack = () => {
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
+  padding-bottom: 140rpx;
 }
 
 .header {

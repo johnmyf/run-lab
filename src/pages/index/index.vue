@@ -24,11 +24,19 @@
         <text class="title">{{ item.title }}</text>
       </view>
     </view>
+
+    <!-- #ifdef MP-WEIXIN -->
+    <CustomTabBar active-index="0" />
+    <!-- #endif -->
   </view>
 </template>
 
 <script setup>
 import { statusBarHeight } from '@/utils/status-bar'
+
+// #ifdef MP-WEIXIN
+import CustomTabBar from '@/custom-tab-bar/index.vue'
+// #endif
 
 const menuItems = [
   { id: 1, title: '跑力值计算', icon: '⚡', colorClass: 'blue', path: '/pages/running-power/index' },
