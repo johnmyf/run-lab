@@ -27,6 +27,14 @@ export function formatRange(value) {
 /** 各间歇跑类型的格式化函数映射 */
 export const INTERVAL_FORMATTERS = {
   /**
+   * 400m 用时直接显示，后跟配速（×2.5 换算为每公里配速）
+   * @param {string} value - 400m 用时 "M:SS"
+   */
+  i400(value) {
+    const perKmSecs = paceToSeconds(value) * 2.5
+    return `${formatPaceStr(value)} (配速:${secondsToPaceStr(perKmSecs)}/km)`
+  },
+  /**
    * 800m 用时 = 1km 配速 × 0.8，后跟配速
    * @param {string} value - 1km 配速 "M:SS"
    */

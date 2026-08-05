@@ -24,7 +24,7 @@ export const TRAINING_CONFIG = [
   { type: 'marathon', label: '马拉松配速跑配速', field: 'M1KMPace' },
   { type: 'threshold', label: '乳酸门槛跑配速', field: 'T1KMPace' },
   // 间歇跑系列
-  { type: 'i400', label: '400米间歇跑用时', field: 'I400MPace' },
+  { type: 'i400', label: '400米间歇跑用时', field: 'I400MPace', formatter: 'i400' },
   { type: 'i800', label: '800米间歇跑用时', field: 'I1KMPace', formatter: 'i800' },
   { type: 'i1000', label: '1000米间歇跑用时及配速', field: 'I1KMPace' },
   { type: 'i1200', label: '1200米间歇跑用时', field: 'I1200MPace', formatter: 'i1200' },

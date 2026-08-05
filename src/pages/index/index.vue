@@ -1,5 +1,6 @@
 <template>
   <view class="home">
+    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <view class="header">
       <image class="header-icon" src="/static/run-lab-icon.png" mode="aspectFit" />
       <text class="header-title">RunLab-跑研社</text>
@@ -27,6 +28,8 @@
 </template>
 
 <script setup>
+import { statusBarHeight } from '@/utils/status-bar'
+
 const menuItems = [
   { id: 1, title: '跑力值计算', icon: '⚡', colorClass: 'blue', path: '/pages/running-power/index' },
   { id: 2, title: '成绩预测', icon: '🏆', colorClass: 'red', path: '/pages/performance-prediction/index' },
@@ -55,6 +58,10 @@ const goToPage = (item) => {
 </script>
 
 <style scoped>
+.status-bar {
+  background: #4DB8A0;
+}
+
 .home {
   min-height: 100vh;
   background: #f5f5f5;

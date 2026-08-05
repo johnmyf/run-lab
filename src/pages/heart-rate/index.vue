@@ -1,5 +1,7 @@
 <template>
   <view class="page-container">
+    <!-- 状态栏占位 -->
+    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <!-- 顶部 Header -->
     <view class="header" style="background: #2ECC71;">
       <view class="back-button" @click="goBack">
@@ -109,6 +111,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
 // #endif
@@ -229,6 +232,10 @@ function goHome() {
 </script>
 
 <style scoped>
+.status-bar {
+  background: #2ECC71;
+}
+
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;

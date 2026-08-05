@@ -1,5 +1,6 @@
 <template>
   <view class="page-container">
+    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <view class="header">
       <view class="back-button" @click="goBack">
         <text class="back-arrow">←</text>
@@ -21,12 +22,18 @@
 </template>
 
 <script setup>
+import { statusBarHeight } from '@/utils/status-bar'
+
 const goBack = () => {
   uni.switchTab({ url: '/pages/index/index' })
 }
 </script>
 
 <style scoped>
+.status-bar {
+  background: #1ABC9C;
+}
+
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;

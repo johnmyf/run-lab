@@ -1,5 +1,7 @@
 <template>
   <view class="page-container">
+    <!-- 状态栏占位 -->
+    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <!-- 顶栏 #E91E63 -->
     <view class="header">
       <view class="back-btn" @click="navigateBack">
@@ -152,6 +154,7 @@
 
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
+import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
 // #endif
@@ -327,6 +330,10 @@ async function shareResult() {
 
 <style scoped>
 /* 全局布局 */
+.status-bar {
+  background: #E91E63;
+}
+
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
