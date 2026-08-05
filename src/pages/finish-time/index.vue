@@ -1,6 +1,6 @@
 <template>
   <view class="page-container">
-    <!-- 顶栏 #00BCD4 -->
+    <!-- 顶栏 #E91E63 -->
     <view class="header">
       <view class="back-btn" @click="navigateBack">
         <text>←</text>
@@ -93,8 +93,8 @@
               :value="strategy"
               @changing="onStrategyChanging"
               @change="onStrategyChange"
-              activeColor="#00BCD4"
-              block-color="#00838F"
+              activeColor="#E91E63"
+              block-color="#AD1457"
               backgroundColor="#E0E0E0"
             />
             <text class="strategy-label">先快后慢</text>
@@ -337,7 +337,7 @@ async function shareResult() {
 /* 顶栏 */
 .header {
   height: 160rpx;
-  background: #00BCD4;
+  background: #E91E63;
   display: flex;
   align-items: center;
   padding: 0 30rpx;
@@ -394,8 +394,8 @@ async function shareResult() {
   color: #7F8C8D;
 }
 .distance-chip.active {
-  background: #00BCD4;
-  border-color: #00BCD4;
+  background: #E91E63;
+  border-color: #E91E63;
   color: #FFF;
 }
 
@@ -444,7 +444,7 @@ async function shareResult() {
 .calculate-btn {
   width: 100%;
   height: 88rpx;
-  background: #00BCD4;
+  background: #E91E63;
   color: #FFF;
   font-size: 32rpx;
   font-weight: bold;
@@ -453,12 +453,12 @@ async function shareResult() {
   align-items: center;
   justify-content: center;
   margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0,188,212,0.4);
+  box-shadow: 0 4rpx 12rpx rgba(233,30,99,0.4);
 }
 
 /* 完赛时间卡片 */
 .total-time-card {
-  background: #E0F7FA;
+  background: #FCE4EC;
   border-radius: 16rpx;
   padding: 30rpx;
   text-align: center;
@@ -472,7 +472,7 @@ async function shareResult() {
 .total-time-value {
   font-size: 52rpx;
   font-weight: bold;
-  color: #00BCD4;
+  color: #E91E63;
   display: block;
   margin-top: 10rpx;
 }
@@ -499,7 +499,7 @@ slider {
 }
 .strategy-hint {
   font-size: 24rpx;
-  color: #00BCD4;
+  color: #E91E63;
   text-align: center;
   display: block;
   margin-top: 10rpx;
@@ -518,8 +518,8 @@ slider {
   color: #7F8C8D;
 }
 .interval-radio.active {
-  background: #00BCD4;
-  border-color: #00BCD4;
+  background: #E91E63;
+  border-color: #E91E63;
   color: #FFF;
 }
 
@@ -534,7 +534,7 @@ slider {
 .table-header {
   display: flex;
   padding: 20rpx 30rpx;
-  background: #00BCD4;
+  background: #E91E63;
   color: #FFF;
   font-size: 28rpx;
   font-weight: bold;
@@ -558,7 +558,7 @@ slider {
   border-bottom: none;
 }
 .table-row.total-row {
-  background: #E0F7FA;
+  background: #FCE4EC;
   font-weight: bold;
 }
 .col-km {
@@ -589,7 +589,7 @@ slider {
   justify-content: center;
 }
 .btn-share {
-  background: #00BCD4;
+  background: #E91E63;
   color: #FFF;
 }
 .btn-home {
@@ -637,7 +637,7 @@ slider {
 .modal-input {
   width: 300rpx;
   height: 80rpx;
-  border: 2rpx solid #00BCD4;
+  border: 2rpx solid #E91E63;
   border-radius: 12rpx;
   font-size: 40rpx;
   text-align: center;
@@ -675,7 +675,7 @@ slider {
   color: #7F8C8D;
 }
 .modal-btn-confirm {
-  background: #00BCD4;
+  background: #E91E63;
   color: #FFF;
 }
 </style>

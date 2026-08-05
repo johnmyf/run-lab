@@ -33,16 +33,32 @@ src/
 ├── uni.scss             # uni-app 全局样式变量
 ├── data/                # 数据文件（JSON 数据表）
 │   ├── sheet5-1.json              # Jack Daniels VDOT 表
-│   └── sheet5-2.json              # 训练配速建议表
+│   ├── sheet5-2.json              # 训练配速建议表
+│   └── level.json                 # 等级查询对照数据（大众/专业等级标准）
 ├── utils/               # 通用工具函数（无 Vue 依赖）
 │   └── time.js                     # 时间/配速格式化工具
 ├── logic/               # 业务逻辑（按功能模块分类）
+│   ├── running-power/              # 跑力值计算业务逻辑
+│   │   ├── constants.js            # picker 范围、距离配置
+│   │   └── vdot.js                 # VDOT 算法（getVDOT）
 │   ├── performance-prediction/     # 成绩预测业务逻辑
 │   │   ├── constants.js            # 常量配置（subject、配速类型、说明文案）
 │   │   └── formatters.js           # 配速格式化函数
-│   └── running-power/              # 跑力值计算业务逻辑
-│       ├── constants.js            # picker 范围、距离配置
-│       └── vdot.js                 # VDOT 算法（getVDOT）
+│   ├── heart-rate/                 # 心率计算逻辑
+│   │   ├── constants.js            # 训练区间、估算方法配置
+│   │   └── calculator.js           # 最大心率估算
+│   ├── pace-calculator/            # 配速计算逻辑
+│   │   ├── constants.js            # 距离配置、分段策略、区间选项
+│   │   └── calculator.js           # 平均/分段配速计算
+│   ├── finish-time/                # 完赛时间计算逻辑
+│   │   ├── constants.js            # 配速范围配置
+│   │   └── calculator.js           # 完赛时间/分段配速计算（复用 pace-calculator）
+│   ├── level-query/                # 等级查询逻辑
+│   │   ├── constants.js            # 项目、性别、年龄组、等级配置
+│   │   └── calculator.js           # 等级判定
+│   └── cadence-stride/             # 步频步幅计算逻辑
+│       ├── constants.js            # 计算模式、输入范围配置
+│       └── calculator.js           # 配速/步频/步幅互相换算
 └── pages/               # 页面组件（必须在此目录下）
     ├── index/
     │   └── index.vue              # 首页（九宫格功能面板 + tabBar 首页）
@@ -52,12 +68,20 @@ src/
     │   └── index.vue              # 成绩预测
     ├── heart-rate/
     │   └── index.vue              # 心率计算
+    ├── pace-calculator/
+    │   └── index.vue              # 配速计算器
+    ├── finish-time/
+    │   └── index.vue              # 完赛时间计算
+    ├── level-query/
+    │   └── index.vue              # 等级查询
+    ├── cadence-stride/
+    │   └── index.vue              # 步频步幅计算
     ├── training-schedule/
-    │   └── index.vue              # 跑步课表
-    ├── forum/                     # 【已移除】交流天地（因监管趋严已停止规划）
-    │   └── index.vue              #   页面代码保留，入口/路由/样式均已注释禁用，恢复时取消注释即可
-    └── achievement/
-        └── index.vue              # 成就体系（同时也是 tabBar "我的"）
+    │   └── index.vue              # 跑步课表（开发中）
+    ├── achievement/
+    │   └── index.vue              # 成就体系（开发中，同时也是 tabBar "我的"）
+    └── forum/                     # 【已移除】交流天地（因监管趋严已停止规划）
+        └── index.vue              #   页面代码保留，入口/路由/样式均已注释禁用，恢复时取消注释即可
 ```
 
 ## 关键设计模式
@@ -66,12 +90,12 @@ src/
 1. 在 `src/pages/` 创建新目录和 `index.vue` 页面组件
 2. 在 `src/pages.json` 的 `pages` 数组中添加路由配置（设置 `navigationStyle: "custom"` 以使用自定义 header）
 3. 在 `src/pages/index/index.vue` 的 `menuItems` 数组中添加对应项（指定 id、title、icon、colorClass、path）
-4. 如需替换"待开发"占位，将对应 `menuItems` 项的 `path` 设为实际页面路径（如 `/pages/xxx/index`）
+4. 如需替换"开发中"占位（当前仅剩跑步课表、成就体系），将对应 `menuItems` 项的 `path` 设为实际页面路径（如 `/pages/xxx/index`）
 
 ### 页面组件约定
-- 所有功能页采用统一模板：顶部彩色 header（含 ← 返回按钮和居中标题）+ 居中内容区
-- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、紫 `#9B59B6`（课表）、青 `#1ABC9C`（成就）、橙 `#F39C12`（等级查询）
-- 跑力值计算页和成绩预测页已实现完整功能，其余功能页为"开发中"占位状态
+- 已实现的功能页采用表单交互模板：顶部彩色 header（含 ← 返回按钮和居中标题）+ 输入区 + 结果展示区；未实现页面为占位状态（功能图标 + "开发中"提示 + 施工动画）
+- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、青 `#00BCD4`（配速计算器）、粉 `#E91E63`（完赛时间）、橙 `#F39C12`（等级查询）、靛蓝 `#5C6BC0`（步频步幅）、紫 `#9B59B6`（课表）、蓝绿 `#1ABC9C`（成就）
+- 已实现完整功能：跑力值计算、成绩预测、心率计算、配速计算器、完赛时间计算、等级查询、步频步幅计算；开发中占位：跑步课表、成就体系
 - 页面导航使用 uni-app API：`uni.navigateTo({ url: '/pages/xxx/index' })` 跳转，`uni.navigateBack()` 返回
 
 ### uni-app 特殊约定
@@ -115,3 +139,35 @@ src/
 - **训练配速配置**: `src/logic/performance-prediction/constants.js` 中的 `TRAINING_CONFIG`、`REPEAT_PRIORITY`、`README_CONTENT`
 - **分享**: H5 平台使用 `html2canvas` 截图下载（条件编译 `#ifdef H5`），分享时隐藏三个操作按钮
 - **按钮**: 分享 / 返回首页(`uni.switchTab`) / 重新评估(`uni.navigateTo` 跑力值计算页)
+
+### 心率计算 (`src/pages/heart-rate/index.vue`)
+
+- **输入**: 年龄（10-99）、性别
+- **算法**: 三种公式估算最大心率 — 传统公式 `220-年龄`、Tanaka `208-0.7×年龄`、Gulati（区分性别），见 `src/logic/heart-rate/constants.js` 的 `METHODS`
+- **输出**: 最大心率估算结果 + 5 个训练区间（热身/燃脂/有氧耐力/乳酸阈/无氧），由 `src/logic/heart-rate/calculator.js` 计算
+
+### 配速计算器 (`src/pages/pace-calculator/index.vue`)
+
+- **输入**: 距离（5公里~马拉松，支持自定义 3~300 公里）、期望完成时间
+- **算法**: `src/logic/pace-calculator/calculator.js`
+- **输出**: 平均配速 + 按策略划分的分段配速（策略见 `constants.js` 的 `STRATEGY_CONFIG`，分段区间见 `INTERVAL_OPTIONS`）
+- **复用**: 完赛时间计算页复用其距离配置与分段计算
+
+### 完赛时间计算 (`src/pages/finish-time/index.vue`)
+
+- **输入**: 距离、平均配速（分钟/秒）
+- **算法**: `src/logic/finish-time/calculator.js`，复用配速计算器的 `DISTANCE_CONFIGS` 与分段计算
+- **输出**: 完赛时间 + 分段配速表
+
+### 等级查询 (`src/pages/level-query/index.vue`)
+
+- **数据源**: `src/data/level.json`
+- **输入**: 项目（马拉松/半程马拉松）、性别、最好成绩、年龄
+- **算法**: `src/logic/level-query/calculator.js`
+- **输出**: 成绩对应等级（大众二级 ~ 国际健将，见 `constants.js` 的 `LEVELS_LOW_TO_HIGH`；未达标返回 `NO_LEVEL_TEXT`）
+
+### 步频步幅计算 (`src/pages/cadence-stride/index.vue`)
+
+- **输入**: 三种计算模式，见 `src/logic/cadence-stride/constants.js` 的 `MODE_OPTIONS` — 由步频和步幅计算配速 / 由配速和步幅计算步频 / 由配速和步频计算步幅
+- **算法**: `src/logic/cadence-stride/calculator.js`
+- **单位**: 步频（步/分钟）、步幅（米）、配速（分/公里）

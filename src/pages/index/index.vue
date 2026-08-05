@@ -34,7 +34,7 @@ const menuItems = [
   { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
   { id: 5, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
   { id: 6, title: '等级查询', icon: '🥇', colorClass: 'orange', path: '/pages/level-query/index' },
-  { id: 7, title: '步频步幅计算', icon: '👣', colorClass: 'indigo', path: '/pages/cadence-stride/index' },
+  { id: 7, title: '步频步幅计算', icon: '👟', colorClass: 'indigo', path: '/pages/cadence-stride/index' },
   { id: 8, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
   { id: 9, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' }
 ]
