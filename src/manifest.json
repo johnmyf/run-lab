@@ -1,5 +1,5 @@
 {
-  "name": "跑研社",
+  "name": "跑研匠",
   "appid": "__UNI__XXXXXX",
   "description": "跑步工具微信小程序",
   "versionName": "1.0.0",
@@ -20,7 +20,7 @@
     "router": {
       "mode": "history"
     },
-    "title": "RunLab-跑研社",
+    "title": "跑研匠-RunLab",
     "devServer": {
       "port": 3000
     }

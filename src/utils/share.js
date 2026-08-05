@@ -7,7 +7,7 @@
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcode'
 
-/** 跑研社官网地址 */
+/** 跑研匠官网地址 */
 export const HOME_SITE = 'https://run-lab.pages.dev/'
 
 /**
@@ -76,14 +76,14 @@ export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2 
       // 图标加载失败 → 跳过，不阻塞分享
     }
 
-    // 9. 绘制 "扫码访问跑研社" 文字
+    // 9. 绘制 "扫码访问跑研匠" 文字
     const fontSize = Math.round(24 * scale)
     ctx.fillStyle = '#999999'
     ctx.font = `${fontSize}px sans-serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
     const textY = qrY + qrSize + textGap
-    ctx.fillText('扫码访问跑研社', canvasB.width / 2, textY)
+    ctx.fillText('扫码访问跑研匠', canvasB.width / 2, textY)
 
     // 10. 触发下载
     const link = document.createElement('a')

@@ -209,7 +209,7 @@ function goBack() {
 
 // #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
-  title: '成绩预测 — 跑研社',
+  title: '成绩预测 — 跑研匠',
   path: '/pages/performance-prediction/index',
 }))
 // #endif

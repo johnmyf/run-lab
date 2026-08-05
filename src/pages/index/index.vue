@@ -3,7 +3,7 @@
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <view class="header">
       <image class="header-icon" src="/static/run-lab-icon.png" mode="aspectFit" />
-      <text class="header-title">RunLab-跑研社</text>
+      <text class="header-title">跑研匠-RunLab</text>
     </view>
 
     <view class="welcome-section">
@@ -33,11 +33,11 @@ import { statusBarHeight } from '@/utils/status-bar'
 const menuItems = [
   { id: 1, title: '跑力值计算', icon: '⚡', colorClass: 'blue', path: '/pages/running-power/index' },
   { id: 2, title: '成绩预测', icon: '🏆', colorClass: 'red', path: '/pages/performance-prediction/index' },
-  { id: 3, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
-  { id: 4, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
-  { id: 5, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
-  { id: 6, title: '等级查询', icon: '🥇', colorClass: 'orange', path: '/pages/level-query/index' },
-  { id: 7, title: '步频步幅计算', icon: '👟', colorClass: 'indigo', path: '/pages/cadence-stride/index' },
+  { id: 3, title: '等级查询', icon: '🥇', colorClass: 'orange', path: '/pages/level-query/index' },
+  { id: 4, title: '步频步幅计算', icon: '👟', colorClass: 'indigo', path: '/pages/cadence-stride/index' },
+  { id: 5, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
+  { id: 6, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
+  { id: 7, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
   { id: 8, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
   { id: 9, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' }
 ]

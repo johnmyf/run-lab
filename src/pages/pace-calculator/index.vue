@@ -298,7 +298,7 @@ function scrollToTop() {
 
 // #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
-  title: '配速计算器 — 跑研社',
+  title: '配速计算器 — 跑研匠',
   path: '/pages/pace-calculator/index',
 }))
 // #endif

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-跑研社 (RunLab) — 跑步工具跨平台应用（微信小程序 + H5），采用 uni-app 框架构建，3x3 九宫格设计展示功能模块。
+跑研匠 (RunLab) — 跑步工具跨平台应用（微信小程序 + H5），采用 uni-app 框架构建，3x3 九宫格设计展示功能模块。
 
 ## 技术栈
 

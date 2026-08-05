@@ -223,7 +223,7 @@ function goHome() { uni.switchTab({ url: '/pages/index/index' }) }
 
 // #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
-  title: '步频步幅计算 — 跑研社',
+  title: '步频步幅计算 — 跑研匠',
   path: '/pages/cadence-stride/index',
 }))
 // #endif

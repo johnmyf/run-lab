@@ -304,7 +304,7 @@ function scrollToTop() {
 
 // #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
-  title: '完赛时间计算 — 跑研社',
+  title: '完赛时间计算 — 跑研匠',
   path: '/pages/finish-time/index',
 }))
 // #endif

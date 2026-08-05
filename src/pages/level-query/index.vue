@@ -229,7 +229,7 @@ function goHome() {
 
 // #ifdef MP-WEIXIN
 onShareAppMessage(() => ({
-  title: '等级查询 — 跑研社',
+  title: '等级查询 — 跑研匠',
   path: '/pages/level-query/index',
 }))
 // #endif
