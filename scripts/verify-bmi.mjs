@@ -47,9 +47,18 @@ for (const [label, list] of lists) {
   }
 }
 
+// 跑者层级 visible 契约：首档（需注意身体健康）不展示，其余档展示（adult 无 visible 字段，不适用）
+for (const [label, list] of lists) {
+  if (label === 'adult' || !Array.isArray(list) || list.length === 0) continue
+  assert(list[0]?.visible === false, `${label} 首档 visible 应为 false`)
+  assert(list.slice(1).every(c => c.visible === true), `${label} 其余档 visible 应为 true`)
+}
+
 // adult 半开语义的交接检查：除首档外，各档 min 即上一档 max（成人相邻不重叠）
-for (let i = 1; i < data.adult.length; i++) {
-  assert(data.adult[i].min === data.adult[i - 1].max, `adult 第${i}档 min 应等于第${i-1}档 max`)
+if (Array.isArray(data.adult)) {
+  for (let i = 1; i < data.adult.length; i++) {
+    assert(data.adult[i].min === data.adult[i - 1].max, `adult 第${i}档 min 应等于第${i-1}档 max`)
+  }
 }
 
 // ===================== 算法测试 =====================

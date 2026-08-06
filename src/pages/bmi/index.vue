@@ -48,7 +48,7 @@
       </view>
 
       <!-- 结果卡（计算后显示） -->
-      <view class="card" v-if="calculated">
+      <view class="card" v-if="calculated && adultStatus && runnerLevel">
         <view class="result-row">
           <text class="result-bmi">{{ bmi.toFixed(1) }}</text>
           <text class="result-bmi-unit">BMI</text>
@@ -64,7 +64,7 @@
       </view>
 
       <!-- 横轴图形区（计算后显示） -->
-      <view class="card" v-if="calculated">
+      <view class="card" v-if="calculated && adultStatus && runnerLevel">
         <text class="card-title">身体状态</text>
         <HeatmapBar
           :categories="adult"
@@ -159,6 +159,8 @@ function calculate() {
 }
 
 function doCalculate(w = parseFloat(weight.value), h = parseFloat(height.value)) {
+  // 双保险守卫：输入非法（含被清空后的 NaN）时直接返回，不更新任何结果状态
+  if (!isFinite(w) || w <= 0 || !isFinite(h) || h <= 0) return
   bmi.value = calcBMI(w, h)
   adultStatus.value = findAdultStatus(bmi.value, adult)
   runnerLevel.value = findRunnerLevel(bmi.value, gender.value, runnerLevels)
