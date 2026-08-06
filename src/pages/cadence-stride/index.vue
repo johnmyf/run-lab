@@ -221,7 +221,7 @@ function onPaceChange(e) {
 function navigateBack() { uni.navigateBack() }
 function goHome() { uni.switchTab({ url: '/pages/index/index' }) }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '步频步幅计算 — 跑研匠',
   path: '/pages/cadence-stride/index',

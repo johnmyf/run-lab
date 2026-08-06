@@ -227,7 +227,7 @@ function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
 }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '等级查询 — 跑研匠',
   path: '/pages/level-query/index',

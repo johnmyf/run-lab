@@ -302,7 +302,7 @@ function scrollToTop() {
   uni.pageScrollTo({ scrollTop: 0, duration: 300 })
 }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '完赛时间计算 — 跑研匠',
   path: '/pages/finish-time/index',

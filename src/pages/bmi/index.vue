@@ -211,7 +211,7 @@ function goUnderstanding() {
   uni.navigateTo({ url: '/pages/bmi/understanding/index' })
 }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '体重建议 — 跑研匠',
   path: '/pages/bmi/index',

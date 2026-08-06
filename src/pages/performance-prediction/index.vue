@@ -207,7 +207,7 @@ function goBack() {
   uni.navigateBack()
 }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '成绩预测 — 跑研匠',
   path: '/pages/performance-prediction/index',

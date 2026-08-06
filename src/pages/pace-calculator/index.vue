@@ -296,7 +296,7 @@ function scrollToTop() {
   uni.pageScrollTo({ scrollTop: 0, duration: 300 })
 }
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '配速计算器 — 跑研匠',
   path: '/pages/pace-calculator/index',
