@@ -87,12 +87,15 @@
       <!-- 说明区（始终显示） -->
       <view class="card">
         <view class="bmi-intro">
-          <text
-            v-for="(seg, i) in introSegs"
-            :key="i"
-            :class="{ bold: seg.bold }"
-            user-select
-          >{{ seg.text }}</text>
+          <text class="intro-prefix">说明：</text>
+          <view class="intro-content">
+            <text
+              v-for="(seg, i) in introSegs"
+              :key="i"
+              :class="{ bold: seg.bold }"
+              user-select
+            >{{ seg.text }}</text>
+          </view>
         </view>
         <text class="understanding-link" @click="goUnderstanding">跑者如何理解 BMI（身体质量指数）</text>
       </view>
@@ -418,6 +421,15 @@ async function shareResult() {
   color: #555;
   font-size: 26rpx;
   line-height: 1.7;
+}
+.intro-prefix {
+  display: block;
+  font-weight: bold;
+  color: #2C3E50;
+}
+.intro-content {
+  padding-left: 56rpx;
+  margin-top: 8rpx;
 }
 .bold {
   font-weight: bold;
