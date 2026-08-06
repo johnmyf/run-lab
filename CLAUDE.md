@@ -34,7 +34,8 @@ src/
 ├── data/                # 数据文件（JSON 数据表）
 │   ├── sheet5-1.json              # Jack Daniels VDOT 表
 │   ├── sheet5-2.json              # 训练配速建议表
-│   └── level.json                 # 等级查询对照数据（大众/专业等级标准）
+│   ├── level.json                 # 等级查询对照数据（大众/专业等级标准）
+│   └── bmi.json                   # 体重建议分类数据（成人状态/跑者层级，含颜色）
 ├── utils/               # 通用工具函数（无 Vue 依赖）
 │   └── time.js                     # 时间/配速格式化工具
 ├── logic/               # 业务逻辑（按功能模块分类）
@@ -56,9 +57,13 @@ src/
 │   ├── level-query/                # 等级查询逻辑
 │   │   ├── constants.js            # 项目、性别、年龄组、等级配置
 │   │   └── calculator.js           # 等级判定
-│   └── cadence-stride/             # 步频步幅计算逻辑
-│       ├── constants.js            # 计算模式、输入范围配置
-│       └── calculator.js           # 配速/步频/步幅互相换算
+│   ├── cadence-stride/             # 步频步幅计算逻辑
+│   │   ├── constants.js            # 计算模式、输入范围配置
+│   │   └── calculator.js           # 配速/步频/步幅互相换算
+│   └── bmi/                        # 体重建议计算逻辑
+│       ├── constants.js            # 输入默认值、横轴范围、说明文案
+│       ├── calculator.js           # BMI 计算/成人状态/跑者层级/横轴分段
+│       └── understanding.js        # 说明页结构化内容（UNDERSTANDING_SECTIONS）
 └── pages/               # 页面组件（必须在此目录下）
     ├── index/
     │   └── index.vue              # 首页（九宫格功能面板 + tabBar 首页）
@@ -76,10 +81,16 @@ src/
     │   └── index.vue              # 等级查询
     ├── cadence-stride/
     │   └── index.vue              # 步频步幅计算
+    ├── bmi/
+    │   ├── index.vue              # 体重建议计算
+    │   ├── understanding/
+    │   │   └── index.vue          # 跑者如何理解 BMI 说明页
+    │   └── components/
+    │       └── heatmap-bar.vue    # 横轴热力图组件（百度式彩色分段条）
     ├── training-schedule/
     │   └── index.vue              # 跑步课表（开发中）
     ├── achievement/
-    │   └── index.vue              # 成就体系（开发中，同时也是 tabBar "我的"）
+    │   └── index.vue              # 成就体系（开发中，tabBar「我的」入口，已从九宫格移除）
     └── forum/                     # 【已移除】交流天地（因监管趋严已停止规划）
         └── index.vue              #   页面代码保留，入口/路由/样式均已注释禁用，恢复时取消注释即可
 ```
@@ -90,12 +101,12 @@ src/
 1. 在 `src/pages/` 创建新目录和 `index.vue` 页面组件
 2. 在 `src/pages.json` 的 `pages` 数组中添加路由配置（设置 `navigationStyle: "custom"` 以使用自定义 header）
 3. 在 `src/pages/index/index.vue` 的 `menuItems` 数组中添加对应项（指定 id、title、icon、colorClass、path）
-4. 如需替换"开发中"占位（当前仅剩跑步课表、成就体系），将对应 `menuItems` 项的 `path` 设为实际页面路径（如 `/pages/xxx/index`）
+4. 如需替换"开发中"占位（当前仅剩跑步课表），将对应 `menuItems` 项的 `path` 设为实际页面路径（如 `/pages/xxx/index`）
 
 ### 页面组件约定
 - 已实现的功能页采用表单交互模板：顶部彩色 header（含 ← 返回按钮和居中标题）+ 输入区 + 结果展示区；未实现页面为占位状态（功能图标 + "开发中"提示 + 施工动画）
-- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、绿 `#2ECC71`（心率）、青 `#00BCD4`（配速计算器）、粉 `#E91E63`（完赛时间）、橙 `#F39C12`（等级查询）、靛蓝 `#5C6BC0`（步频步幅）、紫 `#9B59B6`（课表）、蓝绿 `#1ABC9C`（成就）
-- 已实现完整功能：跑力值计算、成绩预测、心率计算、配速计算器、完赛时间计算、等级查询、步频步幅计算；开发中占位：跑步课表、成就体系
+- header 颜色与首页九宫格颜色对应：蓝 `#3498DB`（跑力值）、红 `#E74C3C`（成绩预测）、橙 `#F39C12`（等级查询）、靛蓝 `#5C6BC0`（步频步幅）、青 `#00BCD4`（配速计算器）、粉 `#E91E63`（完赛时间）、绿 `#2ECC71`（心率）、蓝绿 `#1ABC9C`（体重建议）、紫 `#9B59B6`（课表）
+- 已实现完整功能：跑力值计算、成绩预测、等级查询、步频步幅计算、配速计算器、完赛时间计算、心率计算、体重建议；开发中占位：跑步课表（成就体系已从九宫格移除，仅保留 tabBar「我的」入口）
 - 页面导航使用 uni-app API：`uni.navigateTo({ url: '/pages/xxx/index' })` 跳转，`uni.navigateBack()` 返回
 
 ### uni-app 特殊约定
@@ -171,3 +182,16 @@ src/
 - **输入**: 三种计算模式，见 `src/logic/cadence-stride/constants.js` 的 `MODE_OPTIONS` — 由步频和步幅计算配速 / 由配速和步幅计算步频 / 由配速和步频计算步幅
 - **算法**: `src/logic/cadence-stride/calculator.js`
 - **单位**: 步频（步/分钟）、步幅（米）、配速（分/公里）
+
+### 体重建议 (`src/pages/bmi/index.vue`)
+
+- **数据源**: `src/data/bmi.json` — 成人身体状态 4 档（偏瘦/正常/偏胖/肥胖）+ 跑者层级 5 档（区分性别：需注意身体健康/世界顶尖精英/大众精英/健康完赛/新手），每档含 `min`/`max`/`color`/`visible`
+- **输入**: 体重（kg）、身高（cm）、性别（男/女）
+- **算法**: `src/logic/bmi/calculator.js`
+  - `calcBMI(weightKg, heightCm)` 计算 BMI（保留 1 位小数）
+  - `findAdultStatus(bmi, adultData)` 成人状态判定 — min 闭区间、max 开区间 `[min, max)`
+  - `findRunnerLevel(bmi, gender, runnerData)` 跑者层级判定 — 闭区间 + 重叠取更高级 + 首档严格小于兜底
+  - `getSegments()` / `getBoundaryWeights()` / `getMarkerPosition()` 供横轴热力图渲染
+- **横轴组件**: `src/pages/bmi/components/heatmap-bar.vue` — 百度式彩色分段条，含临界 BMI + 对应体重交界标签、当前值黑色三角形标记、按占比分段渲染（`visible === false` 的档不显示）
+- **说明页**: `src/pages/bmi/understanding/index.vue` — 「跑者如何理解 BMI」，内容由 `src/logic/bmi/understanding.js` 的 `UNDERSTANDING_SECTIONS` 结构化定义（`h2`/`h3`/`p`/`table`/`list`/`divider` 六种类型，`**加粗**` 由 `parseBold()` 解析）
+- **header 颜色**: 蓝绿 teal `#1ABC9C`（对应首页九宫格第 8 格）
