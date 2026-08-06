@@ -28,8 +28,16 @@
       ></view>
     </view>
 
-    <!-- 分类名标签 -->
-    <view class="cat-labels">
+    <!-- 图例表格（长名称防截断，跑者层级用） -->
+    <view v-if="tableLegend" class="legend-table">
+      <view v-for="(seg, i) in segments" :key="i" class="legend-row">
+        <view class="legend-swatch" :style="{ background: seg.cat.color }"></view>
+        <text class="legend-name">{{ seg.cat.name }}</text>
+      </view>
+    </view>
+
+    <!-- 分类名标签（短名称，体重状态用） -->
+    <view v-else class="cat-labels">
       <text
         v-for="(seg, i) in segments"
         :key="i"
@@ -49,6 +57,8 @@ const props = defineProps({
   axis: { type: Array, required: true },       // [min, max]
   currentBmi: { type: Number, required: true },
   heightCm: { type: Number, required: true },
+  /** true 时用下方图例表格（色块+完整名称）替代分段下的分类名标签，避免长名称截断 */
+  tableLegend: { type: Boolean, default: false },
 })
 
 const axisMin = computed(() => props.axis[0])
@@ -140,5 +150,34 @@ function segWidth(seg) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 图例表格（2 列：色块 + 完整名称） */
+.legend-table {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+  border: 2rpx solid #f0f0f0;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+.legend-row {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  padding: 12rpx 20rpx;
+  box-sizing: content-box;
+}
+.legend-swatch {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 8rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+.legend-name {
+  font-size: 24rpx;
+  color: #555;
+  white-space: nowrap;
 }
 </style>

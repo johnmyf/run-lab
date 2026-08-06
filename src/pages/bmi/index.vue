@@ -53,19 +53,21 @@
           <text class="result-bmi">{{ bmi.toFixed(1) }}</text>
           <text class="result-bmi-unit">BMI</text>
         </view>
-        <view class="result-line">
-          <text class="result-label">身体状态:</text>
-          <text class="result-value">{{ adultStatus.name }}</text>
-        </view>
-        <view class="result-line">
-          <text class="result-label">跑者层级:</text>
-          <text class="result-value">{{ runnerLevel.name }}</text>
+        <view class="result-table">
+          <view class="result-line">
+            <text class="result-label">体重状态:</text>
+            <text class="result-value">{{ weightStatusText }}</text>
+          </view>
+          <view class="result-line">
+            <text class="result-label">跑者层级:</text>
+            <text class="result-value">{{ runnerLevel.name }}</text>
+          </view>
         </view>
       </view>
 
       <!-- 横轴图形区（计算后显示） -->
       <view class="card" v-if="calculated && adultStatus && runnerLevel">
-        <text class="card-title">身体状态</text>
+        <text class="card-title">体重状态</text>
         <HeatmapBar
           :categories="adult"
           :axis="ADULT_AXIS"
@@ -78,6 +80,7 @@
           :axis="RUNNER_AXIS"
           :current-bmi="bmi"
           :height-cm="heightNum"
+          table-legend
         />
       </view>
 
@@ -130,6 +133,7 @@ const sharing = ref(false)
 const bmi = ref(0)
 const adultStatus = ref(null)
 const runnerLevel = ref(null)
+const weightNum = ref(DEFAULT_WEIGHT) // 需减重推算用（体重数值）
 const heightNum = ref(DEFAULT_HEIGHT) // 横轴体重推算用（身高数值）
 
 // ==================== 数据引用 ====================
@@ -138,6 +142,23 @@ const runnerLevels = bmiData.runnerLevels
 
 /** BMI 说明文案加粗分段 */
 const introSegs = computed(() => parseBold(BMI_INTRO))
+
+/** 正常档上临界 BMI（来自数据，即 24.0），用于推算正常临界体重 */
+const NORMAL_MAX_BMI = adult.find(c => c.name === '正常')?.max ?? 24
+
+/** 体重状态超出正常范围需减掉的公斤数（向上取整） */
+const needLoseKg = computed(() => {
+  const name = adultStatus.value?.name
+  if (!name || (name !== '偏胖' && name !== '肥胖')) return 0
+  const target = NORMAL_MAX_BMI * (heightNum.value / 100) ** 2
+  return Math.max(0, Math.ceil(weightNum.value - target))
+})
+
+/** 体重状态显示文本（偏胖/肥胖时附加需减重提示） */
+const weightStatusText = computed(() => {
+  const name = adultStatus.value?.name ?? ''
+  return needLoseKg.value > 0 ? `${name}(需减掉${needLoseKg.value}公斤)` : name
+})
 
 // ==================== 事件 ====================
 function onWeightInput(e) { weight.value = e.detail.value }
@@ -164,6 +185,7 @@ function doCalculate(w = parseFloat(weight.value), h = parseFloat(height.value))
   bmi.value = calcBMI(w, h)
   adultStatus.value = findAdultStatus(bmi.value, adult)
   runnerLevel.value = findRunnerLevel(bmi.value, gender.value, runnerLevels)
+  weightNum.value = w
   heightNum.value = h
   calculated.value = true
 }
@@ -366,20 +388,29 @@ async function shareResult() {
   font-size: 32rpx;
   font-weight: bold;
 }
+.result-table {
+  margin-top: 8rpx;
+}
 .result-line {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  padding: 10rpx 0;
+  padding: 12rpx 0;
 }
 .result-label {
   color: #555;
   font-size: 28rpx;
+  width: 170rpx;
+  text-align: right;
+  margin-right: 24rpx;
+  flex-shrink: 0;
 }
 .result-value {
   color: #2C3E50;
   font-size: 28rpx;
   font-weight: bold;
+  text-align: left;
+  min-width: 200rpx;
 }
 
 /* 说明区 */

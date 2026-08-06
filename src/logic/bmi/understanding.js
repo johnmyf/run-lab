@@ -41,7 +41,7 @@ export const UNDERSTANDING_SECTIONS = [
     ]
   },
   { type: 'p', text: '这些分类是为一般健康设计的，并非针对运动表现。' },
-  { type: 'p', text: '注：以上为 WHO 通用分类；本应用「体重建议」的成人身体状态采用中国参考标准（BMI ≥ 24.0 即判定为偏胖），两套口径略有差异。' },
+  { type: 'p', text: '注：以上为 WHO 通用分类；本应用「体重建议」的成人体重状态采用中国参考标准（BMI ≥ 24.0 即判定为偏胖），两套口径略有差异。' },
   { type: 'divider' },
   { type: 'h2', text: 'BMI 与跑步表现' },
   { type: 'h3', text: '为什么体重对跑步很重要' },

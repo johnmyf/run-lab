@@ -185,7 +185,7 @@ src/
 
 ### 体重建议 (`src/pages/bmi/index.vue`)
 
-- **数据源**: `src/data/bmi.json` — 成人身体状态 4 档（偏瘦/正常/偏胖/肥胖）+ 跑者层级 5 档（区分性别：需注意身体健康/世界顶尖精英/大众精英/健康完赛/新手），每档含 `min`/`max`/`color`/`visible`
+- **数据源**: `src/data/bmi.json` — 成人体重状态 4 档（偏瘦/正常/偏胖/肥胖）+ 跑者层级 5 档（区分性别：需注意身体健康/世界顶尖精英/大众精英/健康完赛/新手），每档含 `min`/`max`/`color`/`visible`
 - **输入**: 体重（kg）、身高（cm）、性别（男/女）
 - **算法**: `src/logic/bmi/calculator.js`
   - `calcBMI(weightKg, heightCm)` 计算 BMI（保留 1 位小数）

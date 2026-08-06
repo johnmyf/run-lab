@@ -15,7 +15,7 @@ export function calcBMI(weightKg, heightCm) {
 }
 
 /**
- * 成人身体状态判定：min 闭区间、max 开区间（[min, max)），按数组顺序返回首个命中
+ * 成人体重状态判定：min 闭区间、max 开区间（[min, max)），按数组顺序返回首个命中
  * @param {number} bmi
  * @param {Array} adultData - bmi.json 的 adult 数组
  * @returns {Object|null} 命中档（含 name/color）
