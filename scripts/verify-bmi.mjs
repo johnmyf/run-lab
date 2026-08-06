@@ -116,6 +116,21 @@ assert(segsMale[0].start === 14 && segsMale[0].end === 17, '男 seg0 [14,17]')
 assert(segsMale[3].start === 21.5 && segsMale[3].end === 23.5, '男 seg3 [21.5,23.5]')
 assert(segsMale[4].start === 23.5 && segsMale[4].end === 30, '男 seg4 [23.5,30]')
 
+// ===================== 说明页内容结构 =====================
+const { UNDERSTANDING_SECTIONS } = await import('../src/logic/bmi/understanding.js')
+const VALID_TYPES = ['h2', 'h3', 'p', 'table', 'list', 'divider']
+assert(Array.isArray(UNDERSTANDING_SECTIONS) && UNDERSTANDING_SECTIONS.length > 0, 'UNDERSTANDING_SECTIONS 应为非空数组')
+UNDERSTANDING_SECTIONS.forEach((sec, i) => {
+  assert(VALID_TYPES.includes(sec.type), `understanding[${i}] 非法类型: ${sec.type}`)
+  if (sec.type === 'p') assert(typeof sec.text === 'string' && sec.text, `understanding[${i}] p 缺 text`)
+  if (sec.type === 'h2' || sec.type === 'h3') assert(typeof sec.text === 'string' && sec.text, `understanding[${i}] 标题缺 text`)
+  if (sec.type === 'table') {
+    assert(Array.isArray(sec.headers) && sec.headers.length > 0, `understanding[${i}] table 缺 headers`)
+    assert(Array.isArray(sec.rows) && sec.rows.every(r => Array.isArray(r) && r.length === sec.headers.length), `understanding[${i}] table 行数与表头不符`)
+  }
+  if (sec.type === 'list') assert(Array.isArray(sec.items) && sec.items.length > 0, `understanding[${i}] list 缺 items`)
+})
+
 if (errors.length) {
   console.error('校验失败:')
   errors.forEach(e => console.error(' - ' + e))
