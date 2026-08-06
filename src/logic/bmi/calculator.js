@@ -42,7 +42,7 @@ export function findRunnerLevel(bmi, gender, runnerData) {
   }
   const first = levels[0]
   if (first.max !== null && bmi < first.max) return first
-  return first
+  return null
 }
 
 /**

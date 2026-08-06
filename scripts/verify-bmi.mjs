@@ -52,11 +52,6 @@ for (let i = 1; i < data.adult.length; i++) {
   assert(data.adult[i].min === data.adult[i - 1].max, `adult 第${i}档 min 应等于第${i-1}档 max`)
 }
 
-if (errors.length) {
-  console.error('校验失败:')
-  errors.forEach(e => console.error(' - ' + e))
-  process.exit(1)
-}
 // ===================== 算法测试 =====================
 function eq(actual, expected, msg) {
   assert(actual === expected, `${msg}: 期望 ${expected}, 实际 ${actual}`)
@@ -121,4 +116,9 @@ assert(segsMale[0].start === 14 && segsMale[0].end === 17, '男 seg0 [14,17]')
 assert(segsMale[3].start === 21.5 && segsMale[3].end === 23.5, '男 seg3 [21.5,23.5]')
 assert(segsMale[4].start === 23.5 && segsMale[4].end === 30, '男 seg4 [23.5,30]')
 
+if (errors.length) {
+  console.error('校验失败:')
+  errors.forEach(e => console.error(' - ' + e))
+  process.exit(1)
+}
 console.log('✅ bmi.json 结构校验通过')
