@@ -3,7 +3,7 @@
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
     <view class="header">
       <image class="header-icon" src="/static/run-lab-icon.png" mode="aspectFit" />
-      <text class="header-title">跑研匠-RunLab</text>
+      <text class="header-title">跑研匠</text>
     </view>
 
     <view class="welcome-section">
