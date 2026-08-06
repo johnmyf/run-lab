@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-跑研匠 (RunLab) — 跑步工具跨平台应用（微信小程序 + H5），采用 uni-app 框架构建，3x3 九宫格设计展示功能模块。
+跑研匠 (RunLab) — 跑步工具跨平台应用（微信 / 抖音 / QQ / 快手小程序 + H5），采用 uni-app 框架构建，3x3 九宫格设计展示功能模块。
 
 ## 技术栈
 
 - uni-app 3.0 (基于 Vue 3, Composition API, `<script setup>`)
 - Vite 5.2 (开发服务器，H5 模式默认端口由 Vite 自动分配)
-- 微信小程序 + H5 双平台
+- 微信 / 抖音 / QQ / 快手小程序 + H5
 
 ## 常用命令
 
@@ -18,8 +18,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm install              # 安装依赖
 npm run dev:h5           # 启动 H5 网页开发服务器
 npm run dev:mp-weixin    # 启动微信小程序开发模式（需用微信开发者工具导入 dist/dev/mp-weixin）
+npm run dev:mp-toutiao   # 启动抖音小程序开发模式(用抖音开发者工具导入 dist/dev/mp-toutiao)
+npm run dev:mp-qq        # 启动 QQ 小程序开发模式(用 QQ 开发者工具导入 dist/dev/mp-qq)
+npm run dev:mp-kuaishou  # 启动快手小程序开发模式(用快手开发者工具导入 dist/dev/mp-kuaishou)
 npm run build:h5         # H5 生产构建
 npm run build:mp-weixin  # 微信小程序生产构建
+npm run build:mp-toutiao # 抖音小程序生产构建
+npm run build:mp-qq      # QQ 小程序生产构建
+npm run build:mp-kuaishou# 快手小程序生产构建
 ```
 
 ## 架构概览
@@ -37,7 +43,8 @@ src/
 │   ├── level.json                 # 等级查询对照数据（大众/专业等级标准）
 │   └── bmi.json                   # 体重建议分类数据（成人状态/跑者层级，含颜色）
 ├── utils/               # 通用工具函数（无 Vue 依赖）
-│   └── time.js                     # 时间/配速格式化工具
+│   ├── time.js                     # 时间/配速格式化工具
+│   └── hide-native-tab-bar.js      # QQ/快手端隐藏原生 tabBar 工具（仅这两端编译）
 ├── logic/               # 业务逻辑（按功能模块分类）
 │   ├── running-power/              # 跑力值计算业务逻辑
 │   │   ├── constants.js            # picker 范围、距离配置

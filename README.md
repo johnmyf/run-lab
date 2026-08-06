@@ -4,7 +4,7 @@ RunLab
 跑研匠
 # 跑步工具跨平台应用
 
-基于 uni-app 框架构建的跑步工具应用，同时支持微信小程序和 H5 网页双平台。采用 3x3 九宫格设计，可灵活扩展功能模块。
+基于 uni-app 框架构建的跑步工具应用，同时支持微信、抖音、QQ、快手小程序和 H5 网页五端。采用 3x3 九宫格设计，可灵活扩展功能模块。
 
 ## 产品介绍（面向用户）
 
@@ -100,7 +100,7 @@ RunLab
 |------|------|
 | 框架 | uni-app 3.0 (基于 Vue 3 Composition API) |
 | 构建工具 | Vite 5.2 |
-| 平台支持 | 微信小程序 + H5 网页 |
+| 平台支持 | 微信 / 抖音 / QQ / 快手小程序 + H5 网页 |
 | 样式 | rpx 响应式单位 + SCSS |
 | 语言 | JavaScript (ES Module) |
 
@@ -187,14 +187,30 @@ npm run build:mp-weixin
 
 构建产物输出到 `dist/build/mp-weixin` 目录，可直接上传发布。
 
+### 抖音 / QQ / 快手小程序生产构建
+
+```bash
+npm run build:mp-toutiao   # 抖音:产物在 dist/build/mp-toutiao,用抖音开发者工具导入
+npm run build:mp-qq        # QQ:产物在 dist/build/mp-qq,用 QQ 开发者工具导入
+npm run build:mp-kuaishou  # 快手:产物在 dist/build/mp-kuaishou,用快手开发者工具导入
+```
+
+三个平台构建前需在 `src/manifest.json` 对应平台段填入真实 appid（当前为占位符 `__UNI__XXXXXX`）。分享能力需在各平台开发者后台开通；QQ/快手端底部 tabBar 由运行时隐藏原生栏实现。
+
 ### 可用脚本一览
 
 | 命令 | 说明 |
 |------|------|
 | `npm run dev:h5` | H5 开发服务器 |
 | `npm run dev:mp-weixin` | 微信小程序开发模式 |
+| `npm run dev:mp-toutiao` | 抖音小程序开发模式 |
+| `npm run dev:mp-qq` | QQ 小程序开发模式 |
+| `npm run dev:mp-kuaishou` | 快手小程序开发模式 |
 | `npm run build:h5` | H5 生产构建 |
 | `npm run build:mp-weixin` | 微信小程序生产构建 |
+| `npm run build:mp-toutiao` | 抖音小程序生产构建 |
+| `npm run build:mp-qq` | QQ 小程序生产构建 |
+| `npm run build:mp-kuaishou` | 快手小程序生产构建 |
 
 ## 设计稿
 
