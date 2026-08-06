@@ -16,6 +16,31 @@
     "usingComponents": true,
     "lazyCodeLoading": "requiredComponents"
   },
+  "mp-toutiao": {
+    "appid": "__UNI__XXXXXX",
+    "setting": {
+      "urlCheck": true,
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    }
+  },
+  "mp-qq": {
+    "appid": "__UNI__XXXXXX",
+    "setting": {
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    }
+  },
+  "mp-kuaishou": {
+    "appid": "__UNI__XXXXXX",
+    "setting": {
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    }
+  },
   "h5": {
     "router": {
       "mode": "history"
