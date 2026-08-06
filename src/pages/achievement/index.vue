@@ -32,6 +32,12 @@ import { statusBarHeight } from '@/utils/status-bar'
 import CustomTabBar from '@/custom-tab-bar/index.vue'
 // #endif
 
+// #ifdef MP-QQ || MP-KUAISHOU
+import { onShow } from '@dcloudio/uni-app'
+import { hideNativeTabBar } from '@/utils/hide-native-tab-bar'
+onShow(() => { hideNativeTabBar() })
+// #endif
+
 const goBack = () => {
   uni.switchTab({ url: '/pages/index/index' })
 }

@@ -38,6 +38,12 @@ import { statusBarHeight } from '@/utils/status-bar'
 import CustomTabBar from '@/custom-tab-bar/index.vue'
 // #endif
 
+// #ifdef MP-QQ || MP-KUAISHOU
+import { onShow } from '@dcloudio/uni-app'
+import { hideNativeTabBar } from '@/utils/hide-native-tab-bar'
+onShow(() => { hideNativeTabBar() })
+// #endif
+
 const menuItems = [
   { id: 1, title: '跑力值计算', icon: '⚡', colorClass: 'blue', path: '/pages/running-power/index' },
   { id: 2, title: '成绩预测', icon: '🏆', colorClass: 'red', path: '/pages/performance-prediction/index' },
