@@ -66,6 +66,18 @@
       "style": {
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/bmi/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/bmi/understanding/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

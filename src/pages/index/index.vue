@@ -46,8 +46,8 @@ const menuItems = [
   { id: 5, title: '配速计算器', icon: '⏱️', colorClass: 'cyan', path: '/pages/pace-calculator/index' },
   { id: 6, title: '完赛时间计算', icon: '🏁', colorClass: 'pink', path: '/pages/finish-time/index' },
   { id: 7, title: '心率计算', icon: '❤️', colorClass: 'green', path: '/pages/heart-rate/index' },
-  { id: 8, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' },
-  { id: 9, title: '成就体系', icon: '🏅', colorClass: 'teal', path: '/pages/achievement/index' }
+  { id: 8, title: '体重建议', icon: '⚖️', colorClass: 'teal', path: '/pages/bmi/index' },
+  { id: 9, title: '跑步课表', icon: '📅', colorClass: 'purple', path: '/pages/training-schedule/index' }
 ]
 
 const goToPage = (item) => {
