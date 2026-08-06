@@ -1,0 +1,24 @@
+{
+  "adult": [
+    { "name": "偏瘦", "min": null,  "max": 18.5, "color": "#FFB6C1" },
+    { "name": "正常", "min": 18.5,  "max": 24.0, "color": "#2ECC71" },
+    { "name": "偏胖", "min": 24.0,  "max": 28.0, "color": "#F1C40F" },
+    { "name": "肥胖", "min": 28.0,  "max": null, "color": "#8B0000" }
+  ],
+  "runnerLevels": {
+    "男": [
+      { "name": "需注意身体健康",   "min": null, "max": 17.0, "color": "#95A5A6", "visible": false },
+      { "name": "世界顶尖精英",   "min": 17.0, "max": 19.0, "color": "#FFB6C1", "visible": true },
+      { "name": "大众精英/严肃跑者", "min": 19.0, "max": 21.5, "color": "#2ECC71", "visible": true },
+      { "name": "健康完赛跑者",     "min": 21.0, "max": 23.5, "color": "#F1C40F", "visible": true },
+      { "name": "新手/健身跑者",    "min": 23.0, "max": null, "color": "#87CEEB", "visible": true }
+    ],
+    "女": [
+      { "name": "需注意身体健康",   "min": null, "max": 16.5, "color": "#95A5A6", "visible": false },
+      { "name": "世界顶尖精英",   "min": 16.5, "max": 18.5, "color": "#FFB6C1", "visible": true },
+      { "name": "大众精英/严肃跑者", "min": 18.0, "max": 20.5, "color": "#2ECC71", "visible": true },
+      { "name": "健康完赛跑者",     "min": 20.0, "max": 22.5, "color": "#F1C40F", "visible": true },
+      { "name": "新手/健身跑者",    "min": 22.5, "max": null, "color": "#87CEEB", "visible": true }
+    ]
+  }
+}
