@@ -27,7 +27,7 @@ export const PAGE_TITLE = '体重建议'
 export const SHARE_PREFIX = '体重建议'
 
 /** BMI 说明文案（含 **加粗** 标记，由 parseBold 解析） */
-export const BMI_INTRO = '说明: BMI（英文全称Body Mass Index，中文名称**身体质量指数**）：是衡量人体胖瘦程度以及是否健康的一个常用指标。'
+export const BMI_INTRO = '说明：BMI全称Body Mass Index，中文为**身体质量指数**，是衡量人体胖瘦程度以及是否健康的一个常用指标。'
 
 /** 说明页链接文案 */
 export const UNDERSTANDING_LINK_TEXT = '跑者如何理解 BMI（身体质量指数）'
