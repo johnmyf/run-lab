@@ -197,6 +197,8 @@ npm run build:mp-kuaishou  # 快手:产物在 dist/build/mp-kuaishou,用快手�
 
 三个平台构建前需在 `src/manifest.json` 对应平台段填入真实 appid（当前为占位符 `__UNI__XXXXXX`）。分享能力需在各平台开发者后台开通；QQ/快手端底部 tabBar 由运行时隐藏原生栏实现。
 
+注意:QQ/快手小程序不支持 pages.json 的 `custom` 配置,采用运行时隐藏原生 tabBar,首次进入页面时原生栏可能闪现一瞬,属正常现象。
+
 ### 可用脚本一览
 
 | 命令 | 说明 |

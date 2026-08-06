@@ -6,6 +6,9 @@
  */
 // #ifdef MP-QQ || MP-KUAISHOU
 export function hideNativeTabBar() {
-  uni.hideTabBar({ animation: false })
+  uni.hideTabBar({
+    animation: false,
+    fail: () => {},
+  })
 }
 // #endif

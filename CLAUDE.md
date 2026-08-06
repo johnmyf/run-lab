@@ -22,10 +22,10 @@ npm run dev:mp-toutiao   # 启动抖音小程序开发模式(用抖音开发者�
 npm run dev:mp-qq        # 启动 QQ 小程序开发模式(用 QQ 开发者工具导入 dist/dev/mp-qq)
 npm run dev:mp-kuaishou  # 启动快手小程序开发模式(用快手开发者工具导入 dist/dev/mp-kuaishou)
 npm run build:h5         # H5 生产构建
-npm run build:mp-weixin  # 微信小程序生产构建
 npm run build:mp-toutiao # 抖音小程序生产构建
 npm run build:mp-qq      # QQ 小程序生产构建
 npm run build:mp-kuaishou# 快手小程序生产构建
+npm run build:mp-weixin  # 微信小程序生产构建
 ```
 
 ## 架构概览
