@@ -28,11 +28,13 @@
       ></view>
     </view>
 
-    <!-- 图例表格（长名称防截断，跑者层级用） -->
+    <!-- 图例表格（长名称防截断，跑者层级用；两列 × 两行网格） -->
     <view v-if="tableLegend" class="legend-table">
-      <view v-for="(seg, i) in segments" :key="i" class="legend-row">
-        <view class="legend-swatch" :style="{ background: seg.cat.color }"></view>
-        <text class="legend-name">{{ seg.cat.name }}</text>
+      <view v-for="(col, ci) in legendColumns" :key="ci" class="legend-col">
+        <view v-for="(seg, i) in col" :key="i" class="legend-row">
+          <view class="legend-swatch" :style="{ background: seg.cat.color }"></view>
+          <text class="legend-name">{{ seg.cat.name }}</text>
+        </view>
       </view>
     </view>
 
@@ -75,6 +77,13 @@ const boundaryPositions = computed(() =>
   boundaries.value.map(b => getMarkerPosition(b.bmi, axisMin.value, axisMax.value))
 )
 const markerPos = computed(() => getMarkerPosition(props.currentBmi, axisMin.value, axisMax.value))
+
+/** 图例表格分两列：将可见分段均分为左右两列（跑者层级 4 项 → 2 列 × 2 行） */
+const legendColumns = computed(() => {
+  const segs = segments.value
+  const mid = Math.ceil(segs.length / 2)
+  return [segs.slice(0, mid), segs.slice(mid)]
+})
 
 function segWidth(seg) {
   return ((seg.end - seg.start) / (axisMax.value - axisMin.value)) * 100
@@ -152,21 +161,22 @@ function segWidth(seg) {
   text-overflow: ellipsis;
 }
 
-/* 图例表格（2 列：色块 + 完整名称） */
+/* 图例表格（两列网格：色块 + 完整名称） */
 .legend-table {
   display: flex;
-  flex-wrap: wrap;
   margin-top: 16rpx;
   border: 2rpx solid #f0f0f0;
   border-radius: 12rpx;
   overflow: hidden;
 }
+.legend-col {
+  flex: 1;
+  min-width: 0;
+}
 .legend-row {
   display: flex;
   align-items: center;
-  width: 50%;
-  padding: 12rpx 20rpx;
-  box-sizing: content-box;
+  padding: 14rpx 20rpx;
 }
 .legend-swatch {
   width: 28rpx;
