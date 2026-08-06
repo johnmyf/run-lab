@@ -25,7 +25,7 @@
       </view>
     </view>
 
-    <!-- #ifdef MP-WEIXIN -->
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
     <CustomTabBar active-index="0" />
     <!-- #endif -->
   </view>
@@ -34,7 +34,7 @@
 <script setup>
 import { statusBarHeight } from '@/utils/status-bar'
 
-// #ifdef MP-WEIXIN
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 import CustomTabBar from '@/custom-tab-bar/index.vue'
 // #endif
 

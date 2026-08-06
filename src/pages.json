@@ -87,7 +87,7 @@
     "backgroundColor": "#f5f5f5"
   },
   "tabBar": {
-    /* #ifdef MP-WEIXIN */
+    /* #ifdef MP-WEIXIN || MP-TOUTIAO */
     "custom": true,
     /* #endif */
     "color": "#7F8C8D",
