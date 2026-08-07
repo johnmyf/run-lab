@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="体重建议" color="#1ABC9C" :content="posterContent" />
+    <SharePoster ref="posterRef" title="体重建议" color="#1ABC9C" :content="posterContent" :heatmaps="posterHeatmaps" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 输入卡片 -->
@@ -113,7 +113,7 @@ import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import bmiData from '@/data/bmi.json'
-import { calcBMI, findAdultStatus, findRunnerLevel } from '@/logic/bmi/calculator'
+import { calcBMI, findAdultStatus, findRunnerLevel, getSegments, getBoundaryWeights } from '@/logic/bmi/calculator'
 import { parseBold } from '@/logic/bmi/understanding'
 import {
   GENDERS, DEFAULT_WEIGHT, DEFAULT_HEIGHT, DEFAULT_GENDER,
@@ -168,6 +168,31 @@ const posterContent = computed(() => {
     { label: 'BMI', value: `${bmi.value}（${gender.value}）` },
     { label: '成人状态', value: weightStatusText.value },
     { label: '跑者层级', value: runnerLevel.value?.name ?? '' },
+  ]
+})
+
+/** 分享海报热力图数据（体重状态 + 跑者层级，与页面横轴一致），由 SharePoster 绘制 */
+const posterHeatmaps = computed(() => {
+  if (!calculated.value || !adultStatus.value || !runnerLevel.value) return []
+  const adultVisible = adult.filter(c => c.visible !== false)
+  const runnerVisible = runnerLevels[gender.value].filter(c => c.visible !== false)
+  return [
+    {
+      title: '体重状态',
+      axis: ADULT_AXIS,
+      segments: getSegments(adultVisible, ADULT_AXIS[0], ADULT_AXIS[1]),
+      boundaries: getBoundaryWeights(heightNum.value, adultVisible),
+      markerBmi: bmi.value,
+      legend: 'labels',
+    },
+    {
+      title: '跑者层级',
+      axis: RUNNER_AXIS,
+      segments: getSegments(runnerVisible, RUNNER_AXIS[0], RUNNER_AXIS[1]),
+      boundaries: getBoundaryWeights(heightNum.value, runnerVisible),
+      markerBmi: bmi.value,
+      legend: 'table',
+    },
   ]
 })
 

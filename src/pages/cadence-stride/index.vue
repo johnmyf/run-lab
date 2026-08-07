@@ -181,7 +181,15 @@ const hasResult = computed(() => result.value !== null)
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterContent = computed(() => result.value?.rows ?? [])
+const posterContent = computed(() => {
+  if (!result.value) return []
+  // 计算方式（参考网页版顶部模式选择区）
+  const modeLabel = MODE_OPTIONS.find(m => m.key === mode.value)?.label ?? ''
+  const rows = []
+  if (modeLabel) rows.push({ label: '计算方式', value: modeLabel })
+  rows.push(...(result.value.rows ?? []))
+  return rows
+})
 
 // ==================== 方法 ====================
 

@@ -145,6 +145,10 @@ const posterContent = computed(() => {
   predictions.value.forEach(p => {
     rows.push({ label: p.label, value: `${p.lowerTime} ~ ${p.upperTime}` })
   })
+  // 训练配速建议（参考网页版数据项）
+  trainingPaces.value.forEach(t => {
+    rows.push({ label: t.label, value: t.display })
+  })
   return rows
 })
 

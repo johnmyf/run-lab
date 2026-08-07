@@ -143,6 +143,9 @@ const posterRef = ref(null)
 const posterContent = computed(() => {
   if (!calculated.value || !currentMaxHR.value) return []
   const rows = []
+  // 输入项：年龄、性别（参考网页版截图元素）
+  rows.push({ label: '年龄', value: `${age.value}岁` })
+  rows.push({ label: '性别', value: gender.value })
   const method = maxHRResults.value[selectedIndex.value]
   if (method) rows.push({ label: '估算公式', value: method.name })
   rows.push({ label: '最大心率', value: `${currentMaxHR.value} bpm` })
