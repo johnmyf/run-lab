@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="跑者如何理解 BMI" color="#1ABC9C" :content="posterContent" />
+    <SharePoster ref="posterRef" title="跑者如何理解 BMI" color="#1ABC9C" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <view class="doc-card" :class="{ 'doc-card-expand': sharing }">
@@ -63,13 +63,25 @@ const sharing = ref(false)
 
 // 分享海报内容（小程序端）：取文档各章节标题
 const posterRef = ref(null)
-const posterContent = computed(() => {
-  const rows = []
+const posterBlocks = computed(() => {
+  const list = []
   for (const sec of UNDERSTANDING_SECTIONS) {
-    if (sec.type === 'h2' || sec.type === 'h3') rows.push({ label: '', value: sec.text })
-    if (rows.length >= 5) break
+    if (list.length >= 6) break
+    if (sec.type === 'h2' || sec.type === 'h3') {
+      list.push({ type: 'text', text: sec.text, fontSize: 30, color: '#2C3E50', bold: true })
+    } else if (sec.type === 'p') {
+      list.push({ type: 'text', text: sec.text, fontSize: 26, color: '#555555' })
+    } else if (sec.type === 'table') {
+      list.push({
+        type: 'table',
+        title: (sec.headers || []).join(' / '),
+        headerBg: '#1ABC9C',
+        headers: (sec.headers || []).map(h => ({ text: h })),
+        rows: (sec.rows || []).map(row => ({ cells: row })),
+      })
+    }
   }
-  return rows
+  return list
 })
 
 function goHome() {

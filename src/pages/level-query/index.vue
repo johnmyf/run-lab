@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="等级查询" color="#F39C12" :content="posterContent" />
+    <SharePoster ref="posterRef" title="等级查询" color="#F39C12" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 项目 -->
@@ -159,17 +159,34 @@ const resultDisplay = computed(() =>
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterContent = computed(() => {
+const posterBlocks = computed(() => {
   if (!hasQuery.value) return []
   const [h, m, s] = timePicker.selected
   const timeStr = `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-  return [
-    { label: '项目', value: project.value },
-    { label: '组别', value: gender.value },
-    { label: '年龄', value: `${AGE_RANGE[ageIndex.value]} 岁` },
-    { label: '成绩', value: timeStr },
-    { label: '等级', value: resultDisplay.value },
-  ]
+  return [{
+    type: 'hero',
+    title: '你的等级',
+    value: resultDisplay.value,
+    style: 'gradient',
+    colors: ['#F39C12', '#E67E22'],
+    color: '#FFFFFF',
+    valueSize: 56,
+    sub: `${project.value} · ${gender.value} · ${AGE_RANGE[ageIndex.value]}岁 · 成绩 ${timeStr}`,
+  }, {
+    type: 'table',
+    title: '专业运动员等级标准',
+    headerBg: '#F39C12',
+    headers: [{ text: '级别' }, { text: '成绩', align: 'right' }],
+    colWidths: [50, 50],
+    rows: proTable.value.map(r => ({ cells: [r.level, r.time] })),
+  }, {
+    type: 'table',
+    title: '大众等级标准',
+    headerBg: '#F39C12',
+    headers: [{ text: '年龄组' }, { text: '大众精英' }, { text: '大众一级' }, { text: '大众二级' }],
+    colWidths: [28, 24, 24, 24],
+    rows: AGE_GROUPS.map(ag => ({ cells: [ag, massTime(ag, '大众精英'), massTime(ag, '大众一级'), massTime(ag, '大众二级')] })),
+  }]
 })
 
 // ==================== 表格数据 ====================

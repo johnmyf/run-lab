@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="步频步幅计算" color="#5C6BC0" :content="posterContent" />
+    <SharePoster ref="posterRef" title="步频步幅计算" color="#5C6BC0" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 计算项（三选一） -->
@@ -181,14 +181,17 @@ const hasResult = computed(() => result.value !== null)
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterContent = computed(() => {
+const posterBlocks = computed(() => {
   if (!result.value) return []
   // 计算方式（参考网页版顶部模式选择区）
   const modeLabel = MODE_OPTIONS.find(m => m.key === mode.value)?.label ?? ''
-  const rows = []
-  if (modeLabel) rows.push({ label: '计算方式', value: modeLabel })
-  rows.push(...(result.value.rows ?? []))
-  return rows
+  return [{
+    type: 'card',
+    title: modeLabel || '计算结果',
+    color: '#5C6BC0',
+    highlightBg: 'rgba(92,107,192,0.10)',
+    rows: (result.value.rows ?? []).map(r => ({ label: r.label, value: r.value, highlight: r.highlight })),
+  }]
 })
 
 // ==================== 方法 ====================

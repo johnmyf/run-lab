@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="配速计算器" color="#00BCD4" :content="posterContent" />
+    <SharePoster ref="posterRef" title="配速计算器" color="#00BCD4" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 选择跑步距离 -->
@@ -191,25 +191,40 @@ const strategyHint = computed(() => {
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterContent = computed(() => {
+const posterBlocks = computed(() => {
   if (!hasResult.value) return []
   const r = result.value
-  const rows = [
-    { label: '距离', value: `${r.totalKm} 公里` },
-    { label: '目标时间', value: formatTime(r.totalSeconds) },
-    { label: '平均配速', value: r.avgPaceDisplay },
-    { label: '策略', value: strategyHint.value },
-  ]
-  // 显示间隔 + 分段配速表（参考网页版分段表）
   const intervalLabel = INTERVAL_OPTIONS.find(o => o.value === interval.value)?.label
-  if (intervalLabel) rows.push({ label: '显示间隔', value: intervalLabel })
-  r.rows.forEach(row => {
-    rows.push({
-      label: formatKm(row.km),
-      value: `${formatTime(row.cumulativeSeconds)}  ${formatPace(row.paceSeconds)}`,
-    })
-  })
-  return rows
+  return [{
+    type: 'hero',
+    title: '平均配速',
+    value: r.avgPaceDisplay,
+    unit: '/公里',
+    style: 'tint',
+    color: '#00BCD4',
+    bgColor: '#E0F7FA',
+    valueSize: 48,
+  }, {
+    type: 'card',
+    title: '目标信息',
+    color: '#00BCD4',
+    rows: [
+      { label: '距离', value: `${r.totalKm} 公里` },
+      { label: '目标时间', value: formatTime(r.totalSeconds) },
+      { label: '策略', value: strategyHint.value },
+      ...(intervalLabel ? [{ label: '显示间隔', value: intervalLabel }] : []),
+    ],
+  }, {
+    type: 'table',
+    title: '分段配速表',
+    headerBg: '#00BCD4',
+    headers: [{ text: '公里' }, { text: '时间', align: 'center' }, { text: '配速', align: 'right' }],
+    colWidths: [30, 35, 35],
+    rows: r.rows.map(row => ({ cells: [formatKm(row.km), formatTime(row.cumulativeSeconds), formatPace(row.paceSeconds)] })),
+    highlightLast: true,
+    highlightBg: 'rgba(0,188,212,0.10)',
+    maxRows: 15,
+  }]
 })
 
 // ==================== 方法 ====================

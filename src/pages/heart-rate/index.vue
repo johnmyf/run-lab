@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="心率计算" color="#2ECC71" :content="posterContent" />
+    <SharePoster ref="posterRef" title="心率计算" color="#2ECC71" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 区域1：输入卡片 -->
@@ -140,19 +140,36 @@ const zonesWithRanges = computed(() =>
 
 // 分享海报内容（小程序端）
 const posterRef = ref(null)
-const posterContent = computed(() => {
+const posterBlocks = computed(() => {
   if (!calculated.value || !currentMaxHR.value) return []
-  const rows = []
-  // 输入项：年龄、性别（参考网页版截图元素）
-  rows.push({ label: '年龄', value: `${age.value}岁` })
-  rows.push({ label: '性别', value: gender.value })
   const method = maxHRResults.value[selectedIndex.value]
-  if (method) rows.push({ label: '估算公式', value: method.name })
-  rows.push({ label: '最大心率', value: `${currentMaxHR.value} bpm` })
-  zonesWithRanges.value.forEach(zone => {
-    rows.push({ label: zone.name, value: `${zone.computedRange.from} - ${zone.computedRange.to} bpm` })
-  })
-  return rows
+  return [{
+    type: 'hero',
+    title: '最大心率',
+    value: String(currentMaxHR.value),
+    unit: 'bpm',
+    style: 'tint',
+    color: '#2ECC71',
+    bgColor: '#E8F8F5',
+    valueSize: 52,
+    sub: method ? `估算公式：${method.name}` : '',
+  }, {
+    type: 'card',
+    title: '基础信息',
+    color: '#2ECC71',
+    rows: [
+      { label: '年龄', value: `${age.value}岁` },
+      { label: '性别', value: gender.value },
+    ],
+  }, {
+    type: 'card',
+    title: '训练心率区间',
+    color: '#2ECC71',
+    rows: zonesWithRanges.value.map(z => ({
+      label: `${z.name}（${Math.round(z.range[0] * 100)}-${Math.round(z.range[1] * 100)}%）`,
+      value: `${z.computedRange.from} - ${z.computedRange.to} bpm`,
+    })),
+  }]
 })
 
 const currentMaxHR = computed(() => {

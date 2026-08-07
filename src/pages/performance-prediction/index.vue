@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="成绩预测" color="#E74C3C" :content="posterContent" />
+    <SharePoster ref="posterRef" title="成绩预测" color="#E74C3C" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- VDOT 显示卡片 -->
@@ -139,17 +139,32 @@ const predictions = computed(() => {
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterContent = computed(() => {
+const posterBlocks = computed(() => {
   if (noVdot.value) return []
-  const rows = [{ label: '跑力值 VDOT', value: String(vdotValue.value) }]
-  predictions.value.forEach(p => {
-    rows.push({ label: p.label, value: `${p.lowerTime} ~ ${p.upperTime}` })
-  })
-  // 训练配速建议（参考网页版数据项）
-  trainingPaces.value.forEach(t => {
-    rows.push({ label: t.label, value: t.display })
-  })
-  return rows
+  return [{
+    type: 'hero',
+    title: '你的跑力值 VDOT',
+    value: String(vdotValue.value),
+    style: 'gradient',
+    colors: ['#E74C3C', '#C0392B'],
+    color: '#FFFFFF',
+    valueSize: 100,
+  }, {
+    type: 'card',
+    title: '近期成绩预测',
+    subtitle: '下限为理应达到，上限为可挑战成绩',
+    color: '#E74C3C',
+    rows: predictions.value.map(p => ({
+      label: p.label,
+      value: p.upperTime && p.lowerTime ? `${p.lowerTime} ~ ${p.upperTime}` : p.lowerTime,
+      note: p.lowerPace ? `配速 ${p.upperPace} ~ ${p.lowerPace}` : '',
+    })),
+  }, {
+    type: 'card',
+    title: '训练配速建议',
+    color: '#E74C3C',
+    rows: trainingPaces.value.map(t => ({ label: t.label, value: t.display })),
+  }]
 })
 
 // ==================== 训练配速建议 ====================
