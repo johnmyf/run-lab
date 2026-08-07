@@ -200,12 +200,22 @@ const posterRef = ref(null)
 const posterContent = computed(() => {
   if (!hasResult.value) return []
   const r = result.value
-  return [
+  const rows = [
     { label: '距离', value: `${r.totalKm} 公里` },
     { label: '平均配速', value: r.avgPaceDisplay },
     { label: '完赛时间', value: r.totalTimeDisplay },
     { label: '策略', value: strategyHint.value },
   ]
+  // 显示间隔 + 分段配速表（参考网页版分段表）
+  const intervalLabel = INTERVAL_OPTIONS.find(o => o.value === interval.value)?.label
+  if (intervalLabel) rows.push({ label: '显示间隔', value: intervalLabel })
+  r.rows.forEach(row => {
+    rows.push({
+      label: formatKm(row.km),
+      value: `${formatTime(row.cumulativeSeconds)}  ${formatPace(row.paceSeconds)}`,
+    })
+  })
+  return rows
 })
 
 // ==================== 方法 ====================

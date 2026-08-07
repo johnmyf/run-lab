@@ -194,16 +194,22 @@ const posterRef = ref(null)
 const posterContent = computed(() => {
   if (!hasResult.value) return []
   const r = result.value
-  const first = r.rows[0]
-  const last = r.rows[r.rows.length - 1]
-  return [
+  const rows = [
     { label: '距离', value: `${r.totalKm} 公里` },
     { label: '目标时间', value: formatTime(r.totalSeconds) },
     { label: '平均配速', value: r.avgPaceDisplay },
     { label: '策略', value: strategyHint.value },
-    { label: '首段配速', value: formatPace(first.paceSeconds) },
-    { label: '末段配速', value: formatPace(last.paceSeconds) },
   ]
+  // 显示间隔 + 分段配速表（参考网页版分段表）
+  const intervalLabel = INTERVAL_OPTIONS.find(o => o.value === interval.value)?.label
+  if (intervalLabel) rows.push({ label: '显示间隔', value: intervalLabel })
+  r.rows.forEach(row => {
+    rows.push({
+      label: formatKm(row.km),
+      value: `${formatTime(row.cumulativeSeconds)}  ${formatPace(row.paceSeconds)}`,
+    })
+  })
+  return rows
 })
 
 // ==================== 方法 ====================
