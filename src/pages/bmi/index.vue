@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <SharePoster ref="posterRef" title="体重建议" color="#1ABC9C" :blocks="posterBlocks" :heatmaps="posterHeatmaps" />
+    <SharePoster ref="posterRef" title="体重建议" color="#1ABC9C" :blocks="posterBlocks" />
     <!-- #endif -->
     <view class="content-wrapper">
       <!-- 输入卡片 -->
@@ -161,26 +161,6 @@ const weightStatusText = computed(() => {
 // ==================== 分享海报内容（小程序端） ====================
 
 const posterRef = ref(null)
-const posterBlocks = computed(() => {
-  if (!calculated.value) return []
-  return [{
-    type: 'hero',
-    title: 'BMI',
-    value: bmi.value.toFixed(1),
-    style: 'plain',
-    color: '#1ABC9C',
-    valueSize: 100,
-    sub: `${weightNum.value}kg / ${heightNum.value}cm · ${gender.value}`,
-  }, {
-    type: 'card',
-    title: '体重建议',
-    color: '#1ABC9C',
-    rows: [
-      { label: '成人状态', value: weightStatusText.value },
-      { label: '跑者层级', value: runnerLevel.value?.name ?? '' },
-    ],
-  }]
-})
 
 /** 分享海报热力图数据（体重状态 + 跑者层级，与页面横轴一致），由 SharePoster 绘制 */
 const posterHeatmaps = computed(() => {
@@ -203,6 +183,38 @@ const posterHeatmaps = computed(() => {
       boundaries: getBoundaryWeights(heightNum.value, runnerVisible),
       markerBmi: bmi.value,
       legend: 'table',
+    },
+  ]
+})
+
+/** 分享海报块（BMI 大数字 + 建议 + 热力图 + 说明，参考网页版区块顺序） */
+const posterBlocks = computed(() => {
+  if (!calculated.value) return []
+  return [
+    {
+      type: 'hero',
+      title: 'BMI',
+      value: bmi.value.toFixed(1),
+      style: 'plain',
+      color: '#1ABC9C',
+      valueSize: 100,
+      sub: `${weightNum.value}kg / ${heightNum.value}cm · ${gender.value}`,
+    },
+    {
+      type: 'card',
+      title: '体重建议',
+      color: '#1ABC9C',
+      rows: [
+        { label: '成人状态', value: weightStatusText.value },
+        { label: '跑者层级', value: runnerLevel.value?.name ?? '' },
+      ],
+    },
+    ...posterHeatmaps.value.map(hm => ({ type: 'heatmap', ...hm })),
+    {
+      type: 'text',
+      text: BMI_INTRO.replace(/\*\*/g, ''),
+      fontSize: 26,
+      color: '#555555',
     },
   ]
 })

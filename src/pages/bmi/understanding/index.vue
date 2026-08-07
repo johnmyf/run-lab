@@ -66,11 +66,10 @@ const posterRef = ref(null)
 const posterBlocks = computed(() => {
   const list = []
   for (const sec of UNDERSTANDING_SECTIONS) {
-    if (list.length >= 6) break
     if (sec.type === 'h2' || sec.type === 'h3') {
       list.push({ type: 'text', text: sec.text, fontSize: 30, color: '#2C3E50', bold: true })
     } else if (sec.type === 'p') {
-      list.push({ type: 'text', text: sec.text, fontSize: 26, color: '#555555' })
+      list.push({ type: 'text', text: sec.text.replace(/\*\*/g, ''), fontSize: 26, color: '#555555' })
     } else if (sec.type === 'table') {
       list.push({
         type: 'table',
@@ -79,7 +78,10 @@ const posterBlocks = computed(() => {
         headers: (sec.headers || []).map(h => ({ text: h })),
         rows: (sec.rows || []).map(row => ({ cells: row })),
       })
+    } else if (sec.type === 'divider') {
+      list.push({ type: 'divider' })
     }
+    // list 类型跳过（项目符号列表，海报不渲染；SharePoster 高度保护会兜底超限内容）
   }
   return list
 })

@@ -68,12 +68,24 @@ const HM_GAP = 28
 
 // ==================== 归一化：content/heatmaps/blocks → 统一块序列 ====================
 
+/** 微信 canvas 单边最大约 4096px；按 375 宽折算 rpx 上限并留余量，防海报超高被截断 */
+const MAX_POSTER_RPX = 7800
+
 const posterBlocks = computed(() => {
   const blocks = []
   props.content.forEach(row => blocks.push({ type: 'row', ...row }))
   props.heatmaps.forEach(hm => blocks.push({ type: 'heatmap', ...hm }))
   props.blocks.forEach(b => blocks.push(b))
-  return blocks
+  // 高度保护：累计超过上限则截断，避免 canvas 超出微信尺寸限制导致内容丢失
+  let total = TITLE_H + PAD * 2 + FOOTER_H
+  const kept = []
+  for (const b of blocks) {
+    const bh = blockH(b)
+    if (total + bh > MAX_POSTER_RPX) break
+    total += bh
+    kept.push(b)
+  }
+  return kept
 })
 
 const posterH = computed(() => {
@@ -243,7 +255,8 @@ function drawHero(ctx, w, y, b, u) {
   } else if (b.style === 'tint') {
     ctx.setFillStyle(b.bgColor || hexA(b.color, 0.08))
   } else {
-    ctx.setFillStyle(b.color || '#2C3E50')
+    // plain：白底 + 主题色数字（页面风格，如 BMI 大数字）
+    ctx.setFillStyle(hexA(b.color, 0.04))
   }
   roundRectPath(ctx, x0, y, cw, bh * u, 16 * u)
   ctx.fill()
@@ -754,7 +767,10 @@ function generate() {
                 canvasId: props.canvasId,
                 fileType: 'png',
                 success: (res) => resolve(res.tempFilePath),
-                fail: reject,
+                fail: (err) => {
+                  console.error('[share-poster] canvasToTempFilePath 失败:', err)
+                  reject(err)
+                },
               },
               instance.proxy
             )
@@ -762,13 +778,14 @@ function generate() {
         })
       })
     } catch (e) {
+      console.error('[share-poster] draw 失败:', e)
       reject(e)
       return
     }
   })
 }
 
-/** 保存到相册（处理相册授权） */
+/** 保存到相册（处理相册授权；开发者工具模拟器无法保存 http://tmp 路径，降级为图片预览） */
 function saveToAlbum(filePath) {
   return new Promise((resolve) => {
     uni.saveImageToPhotosAlbum({
@@ -790,7 +807,9 @@ function saveToAlbum(filePath) {
             },
           })
         } else {
-          uni.showToast({ title: '保存失败', icon: 'none' })
+          console.error('[share-poster] 保存相册失败:', err)
+          // 开发者工具模拟器无真实相册（http://tmp 虚拟路径），降级为预览，便于查看海报效果；真机保存正常
+          uni.previewImage({ urls: [filePath], fail: () => {} })
           resolve(false)
         }
       },
@@ -801,21 +820,24 @@ function saveToAlbum(filePath) {
 /** 生成海报并保存到相册 */
 async function share() {
   uni.showLoading({ title: '生成海报...' })
+  let ok = false
   try {
     await nextTick()
     const filePath = await generate()
-    const ok = await saveToAlbum(filePath)
-    if (ok) {
-      uni.showToast({ title: '海报已保存', icon: 'success' })
-    }
-    return ok
+    ok = await saveToAlbum(filePath)
   } catch (e) {
     console.error('海报生成失败:', e)
-    uni.showToast({ title: '海报生成失败', icon: 'none' })
-    return false
+    ok = false
   } finally {
+    // 先隐藏 loading，再弹 toast，避免 showLoading 与 hideLoading 未配对
     uni.hideLoading()
   }
+  if (ok) {
+    uni.showToast({ title: '海报已保存', icon: 'success' })
+  } else {
+    uni.showToast({ title: '海报生成失败', icon: 'none' })
+  }
+  return ok
 }
 
 defineExpose({ share, generate })
