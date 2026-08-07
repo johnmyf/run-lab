@@ -1,15 +1,5 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶部 Header -->
-    <view class="header" style="background: #3498DB;">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">跑力值计算</text>
-    </view>
-
     <view class="content-wrapper">
       <!-- 描述文字 -->
       <view class="desc-section">
@@ -73,7 +63,6 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 import vdotMap from '@/data/sheet5-1.json'
 import { parseTimeToSeconds } from '@/utils/time'
 import { DISTANCE_CONFIGS, getPickerRanges, formatPickerTime, MARATHON_303_TIME } from '@/logic/running-power/constants'
@@ -181,62 +170,20 @@ function goToPrediction() {
   modalState.value = 'hidden'
   uni.navigateTo({ url: '/pages/performance-prediction/index' })
 }
-
-function goBack() {
-  uni.navigateBack()
-}
 </script>
 
 <style scoped>
-.status-bar {
-  background: #3498DB;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
   overflow-x: hidden;
 }
 
-.header {
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.back-button {
-  font-size: 56rpx;
-  color: #FFFFFF;
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 .content-wrapper {
   /* 使用 padding-box 模拟：用 margin 给子元素留空间 */
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 160rpx);
+  height: 100vh;
 }
 
 /* 所有带 padding 的卡片和内边距容器，都不设 width: 100%

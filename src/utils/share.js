@@ -11,15 +11,17 @@ import QRCode from 'qrcode'
 export const HOME_SITE = 'https://run-lab.pages.dev/'
 
 /**
- * 生成分享图片（截图 + 底部二维码），触发下载
+ * 生成分享图片（截图 + 顶部标题色带 + 底部二维码），触发下载
  * @param {Element} pageEl - 页面容器 DOM 元素
  * @param {object} options
  * @param {string} options.prefix - 文件名前缀，如 "成绩预测"
  * @param {number} [options.qrSize=200] - 二维码尺寸 (px)
  * @param {number} [options.scale=2] - canvas 缩放倍率
+ * @param {string} [options.title] - 页面顶部标题（系统导航栏不在截图 DOM 内，需手动合成色带）
+ * @param {string} [options.color] - 标题色带背景色（与导航栏主题色一致）
  * @returns {Promise<boolean>} 是否成功
  */
-export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2 }) {
+export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2, title, color }) {
   try {
     // 1. 截图页面内容
     const canvasA = await html2canvas(pageEl, {
@@ -27,6 +29,10 @@ export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2 
       useCORS: true,
       backgroundColor: '#f5f5f5',
     })
+
+    // 1.1 顶部标题色带高度（按 160rpx 等比换算到 canvas 像素）
+    const headerH = title ? Math.round((160 / 750) * canvasA.width) : 0
+    const titleFontSize = title ? Math.round((40 / 750) * canvasA.width) : 0
 
     // 2. QR 区域尺寸计算
     const padding = 40 * scale
@@ -37,14 +43,25 @@ export async function captureAndShare(pageEl, { prefix, qrSize = 200, scale = 2 
     // 3. 创建合成 canvas
     const canvasB = document.createElement('canvas')
     canvasB.width = canvasA.width
-    canvasB.height = canvasA.height + qrAreaHeight
+    canvasB.height = headerH + canvasA.height + qrAreaHeight
     const ctx = canvasB.getContext('2d')
 
-    // 4. 绘制页面截图
-    ctx.drawImage(canvasA, 0, 0)
+    // 4. 绘制顶部标题色带
+    if (title && color) {
+      ctx.fillStyle = color
+      ctx.fillRect(0, 0, canvasB.width, headerH)
+      ctx.fillStyle = '#FFFFFF'
+      ctx.font = `bold ${titleFontSize}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(title, canvasB.width / 2, headerH / 2)
+    }
 
-    // 5. 绘制二维码区域（白底）
-    const qrAreaY = canvasA.height
+    // 5. 绘制页面截图
+    ctx.drawImage(canvasA, 0, headerH)
+
+    // 6. 绘制二维码区域（白底）
+    const qrAreaY = headerH + canvasA.height
     ctx.fillStyle = '#FFFFFF'
     ctx.fillRect(0, qrAreaY, canvasB.width, qrAreaHeight)
 

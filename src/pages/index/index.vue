@@ -1,11 +1,5 @@
 <template>
   <view class="home">
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <view class="header">
-      <image class="header-icon" src="/static/run-lab-icon.png" mode="aspectFit" />
-      <text class="header-title">跑研匠</text>
-    </view>
-
     <view class="welcome-section">
       <text class="welcome-text">欢迎回来，开始今天的跑步之旅！</text>
     </view>
@@ -26,14 +20,12 @@
     </view>
 
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <CustomTabBar active-index="0" />
+    <CustomTabBar :active-index="0" />
     <!-- #endif -->
   </view>
 </template>
 
 <script setup>
-import { statusBarHeight } from '@/utils/status-bar'
-
 // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 import CustomTabBar from '@/custom-tab-bar/index.vue'
 // #endif
@@ -72,34 +64,10 @@ const goToPage = (item) => {
 </script>
 
 <style scoped>
-.status-bar {
-  background: #4DB8A0;
-}
-
 .home {
   min-height: 100vh;
   background: #f5f5f5;
   padding-bottom: 140rpx;
-}
-
-.header {
-  background: #4DB8A0;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 60rpx;
-}
-
-.header-title {
-  color: #FFFFFF;
-  font-size: 48rpx;
-  font-weight: bold;
-}
-
-.header-icon {
-  width: 96rpx;
-  height: 96rpx;
-  margin-right: 16rpx;
 }
 
 .welcome-section {

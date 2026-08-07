@@ -1,15 +1,8 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶部 Header #F39C12 -->
-    <view class="header">
-      <view class="back-btn" @click="navigateBack">
-        <text>←</text>
-      </view>
-      <text class="header-title">等级查询</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="等级查询" color="#F39C12" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <!-- 项目 -->
       <view class="section">
@@ -117,7 +110,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-show="!sharing">
-        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
+        <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
       </view>
     </view>
@@ -126,9 +119,11 @@
 
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import levelData from '@/data/level.json'
@@ -160,6 +155,22 @@ const hasQuery = ref(false)
 const resultDisplay = computed(() =>
   resultLevel.value ? getLevelDisplayName(resultLevel.value) : NO_LEVEL_TEXT
 )
+
+// ==================== 分享海报内容（小程序端） ====================
+
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  if (!hasQuery.value) return []
+  const [h, m, s] = timePicker.selected
+  const timeStr = `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  return [
+    { label: '项目', value: project.value },
+    { label: '组别', value: gender.value },
+    { label: '年龄', value: `${AGE_RANGE[ageIndex.value]} 岁` },
+    { label: '成绩', value: timeStr },
+    { label: '等级', value: resultDisplay.value },
+  ]
+})
 
 // ==================== 表格数据 ====================
 
@@ -219,10 +230,6 @@ function query() {
   hasQuery.value = true
 }
 
-function navigateBack() {
-  uni.navigateBack()
-}
-
 function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
 }
@@ -242,7 +249,7 @@ async function shareResult() {
   await new Promise(r => setTimeout(r, 300))
   try {
     const el = document.querySelector('.page-container')
-    const ok = await captureAndShare(el, { prefix: '等级查询' })
+    const ok = await captureAndShare(el, { prefix: '等级查询', title: '等级查询', color: '#F39C12' })
     if (!ok) throw new Error('captureAndShare failed')
   } catch (e) {
     uni.showToast({ title: '分享失败', icon: 'none' })
@@ -250,50 +257,24 @@ async function shareResult() {
     sharing.value = false
   }
   // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  if (!hasQuery.value) {
+    uni.showToast({ title: '请先查询', icon: 'none' })
+    return
+  }
+  await posterRef.value.share()
+  // #endif
 }
 </script>
 
 <style scoped>
-.status-bar {
-  background: #F39C12;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
 }
 .content-wrapper {
   padding: 30rpx;
-}
-
-/* 顶栏 */
-.header {
-  height: 160rpx;
-  background: #F39C12;
-  display: flex;
-  align-items: center;
-  padding: 0 30rpx;
-  position: relative;
-}
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-.back-btn text {
-  color: #FFF;
-  font-size: 40rpx;
-}
-.header-title {
-  color: #FFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* 卡片区 */

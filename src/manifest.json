@@ -5,6 +5,9 @@
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
+  "uniStatistics": {
+    "enable": false
+  },
   "mp-weixin": {
     "appid": "wxc20b6961f816efa0",
     "setting": {
@@ -17,7 +20,7 @@
     "lazyCodeLoading": "requiredComponents"
   },
   "mp-toutiao": {
-    "appid": "__UNI__XXXXXX",
+    "appid": "tt152b63968b519cf601",
     "setting": {
       "urlCheck": true,
       "es6": true,

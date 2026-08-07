@@ -1,13 +1,5 @@
 <template>
   <view class="page-container">
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">成就体系</text>
-    </view>
-
     <view class="content">
       <text class="icon-large">🏅</text>
       <text class="feature-title">成就体系</text>
@@ -20,14 +12,12 @@
     </view>
 
     <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
-    <CustomTabBar active-index="1" />
+    <CustomTabBar :active-index="1" />
     <!-- #endif -->
   </view>
 </template>
 
 <script setup>
-import { statusBarHeight } from '@/utils/status-bar'
-
 // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 import CustomTabBar from '@/custom-tab-bar/index.vue'
 // #endif
@@ -37,52 +27,13 @@ import { onShow } from '@dcloudio/uni-app'
 import { hideNativeTabBar } from '@/utils/hide-native-tab-bar'
 onShow(() => { hideNativeTabBar() })
 // #endif
-
-const goBack = () => {
-  uni.switchTab({ url: '/pages/index/index' })
-}
 </script>
 
 <style scoped>
-.status-bar {
-  background: #1ABC9C;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
   padding-bottom: 140rpx;
-}
-
-.header {
-  background: #1ABC9C;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.back-button {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
 }
 
 .content {
@@ -90,7 +41,7 @@ const goBack = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 160rpx);
+  min-height: 100vh;
   padding: 80rpx 40rpx;
 }
 

@@ -1,13 +1,5 @@
 <template>
   <view class="page-container">
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">跑步课表</text>
-    </view>
-
     <view class="content">
       <text class="icon-large">📅</text>
       <text class="feature-title">跑步课表</text>
@@ -22,52 +14,12 @@
 </template>
 
 <script setup>
-import { statusBarHeight } from '@/utils/status-bar'
-
-const goBack = () => {
-  uni.navigateBack()
-}
 </script>
 
 <style scoped>
-.status-bar {
-  background: #9B59B6;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
-}
-
-.header {
-  background: #9B59B6;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.back-button {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
 }
 
 .content {
@@ -75,7 +27,7 @@ const goBack = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 160rpx);
+  min-height: 100vh;
   padding: 80rpx 40rpx;
 }
 

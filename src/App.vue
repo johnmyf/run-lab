@@ -5,6 +5,19 @@
 </template>
 
 <script setup>
+import { onLaunch } from '@dcloudio/uni-app'
+
+onLaunch(() => {
+  // #ifdef MP-TOUTIAO
+  // 关闭抖音端滑动返回手势（mode=0），避免快速拖动页面时误触返回上一页
+  // 参考: tt.setSwipeBackMode 官方文档
+  try {
+    tt.setSwipeBackMode(0)
+  } catch (e) {
+    console.warn('setSwipeBackMode 调用失败:', e)
+  }
+  // #endif
+})
 </script>
 
 <style>

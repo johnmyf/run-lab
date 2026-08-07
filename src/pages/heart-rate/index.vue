@@ -1,15 +1,8 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶部 Header -->
-    <view class="header" style="background: #2ECC71;">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">心率计算</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="心率计算" color="#2ECC71" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <!-- 区域1：输入卡片 -->
       <view class="card">
@@ -111,9 +104,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { TRAINING_ZONES, METHODS } from '@/logic/heart-rate/constants'
 import { calcHeartRates, calcZoneRange } from '@/logic/heart-rate/calculator'
@@ -142,6 +137,20 @@ const zonesWithRanges = computed(() =>
     computedRange: calcZoneRange(currentMaxHR.value, zone.range[0], zone.range[1])
   }))
 )
+
+// 分享海报内容（小程序端）
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  if (!calculated.value || !currentMaxHR.value) return []
+  const rows = []
+  const method = maxHRResults.value[selectedIndex.value]
+  if (method) rows.push({ label: '估算公式', value: method.name })
+  rows.push({ label: '最大心率', value: `${currentMaxHR.value} bpm` })
+  zonesWithRanges.value.forEach(zone => {
+    rows.push({ label: zone.name, value: `${zone.computedRange.from} - ${zone.computedRange.to} bpm` })
+  })
+  return rows
+})
 
 const currentMaxHR = computed(() => {
   if (!calculated.value || !maxHRResults.value.length) return 0
@@ -188,16 +197,8 @@ function onMethodChange(event) {
 
 // ==================== 分享与导航 ====================
 
-function goBack() {
-  uni.navigateBack()
-}
-
 async function shareResult() {
-  // #ifndef H5
-  uni.showToast({ title: '请在浏览器中打开使用分享功能', icon: 'none' })
-  return
-  // #endif
-
+  // #ifdef H5
   try {
     uni.showLoading({ title: '生成分享图片...' })
 
@@ -211,19 +212,30 @@ async function shareResult() {
       return
     }
 
-    const ok = await captureAndShare(pageEl, { prefix: '心率计算' })
+    const ok = await captureAndShare(pageEl, { prefix: '心率计算', title: '心率计算', color: '#2ECC71' })
+    // 先关闭 loading，避免与后续 showToast 共用弹窗产生冲突（showLoading 需与 hideLoading 配对）
+    uni.hideLoading()
     if (ok) {
       uni.showToast({ title: '图片已生成', icon: 'success' })
     } else {
-      throw new Error('captureAndShare returned false')
+      uni.showToast({ title: '分享生成失败', icon: 'none' })
     }
   } catch (e) {
     console.error('分享失败:', e)
+    uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
   } finally {
     sharing.value = false
-    uni.hideLoading()
   }
+  // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  if (!calculated.value || !currentMaxHR.value) {
+    uni.showToast({ title: '请先完成计算', icon: 'none' })
+    return
+  }
+  await posterRef.value.share()
+  // #endif
 }
 
 function goHome() {
@@ -232,48 +244,10 @@ function goHome() {
 </script>
 
 <style scoped>
-.status-bar {
-  background: #2ECC71;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
   overflow-x: hidden;
-}
-
-.header {
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.back-button {
-  font-size: 56rpx;
-  color: #FFFFFF;
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  white-space: nowrap;
 }
 
 .content-wrapper {

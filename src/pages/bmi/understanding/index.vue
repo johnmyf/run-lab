@@ -1,13 +1,8 @@
 <template>
   <view class="page-container">
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">跑者如何理解BMI</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="跑者如何理解 BMI" color="#1ABC9C" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <view class="doc-card" :class="{ 'doc-card-expand': sharing }">
         <template v-for="(sec, i) in UNDERSTANDING_SECTIONS" :key="i">
@@ -46,7 +41,7 @@
       </view>
 
       <view class="action-buttons" v-if="!sharing">
-        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
+        <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
       </view>
     </view>
@@ -54,19 +49,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
+import { ref, computed } from 'vue'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { UNDERSTANDING_SECTIONS, UNDERSTANDING_SHARE_PREFIX, parseBold } from '@/logic/bmi/understanding'
 
 const sharing = ref(false)
 
-function goBack() {
-  uni.navigateBack()
-}
+// 分享海报内容（小程序端）：取文档各章节标题
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  const rows = []
+  for (const sec of UNDERSTANDING_SECTIONS) {
+    if (sec.type === 'h2' || sec.type === 'h3') rows.push({ label: '', value: sec.text })
+    if (rows.length >= 5) break
+  }
+  return rows
+})
 
 function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
@@ -91,58 +95,33 @@ async function shareResult() {
       uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
     }
-    const ok = await captureAndShare(pageEl, { prefix: UNDERSTANDING_SHARE_PREFIX })
+    const ok = await captureAndShare(pageEl, { prefix: UNDERSTANDING_SHARE_PREFIX, title: '跑者如何理解 BMI', color: '#1ABC9C' })
+    // 先关闭 loading，避免与后续 showToast 共用弹窗产生冲突（showLoading 需与 hideLoading 配对）
+    uni.hideLoading()
     if (ok) {
       uni.showToast({ title: '图片已生成', icon: 'success' })
     } else {
-      throw new Error('captureAndShare returned false')
+      uni.showToast({ title: '分享生成失败', icon: 'none' })
     }
   } catch (e) {
     console.error('分享失败:', e)
+    uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
   } finally {
     sharing.value = false
-    uni.hideLoading()
   }
+  // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  await posterRef.value.share()
   // #endif
 }
 </script>
 
 <style scoped>
-.status-bar {
-  background: #1ABC9C;
-}
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
-}
-.header {
-  background: #1ABC9C;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-.back-button {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  white-space: nowrap;
 }
 .content-wrapper {
   padding: 30rpx;

@@ -1,15 +1,8 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶栏 #E91E63 -->
-    <view class="header">
-      <view class="back-btn" @click="navigateBack">
-        <text>←</text>
-      </view>
-      <text class="header-title">完赛时间计算</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="完赛时间计算" color="#E91E63" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <!-- 选择跑步距离 -->
       <view class="section">
@@ -143,7 +136,7 @@
 
         <!-- 操作按钮 -->
         <view class="action-buttons" v-show="!sharing">
-          <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
+          <button class="btn btn-share" @click="shareResult">分享</button>
           <button class="btn btn-home" @click="goHome">返回首页</button>
           <button class="btn btn-re-eval" @click="scrollToTop">重新评估</button>
         </view>
@@ -154,9 +147,11 @@
 
 <script setup>
 import { ref, reactive, computed, nextTick } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import {
@@ -197,6 +192,20 @@ const strategyHint = computed(() => {
   const pct = Math.abs(S)
   if (S < 0) return `前慢后快 — 后段快 ${pct}%，逐段加速`
   return `前快后慢 — 后段慢 ${pct}%，逐段降速`
+})
+
+// ==================== 分享海报内容（小程序端） ====================
+
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  if (!hasResult.value) return []
+  const r = result.value
+  return [
+    { label: '距离', value: `${r.totalKm} 公里` },
+    { label: '平均配速', value: r.avgPaceDisplay },
+    { label: '完赛时间', value: r.totalTimeDisplay },
+    { label: '策略', value: strategyHint.value },
+  ]
 })
 
 // ==================== 方法 ====================
@@ -295,7 +304,6 @@ function formatKm(km) {
   return km.toFixed(3)
 }
 
-function navigateBack() { uni.navigateBack() }
 function goHome() { uni.switchTab({ url: '/pages/index/index' }) }
 function scrollToTop() {
   result.value = null
@@ -317,7 +325,7 @@ async function shareResult() {
   await new Promise(r => setTimeout(r, 300))
   try {
     const el = document.querySelector('.page-container')
-    const ok = await captureAndShare(el, { prefix: '完赛计划' })
+    const ok = await captureAndShare(el, { prefix: '完赛计划', title: '完赛时间计算', color: '#E91E63' })
     if (!ok) throw new Error('captureAndShare failed')
   } catch (e) {
     uni.showToast({ title: '分享失败', icon: 'none' })
@@ -325,51 +333,25 @@ async function shareResult() {
     sharing.value = false
   }
   // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  if (!hasResult.value) {
+    uni.showToast({ title: '请先完成计算', icon: 'none' })
+    return
+  }
+  await posterRef.value.share()
+  // #endif
 }
 </script>
 
 <style scoped>
 /* 全局布局 */
-.status-bar {
-  background: #E91E63;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
 }
 .content-wrapper {
   padding: 30rpx;
-}
-
-/* 顶栏 */
-.header {
-  height: 160rpx;
-  background: #E91E63;
-  display: flex;
-  align-items: center;
-  padding: 0 30rpx;
-  position: relative;
-}
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-.back-btn text {
-  color: #FFF;
-  font-size: 40rpx;
-}
-.header-title {
-  color: #FFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* 卡片区 */

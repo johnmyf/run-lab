@@ -1,15 +1,8 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶部 Header（teal） -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">体重建议</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="体重建议" color="#1ABC9C" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <!-- 输入卡片 -->
       <view class="card">
@@ -102,7 +95,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-if="calculated && !sharing">
-        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
+        <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
         <button class="btn btn-recalc" @click="resetResult">重新计算</button>
       </view>
@@ -112,9 +105,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import bmiData from '@/data/bmi.json'
@@ -163,6 +158,19 @@ const weightStatusText = computed(() => {
   return needLoseKg.value > 0 ? `${name}(需减掉${needLoseKg.value}公斤)` : name
 })
 
+// ==================== 分享海报内容（小程序端） ====================
+
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  if (!calculated.value) return []
+  return [
+    { label: '体重/身高', value: `${weightNum.value} kg / ${heightNum.value} cm` },
+    { label: 'BMI', value: `${bmi.value}（${gender.value}）` },
+    { label: '成人状态', value: weightStatusText.value },
+    { label: '跑者层级', value: runnerLevel.value?.name ?? '' },
+  ]
+})
+
 // ==================== 事件 ====================
 function onWeightInput(e) { weight.value = e.detail.value }
 function onHeightInput(e) { height.value = e.detail.value }
@@ -199,10 +207,6 @@ function resetResult() {
 }
 
 // ==================== 导航与分享 ====================
-function goBack() {
-  uni.navigateBack()
-}
-
 function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
 }
@@ -230,60 +234,37 @@ async function shareResult() {
       uni.showToast({ title: '页面元素未找到', icon: 'none' })
       return
     }
-    const ok = await captureAndShare(pageEl, { prefix: SHARE_PREFIX })
+    const ok = await captureAndShare(pageEl, { prefix: SHARE_PREFIX, title: '体重建议', color: '#1ABC9C' })
+    // 先关闭 loading，避免与后续 showToast 共用弹窗产生冲突（showLoading 需与 hideLoading 配对）
+    uni.hideLoading()
     if (ok) {
       uni.showToast({ title: '图片已生成', icon: 'success' })
     } else {
-      throw new Error('captureAndShare returned false')
+      uni.showToast({ title: '分享生成失败', icon: 'none' })
     }
   } catch (e) {
     console.error('分享失败:', e)
+    uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
   } finally {
     sharing.value = false
-    uni.hideLoading()
   }
+  // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  if (!calculated.value) {
+    uni.showToast({ title: '请先完成计算', icon: 'none' })
+    return
+  }
+  await posterRef.value.share()
   // #endif
 }
 </script>
 
 <style scoped>
-.status-bar {
-  background: #1ABC9C;
-}
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
-}
-
-/* 顶部 Header */
-.header {
-  background: #1ABC9C;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-.back-button {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  white-space: nowrap;
 }
 
 .content-wrapper {

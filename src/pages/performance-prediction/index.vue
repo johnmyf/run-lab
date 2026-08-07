@@ -1,15 +1,8 @@
 <template>
   <view class="page-container">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    <!-- 顶部 Header -->
-    <view class="header">
-      <view class="back-button" @click="goBack">
-        <text class="back-arrow">←</text>
-      </view>
-      <text class="page-title">成绩预测</text>
-    </view>
-
+    <!-- #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU -->
+    <SharePoster ref="posterRef" title="成绩预测" color="#E74C3C" :content="posterContent" />
+    <!-- #endif -->
     <view class="content-wrapper">
       <!-- VDOT 显示卡片 -->
       <view class="vdot-card">
@@ -65,7 +58,7 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons" v-if="!sharing && !noVdot">
-        <button class="btn btn-share" open-type="share" @click="shareResult">分享</button>
+        <button class="btn btn-share" @click="shareResult">分享</button>
         <button class="btn btn-home" @click="goHome">返回首页</button>
         <button class="btn btn-re-eval" @click="goToRunningPower">重新评估</button>
       </view>
@@ -75,9 +68,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { statusBarHeight } from '@/utils/status-bar'
 // #ifdef H5
 import { captureAndShare } from '@/utils/share'
+// #endif
+// #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+import SharePoster from '@/components/share-poster.vue'
 // #endif
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import vdotMap from '@/data/sheet5-1.json'
@@ -141,6 +136,18 @@ const predictions = computed(() => {
   })
 })
 
+// ==================== 分享海报内容（小程序端） ====================
+
+const posterRef = ref(null)
+const posterContent = computed(() => {
+  if (noVdot.value) return []
+  const rows = [{ label: '跑力值 VDOT', value: String(vdotValue.value) }]
+  predictions.value.forEach(p => {
+    rows.push({ label: p.label, value: `${p.lowerTime} ~ ${p.upperTime}` })
+  })
+  return rows
+})
+
 // ==================== 训练配速建议 ====================
 
 /** 生成训练配速列表 */
@@ -202,11 +209,6 @@ const trainingReadme = computed(() => {
   return readmeItems
 })
 
-// 返回上一页
-function goBack() {
-  uni.navigateBack()
-}
-
 // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
 onShareAppMessage(() => ({
   title: '成绩预测 — 跑研匠',
@@ -230,19 +232,29 @@ async function shareResult() {
       return
     }
 
-    const ok = await captureAndShare(pageEl, { prefix: `成绩预测_VDOT${vdotValue.value}` })
+    const ok = await captureAndShare(pageEl, { prefix: `成绩预测_VDOT${vdotValue.value}`, title: '成绩预测', color: '#E74C3C' })
+    // 先关闭 loading，避免与后续 showToast 共用弹窗产生冲突（showLoading 需与 hideLoading 配对）
+    uni.hideLoading()
     if (ok) {
       uni.showToast({ title: '图片已生成', icon: 'success' })
     } else {
-      throw new Error('captureAndShare returned false')
+      uni.showToast({ title: '分享生成失败', icon: 'none' })
     }
   } catch (e) {
     console.error('分享失败:', e)
+    uni.hideLoading()
     uni.showToast({ title: '分享生成失败', icon: 'none' })
   } finally {
     sharing.value = false
-    uni.hideLoading()
   }
+  // #endif
+
+  // #ifdef MP-WEIXIN || MP-TOUTIAO || MP-QQ || MP-KUAISHOU
+  if (noVdot.value) {
+    uni.showToast({ title: '请先在跑力值计算页获取 VDOT', icon: 'none' })
+    return
+  }
+  await posterRef.value.share()
   // #endif
 }
 
@@ -258,46 +270,9 @@ function goToRunningPower() {
 </script>
 
 <style scoped>
-.status-bar {
-  background: #E74C3C;
-}
-
 .page-container {
   min-height: 100vh;
   background: #f5f5f5;
-}
-
-/* ==================== Header ==================== */
-.header {
-  background: #E74C3C;
-  height: 160rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 40rpx;
-  position: relative;
-}
-
-.back-button {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-arrow {
-  color: #FFFFFF;
-  font-size: 56rpx;
-}
-
-.page-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #FFFFFF;
-  font-size: 40rpx;
-  font-weight: bold;
-  white-space: nowrap;
 }
 
 /* ==================== Content ==================== */
